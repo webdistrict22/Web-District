@@ -1,0 +1,98 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  --wd-bg: #020817;
+  --wd-bg-2: #07111f;
+  --wd-card: #0a1a2d;
+  --wd-card-soft: rgba(10, 26, 45, 0.72);
+  --wd-text: #f5f8fc;
+  --wd-muted: #94a3b8;
+  --wd-gold: #c69a4e;
+  --wd-gold-soft: rgba(198, 154, 78, 0.16);
+  --wd-cyan: #22d3ee;
+  --wd-border: rgba(245, 248, 252, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 70% 0%, rgba(198, 154, 78, 0.08), transparent 32%),
+    radial-gradient(circle at 25% 12%, rgba(34, 211, 238, 0.06), transparent 28%),
+    var(--wd-bg);
+  color: var(--wd-text);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.font-display {
+  font-family: "Sora", system-ui, sans-serif;
+}
+
+.wd-container {
+  width: min(1180px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.wd-card {
+  background: linear-gradient(180deg, rgba(10, 26, 45, 0.86), rgba(7, 17, 31, 0.82));
+  border: 1px solid var(--wd-border);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.wd-gold-line {
+  height: 1px;
+  width: 74px;
+  background: linear-gradient(90deg, transparent, var(--wd-gold), transparent);
+}
+
+.wd-text-gradient {
+  background: linear-gradient(135deg, #ffffff, #f5f8fc 45%, #b8c1cf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.wd-gold-gradient {
+  background: linear-gradient(135deg, #f1d08b, #c69a4e, #94682e);
+}
+
+.wd-noise {
+  position: relative;
+}
+
+.wd-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+::selection {
+  background: rgba(198, 154, 78, 0.35);
+  color: white;
+}

@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import ClientManager from "../../components/admin/ClientManager";
 
 function AdminClients() {
-  return (
-    <AdminPlaceholder
-      title="Clients"
-      description="Soon this page will let you view clients and their related requests, calls, contracts, and reviews."
-    />
-  );
+  return <ClientManager />;
 }
 
 export default AdminClients;

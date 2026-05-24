@@ -1,15 +1,72 @@
 const CallSlot = require("../models/CallSlot");
 const asyncHandler = require("../middleware/asyncHandler");
 
+const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+const isValidDateString = (date) => {
+  if (!datePattern.test(date)) return false;
+
+  const parsedDate = new Date(`${date}T00:00:00.000Z`);
+
+  return (
+    !Number.isNaN(parsedDate.getTime()) &&
+    parsedDate.toISOString().slice(0, 10) === date
+  );
+};
+
+const validateSlotTime = ({ date, startTime, endTime }) => {
+  if (!date || !startTime || !endTime) {
+    return "Date, start time, and end time are required";
+  }
+
+  if (!isValidDateString(date)) {
+    return "Date must be a valid YYYY-MM-DD date";
+  }
+
+  if (!timePattern.test(startTime) || !timePattern.test(endTime)) {
+    return "Start time and end time must use HH:mm format";
+  }
+
+  if (startTime >= endTime) {
+    return "End time must be after start time";
+  }
+
+  return null;
+};
+
+const findDuplicateSlot = ({ date, startTime, endTime, excludeId }) => {
+  const query = {
+    date,
+    startTime,
+    endTime,
+  };
+
+  if (excludeId) {
+    query._id = { $ne: excludeId };
+  }
+
+  return CallSlot.findOne(query);
+};
+
 // @desc    Create call slot
 // @route   POST /api/slots
 // @access  Admin
 const createCallSlot = asyncHandler(async (req, res) => {
   const { date, startTime, endTime, notes } = req.body;
 
-  if (!date || !startTime || !endTime) {
+  const validationError = validateSlotTime({ date, startTime, endTime });
+
+  if (validationError) {
     res.status(400);
-    throw new Error("Date, start time, and end time are required");
+    throw new Error(validationError);
+  }
+
+  const duplicateSlot = await findDuplicateSlot({ date, startTime, endTime });
+
+  if (duplicateSlot) {
+    res.status(400);
+    throw new Error("A call slot with this exact date and time already exists");
   }
 
   const slot = await CallSlot.create({
@@ -68,11 +125,47 @@ const updateCallSlot = asyncHandler(async (req, res) => {
     throw new Error("Call slot not found");
   }
 
+  const nextDate = date !== undefined ? date : slot.date;
+  const nextStartTime = startTime !== undefined ? startTime : slot.startTime;
+  const nextEndTime = endTime !== undefined ? endTime : slot.endTime;
+
+  const validationError = validateSlotTime({
+    date: nextDate,
+    startTime: nextStartTime,
+    endTime: nextEndTime,
+  });
+
+  if (validationError) {
+    res.status(400);
+    throw new Error(validationError);
+  }
+
+  const duplicateSlot = await findDuplicateSlot({
+    date: nextDate,
+    startTime: nextStartTime,
+    endTime: nextEndTime,
+    excludeId: slot._id,
+  });
+
+  if (duplicateSlot) {
+    res.status(400);
+    throw new Error("A call slot with this exact date and time already exists");
+  }
+
+  if (slot.isBooked && isActive === false) {
+    res.status(400);
+    throw new Error("Cannot disable a booked slot");
+  }
+
+  if (isBooked !== undefined && isBooked !== slot.isBooked) {
+    res.status(400);
+    throw new Error("Slot booking status is managed by appointments");
+  }
+
   if (date !== undefined) slot.date = date;
   if (startTime !== undefined) slot.startTime = startTime;
   if (endTime !== undefined) slot.endTime = endTime;
   if (isActive !== undefined) slot.isActive = isActive;
-  if (isBooked !== undefined) slot.isBooked = isBooked;
   if (notes !== undefined) slot.notes = notes;
 
   const updatedSlot = await slot.save();

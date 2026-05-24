@@ -1,5 +1,6 @@
 const ContactMessage = require("../models/ContactMessage");
 const asyncHandler = require("../middleware/asyncHandler");
+const { notifyContactMessage } = require("../utils/notificationService");
 
 // @desc    Create contact message
 // @route   POST /api/contact
@@ -18,6 +19,10 @@ const createContactMessage = asyncHandler(async (req, res) => {
     phone,
     subject,
     message,
+  });
+
+  notifyContactMessage(contactMessage).catch((error) => {
+    console.error("Contact message email notification failed:", error.message);
   });
 
   res.status(201).json({

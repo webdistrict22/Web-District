@@ -2,8 +2,11 @@ import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Button from "../common/Button";
 import Container from "../common/Container";
+import useSettings from "../../hooks/useSettings";
 
 function HeroSection() {
+  const { settings } = useSettings();
+
   return (
     <section className="wd-noise relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40">
       <div className="absolute left-1/2 top-0 -z-10 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-[#0A1A2D] blur-[110px]" />
@@ -23,17 +26,17 @@ function HeroSection() {
             </div>
 
             <h1 className="font-display max-w-5xl text-5xl font-extrabold leading-[0.98] tracking-[-0.07em] wd-text-gradient md:text-7xl">
-              Websites that make businesses look serious.
+              {settings.heroHeadline}
             </h1>
 
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[#94A3B8]">
-              We build clean, modern websites for brands, businesses, and campaigns — from online stores to business websites and landing pages.
+              {settings.heroSubtext}
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-              <Button to="/start">Book your website</Button>
+              <Button to="/start">{settings.primaryCTA || "Book your website"}</Button>
               <Button to="/work" variant="secondary">
-                View our work
+                {settings.secondaryCTA || "View our work"}
               </Button>
             </div>
 

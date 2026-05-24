@@ -1,26 +1,19 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import Loader from "../components/common/Loader";
 import useAuth from "../hooks/useAuth";
 
-function PublicOnlyRoute() {
+function PublicOnlyRoute({ children }) {
   const { isAuthenticated, isAdmin, isAuthLoading } = useAuth();
 
   if (isAuthLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#020817] px-5 text-center">
-        <div>
-          <p className="font-display text-2xl font-bold text-white">
-            Loading...
-          </p>
-        </div>
-      </main>
-    );
+    return <Loader text="Loading..." />;
   }
 
   if (isAuthenticated) {
     return <Navigate to={isAdmin ? "/admin" : "/account"} replace />;
   }
 
-  return <Outlet />;
+  return children;
 }
 
 export default PublicOnlyRoute;

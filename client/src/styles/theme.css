@@ -1,1 +1,55 @@
-/* Web District scaffold placeholder. */
+:root {
+  --wd-bg: #020817;
+  --wd-surface: #0a1a2d;
+  --wd-gold: #c69a4e;
+  --wd-gold-light: #f1d08b;
+  --wd-cyan: #22d3ee;
+  --wd-text: #f5f8fc;
+  --wd-muted: #94a3b8;
+  --wd-border: rgba(255, 255, 255, 0.1);
+}
+
+.wd-glass {
+  border: 1px solid var(--wd-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(18px);
+}
+
+.wd-soft-border {
+  border: 1px solid var(--wd-border);
+}
+
+.wd-gold-border {
+  border: 1px solid rgba(198, 154, 78, 0.25);
+}
+
+.wd-gold-surface {
+  background: rgba(198, 154, 78, 0.1);
+}
+
+.wd-cyan-surface {
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.wd-focus-ring:focus {
+  outline: 2px solid rgba(198, 154, 78, 0.65);
+  outline-offset: 3px;
+}
+
+.wd-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.wd-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.wd-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(198, 154, 78, 0.45);
+  border-radius: 999px;
+}
+
+.wd-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(198, 154, 78, 0.65);
+}

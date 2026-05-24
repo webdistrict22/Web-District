@@ -1,12 +1,21 @@
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import {
+  CalendarDays,
+  FileQuestion,
+  FileText,
+  FolderKanban,
+  Layers,
+  MessageSquare,
+  Star,
+  UsersRound,
+} from "lucide-react";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
-
-const stats = [
-  { label: "Website requests", value: "—" },
-  { label: "Booked calls", value: "—" },
-  { label: "Contact messages", value: "—" },
-  { label: "Pending reviews", value: "—" },
-];
+import Loader from "../../components/common/Loader";
+import StatusBadge from "../../components/common/StatusBadge";
+import api from "../../lib/axios";
+import { formatDate } from "../../lib/helpers";
 
 const quickActions = [
   {
@@ -29,36 +38,147 @@ const quickActions = [
     description: "View messages submitted from the contact page.",
     to: "/admin/messages",
   },
+  {
+    title: "Manage testimonials",
+    description: "Approve client reviews or add manual testimonials.",
+    to: "/admin/reviews",
+  },
+  {
+    title: "Manage selected work",
+    description: "Add and edit projects shown on the Work page.",
+    to: "/admin/projects",
+  },
 ];
 
 function AdminDashboard() {
+  const [dashboard, setDashboard] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDashboard = async () => {
+    try {
+      setIsLoading(true);
+
+      const { data } = await api.get("/dashboard/admin");
+
+      setDashboard(data);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to load dashboard stats."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const statsCards = useMemo(() => {
+    const stats = dashboard?.stats;
+
+    if (!stats) return [];
+
+    return [
+      {
+        label: "Website requests",
+        value: stats.requests.total,
+        note: `${stats.requests.new} new`,
+        icon: FileText,
+        to: "/admin/requests",
+      },
+      {
+        label: "Booked calls",
+        value: stats.appointments.total,
+        note: `${stats.appointments.pending} pending`,
+        icon: CalendarDays,
+        to: "/admin/appointments",
+      },
+      {
+        label: "Contact messages",
+        value: stats.messages.total,
+        note: `${stats.messages.new} new`,
+        icon: MessageSquare,
+        to: "/admin/messages",
+      },
+      {
+        label: "Pending reviews",
+        value: stats.reviews.pending,
+        note: `${stats.reviews.approved} approved`,
+        icon: Star,
+        to: "/admin/reviews",
+      },
+      {
+        label: "Clients",
+        value: stats.clients.total,
+        note: "Client accounts",
+        icon: UsersRound,
+        to: "/admin/clients",
+      },
+      {
+        label: "Available slots",
+        value: stats.slots.available,
+        note: `${stats.slots.booked} booked`,
+        icon: Layers,
+        to: "/admin/slots",
+      },
+      {
+        label: "Visible projects",
+        value: stats.projects.visible,
+        note: `${stats.projects.featured} featured`,
+        icon: FolderKanban,
+        to: "/admin/projects",
+      },
+      {
+        label: "Visible FAQ",
+        value: stats.faqs.visible,
+        note: `${stats.faqs.total} total`,
+        icon: FileQuestion,
+        to: "/admin/faq",
+      },
+    ];
+  }, [dashboard]);
+
+  if (isLoading) {
+    return <Loader text="Loading Web District dashboard..." />;
+  }
+
   return (
     <div className="grid gap-5">
       <Card className="p-6 md:p-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
-          Overview
-        </p>
-        <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-          Manage the Web District platform.
-        </h2>
-        <p className="mt-4 max-w-2xl leading-7 text-[#94A3B8]">
-          This dashboard controls requests, appointments, slots, projects,
-          reviews, FAQ, packages, settings, and client data.
-        </p>
+        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+              Overview
+            </p>
+            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
+              Manage the Web District platform.
+            </h2>
+            <p className="mt-4 max-w-2xl leading-7 text-[#94A3B8]">
+              Track the real activity behind requests, calls, messages, reviews,
+              selected work, services, FAQ, and client accounts.
+            </p>
+          </div>
+
+          <Button type="button" variant="secondary" onClick={fetchDashboard}>
+            Refresh stats
+          </Button>
+        </div>
       </Card>
 
-      <div className="grid gap-5 md:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.label} className="p-6">
-            <p className="text-sm text-[#94A3B8]">{stat.label}</p>
-            <p className="font-display mt-3 text-4xl font-bold text-white">
-              {stat.value}
-            </p>
-          </Card>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {statsCards.map((stat) => (
+          <StatCard key={stat.label} stat={stat} />
         ))}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-4">
+      <div className="grid gap-5 xl:grid-cols-3">
+        <LatestRequests items={dashboard?.latest?.requests || []} />
+        <LatestAppointments items={dashboard?.latest?.appointments || []} />
+        <LatestMessages items={dashboard?.latest?.messages || []} />
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-3">
         {quickActions.map((action) => (
           <Card key={action.title} className="p-6">
             <h3 className="font-display text-xl font-bold tracking-[-0.04em]">
@@ -77,6 +197,126 @@ function AdminDashboard() {
           </Card>
         ))}
       </div>
+    </div>
+  );
+}
+
+function StatCard({ stat }) {
+  const Icon = stat.icon;
+
+  return (
+    <Card className="p-5 transition duration-300 hover:-translate-y-1 hover:border-[#C69A4E]/35">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm text-[#94A3B8]">{stat.label}</p>
+          <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+            {stat.value}
+          </p>
+          <p className="mt-2 text-sm text-[#64748B]">{stat.note}</p>
+        </div>
+
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+          <Icon size={20} />
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <Button to={stat.to} variant="secondary">
+          View
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+function LatestRequests({ items }) {
+  return (
+    <LatestCard title="Latest requests" actionTo="/admin/requests">
+      {items.length ? (
+        items.map((item) => (
+          <LatestItem
+            key={item._id}
+            title={item.businessName || item.name}
+            subtitle={item.websiteType}
+            date={item.createdAt}
+            status={item.status}
+          />
+        ))
+      ) : (
+        <p className="text-sm text-[#94A3B8]">No requests yet.</p>
+      )}
+    </LatestCard>
+  );
+}
+
+function LatestAppointments({ items }) {
+  return (
+    <LatestCard title="Latest calls" actionTo="/admin/appointments">
+      {items.length ? (
+        items.map((item) => (
+          <LatestItem
+            key={item._id}
+            title={item.businessName || item.name}
+            subtitle={item.slot ? `${item.slot.date} • ${item.slot.startTime}` : item.topic}
+            date={item.createdAt}
+            status={item.status}
+          />
+        ))
+      ) : (
+        <p className="text-sm text-[#94A3B8]">No appointments yet.</p>
+      )}
+    </LatestCard>
+  );
+}
+
+function LatestMessages({ items }) {
+  return (
+    <LatestCard title="Latest messages" actionTo="/admin/messages">
+      {items.length ? (
+        items.map((item) => (
+          <LatestItem
+            key={item._id}
+            title={item.name}
+            subtitle={item.subject || item.email}
+            date={item.createdAt}
+            status={item.status}
+          />
+        ))
+      ) : (
+        <p className="text-sm text-[#94A3B8]">No messages yet.</p>
+      )}
+    </LatestCard>
+  );
+}
+
+function LatestCard({ title, actionTo, children }) {
+  return (
+    <Card className="p-6">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h3 className="font-display text-xl font-bold tracking-[-0.04em]">
+          {title}
+        </h3>
+
+        <Button to={actionTo} variant="ghost">
+          View all
+        </Button>
+      </div>
+
+      <div className="grid gap-3">{children}</div>
+    </Card>
+  );
+}
+
+function LatestItem({ title, subtitle, date, status }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <StatusBadge status={status} />
+        <span className="text-xs text-[#64748B]">{formatDate(date)}</span>
+      </div>
+
+      <p className="font-semibold text-white">{title}</p>
+      <p className="mt-1 text-sm text-[#94A3B8]">{subtitle}</p>
     </div>
   );
 }

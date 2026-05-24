@@ -61,7 +61,19 @@ const createPackage = asyncHandler(async (req, res) => {
 });
 
 const getPublicPackages = asyncHandler(async (req, res) => {
-  const packages = await Package.find({ isVisible: true }).sort({
+  const { featured, websiteType } = req.query;
+
+  const query = { isVisible: true };
+
+  if (featured === "true") {
+    query.isFeatured = true;
+  }
+
+  if (websiteType) {
+    query.websiteType = websiteType;
+  }
+
+  const packages = await Package.find(query).sort({
     order: 1,
     createdAt: -1,
   });

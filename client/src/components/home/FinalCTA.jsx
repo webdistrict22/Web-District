@@ -1,9 +1,11 @@
 import Container from "../common/Container";
 import Button from "../common/Button";
-import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink } from "../../lib/helpers";
+import useSettings from "../../hooks/useSettings";
 
 function FinalCTA() {
+  const { settings } = useSettings();
+
   return (
     <section className="py-20">
       <Container>
@@ -26,7 +28,7 @@ function FinalCTA() {
               <Button to="/start" variant="secondary">Book a call</Button>
               <Button
                 href={getWhatsappLink(
-                  AGENCY.whatsapp,
+                  settings.whatsapp || "01130696935",
                   "Hi Web District, I want to ask about building a website."
                 )}
                 variant="secondary"

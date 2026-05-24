@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import ProjectManager from "../../components/admin/ProjectManager";
 
 function AdminProjects() {
-  return (
-    <AdminPlaceholder
-      title="Projects / selected work"
-      description="Soon this page will let you add, edit, show, hide, and manage work shown on the website."
-    />
-  );
+  return <ProjectManager />;
 }
 
 export default AdminProjects;

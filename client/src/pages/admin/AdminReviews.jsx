@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import ReviewManager from "../../components/admin/ReviewManager";
 
 function AdminReviews() {
-  return (
-    <AdminPlaceholder
-      title="Reviews and testimonials"
-      description="Soon this page will let you approve, reject, hide, delete, and manually add reviews."
-    />
-  );
+  return <ReviewManager />;
 }
 
 export default AdminReviews;

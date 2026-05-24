@@ -1,76 +1,108 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../lib/axios";
+import { STORAGE_KEYS } from "../lib/constants";
 
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("webDistrictToken") || "";
-  });
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const saveAuth = (authData) => {
-    localStorage.setItem("webDistrictToken", authData.token);
-    setToken(authData.token);
-    setUser(authData.user);
+  const saveAuth = (token, nextUser) => {
+    localStorage.setItem(STORAGE_KEYS.token, token);
+    localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(nextUser));
+
+    setUser(nextUser);
   };
 
-  const signup = async (formData) => {
-    const { data } = await api.post("/auth/register", formData);
-    saveAuth(data);
-    toast.success("Account created successfully.");
-    return data.user;
-  };
+  const clearAuth = () => {
+    localStorage.removeItem(STORAGE_KEYS.token);
+    localStorage.removeItem(STORAGE_KEYS.user);
 
-  const login = async (formData) => {
-    const { data } = await api.post("/auth/login", formData);
-    saveAuth(data);
-    toast.success("Logged in successfully.");
-    return data.user;
-  };
-
-  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("webDistrictToken");
-    setToken("");
+    localStorage.removeItem("webDistrictUser");
+
     setUser(null);
-    toast.success("Logged out successfully.");
   };
 
-  const fetchMe = async () => {
-    if (!token) {
+  const loadStoredUser = () => {
+    const storedUser = localStorage.getItem(STORAGE_KEYS.user);
+    const storedToken = localStorage.getItem(STORAGE_KEYS.token);
+
+    if (!storedUser || !storedToken) {
       setIsAuthLoading(false);
       return;
     }
 
     try {
-      const { data } = await api.get("/auth/me");
-      setUser(data.user);
+      setUser(JSON.parse(storedUser));
     } catch (error) {
-      localStorage.removeItem("webDistrictToken");
-      setToken("");
-      setUser(null);
+      clearAuth();
     } finally {
       setIsAuthLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  const refreshUser = async () => {
+    try {
+      const { data } = await api.get("/auth/me");
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: Boolean(user),
-    isAdmin: user?.role === "admin",
-    isAuthLoading,
-    signup,
-    login,
-    logout,
+      setUser(data.user);
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
+
+      return data.user;
+    } catch (error) {
+      clearAuth();
+      return null;
+    }
   };
+
+  useEffect(() => {
+    loadStoredUser();
+  }, []);
+
+  const login = async (credentials) => {
+    const { data } = await api.post("/auth/login", credentials);
+
+    saveAuth(data.token, data.user);
+
+    toast.success("Logged in successfully.");
+
+    return data;
+  };
+
+  const signup = async (payload) => {
+    const { data } = await api.post("/auth/signup", payload);
+
+    saveAuth(data.token, data.user);
+
+    toast.success("Account created successfully.");
+
+    return data;
+  };
+
+  const logout = () => {
+    clearAuth();
+    toast.success("Logged out successfully.");
+  };
+
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthLoading,
+      isAuthenticated: Boolean(user),
+      isAdmin: user?.role === "admin",
+      login,
+      signup,
+      logout,
+      refreshUser,
+      setUser,
+    }),
+    [user, isAuthLoading]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

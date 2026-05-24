@@ -3,10 +3,12 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import ContactCards from "../../components/contact/ContactCards";
 import ContactForm from "../../components/contact/ContactForm";
-import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink } from "../../lib/helpers";
+import useSettings from "../../hooks/useSettings";
 
 function Contact() {
+  const { settings } = useSettings();
+
   return (
     <main className="pb-20 pt-32">
       <Container>
@@ -23,7 +25,7 @@ function Contact() {
 
               <Button
                 href={getWhatsappLink(
-                  AGENCY.whatsapp,
+                  settings.whatsapp || "01130696935",
                   "Hi Web District, I want to ask about building a website."
                 )}
                 variant="secondary"

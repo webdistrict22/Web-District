@@ -1,114 +1,139 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import PublicLayout from "../components/layout/PublicLayout";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import AdminLayout from "../components/layout/AdminLayout";
+import Loader from "../components/common/Loader";
+import ScrollToTop from "../components/common/ScrollToTop";
 
 import ProtectedRoute from "./ProtectedRoute";
-import AdminRoute from "./AdminRoute";
 import PublicOnlyRoute from "./PublicOnlyRoute";
+import AdminRoute from "./AdminRoute";
 
-import Home from "../pages/public/Home";
-import Services from "../pages/public/Services";
-import Work from "../pages/public/Work";
-import CaseStudy from "../pages/public/CaseStudy";
-import Process from "../pages/public/Process";
-import Start from "../pages/public/Start";
-import Contact from "../pages/public/Contact";
+const Home = lazy(() => import("../pages/public/Home"));
+const Services = lazy(() => import("../pages/public/Services"));
+const Work = lazy(() => import("../pages/public/Work"));
+const CaseStudy = lazy(() => import("../pages/public/CaseStudy"));
+const Process = lazy(() => import("../pages/public/Process"));
+const Start = lazy(() => import("../pages/public/Start"));
+const Contact = lazy(() => import("../pages/public/Contact"));
 
-import Login from "../pages/auth/Login";
-import Signup from "../pages/auth/Signup";
+const Login = lazy(() => import("../pages/auth/Login"));
+const Signup = lazy(() => import("../pages/auth/Signup"));
 
-import ClientDashboard from "../pages/client/ClientDashboard";
-import ClientRequests from "../pages/client/ClientRequests";
-import ClientAppointments from "../pages/client/ClientAppointments";
-import ClientContracts from "../pages/client/ClientContracts";
-import ClientProjectStatus from "../pages/client/ClientProjectStatus";
-import ClientReviews from "../pages/client/ClientReviews";
-import ClientProfile from "../pages/client/ClientProfile";
+const ClientDashboard = lazy(() => import("../pages/client/ClientDashboard"));
+const ClientRequests = lazy(() => import("../pages/client/ClientRequests"));
+const ClientAppointments = lazy(() =>
+  import("../pages/client/ClientAppointments")
+);
+const ClientContracts = lazy(() => import("../pages/client/ClientContracts"));
+const ClientProjectStatus = lazy(() =>
+  import("../pages/client/ClientProjectStatus")
+);
+const ClientReviews = lazy(() => import("../pages/client/ClientReviews"));
+const ClientProfile = lazy(() => import("../pages/client/ClientProfile"));
 
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminRequests from "../pages/admin/AdminRequests";
-import AdminAppointments from "../pages/admin/AdminAppointments";
-import AdminSlots from "../pages/admin/AdminSlots";
-import AdminContracts from "../pages/admin/AdminContracts";
-import AdminProjects from "../pages/admin/AdminProjects";
-import AdminReviews from "../pages/admin/AdminReviews";
-import AdminFAQ from "../pages/admin/AdminFAQ";
-import AdminPackages from "../pages/admin/AdminPackages";
-import AdminSettings from "../pages/admin/AdminSettings";
-import AdminClients from "../pages/admin/AdminClients";
-import AdminMessages from "../pages/admin/AdminMessages";
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
+const AdminRequests = lazy(() => import("../pages/admin/AdminRequests"));
+const AdminAppointments = lazy(() =>
+  import("../pages/admin/AdminAppointments")
+);
+const AdminSlots = lazy(() => import("../pages/admin/AdminSlots"));
+const AdminContracts = lazy(() => import("../pages/admin/AdminContracts"));
+const AdminProjects = lazy(() => import("../pages/admin/AdminProjects"));
+const AdminReviews = lazy(() => import("../pages/admin/AdminReviews"));
+const AdminFAQ = lazy(() => import("../pages/admin/AdminFAQ"));
+const AdminPackages = lazy(() => import("../pages/admin/AdminPackages"));
+const AdminClients = lazy(() => import("../pages/admin/AdminClients"));
+const AdminSettings = lazy(() => import("../pages/admin/AdminSettings"));
+const AdminMessages = lazy(() => import("../pages/admin/AdminMessages"));
 
-import NotFound from "../pages/NotFound";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <PublicLayout />,
-    errorElement: <NotFound />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: "services", element: <Services /> },
-      { path: "work", element: <Work /> },
-      { path: "work/:slug", element: <CaseStudy /> },
-      { path: "process", element: <Process /> },
-      { path: "start", element: <Start /> },
-      { path: "contact", element: <Contact /> },
-      {
-        element: <PublicOnlyRoute />,
-        children: [
-          { path: "login", element: <Login /> },
-          { path: "signup", element: <Signup /> },
-        ],
-      },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: "/account",
-        element: <DashboardLayout />,
-        children: [
-          { index: true, element: <ClientDashboard /> },
-          { path: "requests", element: <ClientRequests /> },
-          { path: "appointments", element: <ClientAppointments /> },
-          { path: "contracts", element: <ClientContracts /> },
-          { path: "project-status", element: <ClientProjectStatus /> },
-          { path: "reviews", element: <ClientReviews /> },
-          { path: "profile", element: <ClientProfile /> },
-        ],
-      },
-    ],
-  },
-  {
-    element: <AdminRoute />,
-    children: [
-      {
-        path: "/admin",
-        element: <AdminLayout />,
-        children: [
-          { index: true, element: <AdminDashboard /> },
-          { path: "requests", element: <AdminRequests /> },
-          { path: "appointments", element: <AdminAppointments /> },
-          { path: "slots", element: <AdminSlots /> },
-          { path: "contracts", element: <AdminContracts /> },
-          { path: "projects", element: <AdminProjects /> },
-          { path: "reviews", element: <AdminReviews /> },
-          { path: "faq", element: <AdminFAQ /> },
-          { path: "packages", element: <AdminPackages /> },
-          { path: "settings", element: <AdminSettings /> },
-          { path: "clients", element: <AdminClients /> },
-          { path: "messages", element: <AdminMessages /> },
-        ],
-      },
-    ],
-  },
-]);
+const NotFound = lazy(() => import("../pages/NotFound"));
 
 function AppRoutes() {
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+
+      <Suspense fallback={<Loader text="Loading page..." />}>
+        <Routes>
+          <Route path="/" element={<PublicLayout />}>
+            <Route index element={<Home />} />
+            <Route path="services" element={<Services />} />
+            <Route path="work" element={<Work />} />
+            <Route path="work/:slug" element={<CaseStudy />} />
+            <Route path="process" element={<Process />} />
+            <Route path="start" element={<Start />} />
+            <Route path="contact" element={<Contact />} />
+            <Route
+              path="login"
+              element={
+                <PublicOnlyRoute>
+                  <Login />
+                </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <PublicOnlyRoute>
+                  <Signup />
+                </PublicOnlyRoute>
+              }
+            />
+          </Route>
+
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<ClientDashboard />} />
+            <Route path="requests" element={<ClientRequests />} />
+            <Route path="appointments" element={<ClientAppointments />} />
+            <Route path="contracts" element={<ClientContracts />} />
+            <Route path="project-status" element={<ClientProjectStatus />} />
+            <Route path="reviews" element={<ClientReviews />} />
+            <Route path="profile" element={<ClientProfile />} />
+          </Route>
+
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="requests" element={<AdminRequests />} />
+            <Route path="appointments" element={<AdminAppointments />} />
+            <Route path="slots" element={<AdminSlots />} />
+            <Route path="contracts" element={<AdminContracts />} />
+            <Route path="projects" element={<AdminProjects />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="faq" element={<AdminFAQ />} />
+            <Route path="packages" element={<AdminPackages />} />
+            <Route path="clients" element={<AdminClients />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="messages" element={<AdminMessages />} />
+          </Route>
+
+          <Route path="/dashboard" element={<Navigate to="/account" replace />} />
+          <Route
+            path="/admin/dashboard"
+            element={<Navigate to="/admin" replace />}
+          />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
 }
 
 export default AppRoutes;

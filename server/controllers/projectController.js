@@ -11,6 +11,25 @@ const createSlug = (text) => {
     .replace(/^-+|-+$/g, "");
 };
 
+const getUniqueSlug = async (text, excludeId = null) => {
+  const baseSlug = createSlug(text) || "project";
+  let slug = baseSlug;
+  let counter = 1;
+  const query = { slug };
+
+  if (excludeId) {
+    query._id = { $ne: excludeId };
+  }
+
+  while (await Project.findOne(query)) {
+    slug = `${baseSlug}-${counter}`;
+    query.slug = slug;
+    counter++;
+  }
+
+  return slug;
+};
+
 const createProject = asyncHandler(async (req, res) => {
   const {
     title,
@@ -34,14 +53,7 @@ const createProject = asyncHandler(async (req, res) => {
     throw new Error("Title, website type, and short description are required");
   }
 
-  const baseSlug = createSlug(title);
-  let slug = baseSlug;
-  let counter = 1;
-
-  while (await Project.findOne({ slug })) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-  }
+  const slug = await getUniqueSlug(title);
 
   const project = await Project.create({
     title,
@@ -121,6 +133,9 @@ const updateProject = asyncHandler(async (req, res) => {
     throw new Error("Project not found");
   }
 
+  const titleChanged =
+    req.body.title !== undefined && req.body.title !== project.title;
+
   const fields = [
     "title",
     "websiteType",
@@ -144,8 +159,8 @@ const updateProject = asyncHandler(async (req, res) => {
     }
   });
 
-  if (req.body.title && req.body.title !== project.title) {
-    project.slug = createSlug(req.body.title);
+  if (titleChanged) {
+    project.slug = await getUniqueSlug(req.body.title, project._id);
   }
 
   const updatedProject = await project.save();

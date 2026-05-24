@@ -1,9 +1,10 @@
 const WebsiteRequest = require("../models/WebsiteRequest");
 const asyncHandler = require("../middleware/asyncHandler");
+const { notifyNewWebsiteRequest } = require("../utils/notificationService");
 
 // @desc    Create website request
 // @route   POST /api/requests
-// @access  Public or Client
+// @access  Public, optionally logged-in client
 const createWebsiteRequest = asyncHandler(async (req, res) => {
   const {
     name,
@@ -21,11 +22,13 @@ const createWebsiteRequest = asyncHandler(async (req, res) => {
 
   if (!name || !phone || !email || !websiteType || !projectDetails) {
     res.status(400);
-    throw new Error("Please fill all required fields");
+    throw new Error(
+      "Name, phone, email, website type, and project details are required"
+    );
   }
 
-  const request = await WebsiteRequest.create({
-    client: req.user ? req.user._id : null,
+  const websiteRequest = await WebsiteRequest.create({
+    client: req.user?._id || null,
     name,
     businessName,
     phone,
@@ -39,25 +42,14 @@ const createWebsiteRequest = asyncHandler(async (req, res) => {
     preferredContactMethod,
   });
 
+  notifyNewWebsiteRequest(websiteRequest).catch((error) => {
+    console.error("Website request email notification failed:", error.message);
+  });
+
   res.status(201).json({
     success: true,
     message: "Website request submitted successfully",
-    request,
-  });
-});
-
-// @desc    Get my website requests
-// @route   GET /api/requests/my
-// @access  Client
-const getMyWebsiteRequests = asyncHandler(async (req, res) => {
-  const requests = await WebsiteRequest.find({ client: req.user._id }).sort({
-    createdAt: -1,
-  });
-
-  res.json({
-    success: true,
-    count: requests.length,
-    requests,
+    request: websiteRequest,
   });
 });
 
@@ -81,8 +73,9 @@ const getAllWebsiteRequests = asyncHandler(async (req, res) => {
     query.$or = [
       { name: { $regex: search, $options: "i" } },
       { businessName: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
       { phone: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { projectDetails: { $regex: search, $options: "i" } },
     ];
   }
 
@@ -97,9 +90,24 @@ const getAllWebsiteRequests = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get my website requests
+// @route   GET /api/requests/my
+// @access  Client
+const getMyWebsiteRequests = asyncHandler(async (req, res) => {
+  const requests = await WebsiteRequest.find({ client: req.user._id }).sort({
+    createdAt: -1,
+  });
+
+  res.json({
+    success: true,
+    count: requests.length,
+    requests,
+  });
+});
+
 // @desc    Get single website request
 // @route   GET /api/requests/:id
-// @access  Admin or owner client
+// @access  Admin
 const getWebsiteRequestById = asyncHandler(async (req, res) => {
   const request = await WebsiteRequest.findById(req.params.id).populate(
     "client",
@@ -111,27 +119,16 @@ const getWebsiteRequestById = asyncHandler(async (req, res) => {
     throw new Error("Website request not found");
   }
 
-  const isAdmin = req.user.role === "admin";
-  const isOwner =
-    request.client && request.client._id.toString() === req.user._id.toString();
-
-  if (!isAdmin && !isOwner) {
-    res.status(403);
-    throw new Error("You are not allowed to view this request");
-  }
-
   res.json({
     success: true,
     request,
   });
 });
 
-// @desc    Update website request status/notes
+// @desc    Update website request
 // @route   PUT /api/requests/:id
 // @access  Admin
 const updateWebsiteRequest = asyncHandler(async (req, res) => {
-  const { status, adminNotes } = req.body;
-
   const request = await WebsiteRequest.findById(req.params.id);
 
   if (!request) {
@@ -139,8 +136,27 @@ const updateWebsiteRequest = asyncHandler(async (req, res) => {
     throw new Error("Website request not found");
   }
 
-  if (status !== undefined) request.status = status;
-  if (adminNotes !== undefined) request.adminNotes = adminNotes;
+  const allowedFields = [
+    "status",
+    "adminNotes",
+    "name",
+    "businessName",
+    "phone",
+    "email",
+    "websiteType",
+    "hasBrandIdentity",
+    "hasContentReady",
+    "budgetRange",
+    "deadline",
+    "projectDetails",
+    "preferredContactMethod",
+  ];
+
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      request[field] = req.body[field];
+    }
+  });
 
   const updatedRequest = await request.save();
 
@@ -172,8 +188,8 @@ const deleteWebsiteRequest = asyncHandler(async (req, res) => {
 
 module.exports = {
   createWebsiteRequest,
-  getMyWebsiteRequests,
   getAllWebsiteRequests,
+  getMyWebsiteRequests,
   getWebsiteRequestById,
   updateWebsiteRequest,
   deleteWebsiteRequest,

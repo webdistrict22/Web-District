@@ -58,7 +58,7 @@ function AdminLayout() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3">
+          <aside className="h-fit max-h-[calc(100vh-120px)] overflow-y-auto rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3 lg:sticky lg:top-24">
             <nav className="grid gap-2">
               {adminLinks.map((link) => {
                 const Icon = link.icon;

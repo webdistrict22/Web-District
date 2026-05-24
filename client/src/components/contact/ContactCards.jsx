@@ -1,41 +1,43 @@
 import { Mail, MessageCircle, Phone } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 import Card from "../common/Card";
-import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink } from "../../lib/helpers";
+import useSettings from "../../hooks/useSettings";
 
 function ContactCards() {
+  const { settings } = useSettings();
+
   const contactOptions = [
     {
       title: "WhatsApp",
-      value: AGENCY.whatsapp,
+      value: settings.whatsapp,
       description: "Fastest way to start a website conversation.",
       icon: MessageCircle,
       href: getWhatsappLink(
-        AGENCY.whatsapp,
+        settings.whatsapp || "01130696935",
         "Hi Web District, I want to ask about building a website."
       ),
     },
     {
       title: "Phone",
-      value: AGENCY.phone,
+      value: settings.phone,
       description: "Call directly if you prefer a quick conversation.",
       icon: Phone,
-      href: `tel:${AGENCY.phone}`,
+      href: `tel:${settings.phone}`,
     },
     {
       title: "Email",
-      value: AGENCY.email,
+      value: settings.email,
       description: "Send your project details or business inquiry.",
       icon: Mail,
-      href: `mailto:${AGENCY.email}`,
+      href: `mailto:${settings.email}`,
     },
     {
       title: "Instagram",
-      value: `@${AGENCY.instagram}`,
+      value: `@${settings.instagram}`,
       description: "Follow the agency identity and send a DM.",
       icon: FaInstagram,
-      href: `https://instagram.com/${AGENCY.instagram}`,
+      href: `https://instagram.com/${settings.instagram}`,
     },
   ];
 

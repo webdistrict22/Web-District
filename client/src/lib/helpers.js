@@ -1,20 +1,85 @@
+export const formatDate = (date) => {
+  if (!date) return "—";
+
+  try {
+    return new Intl.DateTimeFormat("en", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(new Date(date));
+  } catch (error) {
+    return "—";
+  }
+};
+
+export const formatDateTime = (date) => {
+  if (!date) return "—";
+
+  try {
+    return new Intl.DateTimeFormat("en", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(date));
+  } catch (error) {
+    return "—";
+  }
+};
+
+export const formatMoney = (value, currency = "EGP") => {
+  const number = Number(value);
+
+  if (!number) return "Not set";
+
+  return `${number.toLocaleString()} ${currency}`;
+};
+
+export const getWhatsappLink = (phone, message = "") => {
+  const cleanedPhone = String(phone || "")
+    .replace(/\s+/g, "")
+    .replace("+", "");
+
+  const egyptFixedPhone = cleanedPhone.startsWith("0")
+    ? `20${cleanedPhone.slice(1)}`
+    : cleanedPhone;
+
+  const encodedMessage = encodeURIComponent(message);
+
+  return `https://wa.me/${egyptFixedPhone}${encodedMessage ? `?text=${encodedMessage}` : ""}`;
+};
+
+export const getInstagramLink = (username = "") => {
+  const cleanUsername = username.replace("@", "").trim();
+
+  return `https://instagram.com/${cleanUsername}`;
+};
+
+export const truncateText = (text = "", maxLength = 120) => {
+  if (!text) return "";
+
+  if (text.length <= maxLength) return text;
+
+  return `${text.slice(0, maxLength).trim()}...`;
+};
+
+export const slugify = (value = "") => {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
 export const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
 };
 
-export const getWhatsappLink = (phone, message = "") => {
-  const cleanPhone = phone.startsWith("2") ? phone : `2${phone}`;
-  const encodedMessage = encodeURIComponent(message);
-
-  return `https://wa.me/${cleanPhone}${message ? `?text=${encodedMessage}` : ""}`;
-};
-
-export const formatDate = (date) => {
-  if (!date) return "";
-
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
+export const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
   });
 };

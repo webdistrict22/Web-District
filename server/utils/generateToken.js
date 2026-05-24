@@ -1,20 +1,20 @@
 const jwt = require("jsonwebtoken");
 
-const generateToken = (user) => {
+const generateToken = (userOrId) => {
   if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is missing in .env");
+    throw new Error("JWT_SECRET is missing");
   }
 
-  return jwt.sign(
-    {
-      id: user._id,
-      role: user.role,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN || "30d",
-    }
-  );
+  const rawId = userOrId?._id || userOrId;
+  const id = rawId?.toString ? rawId.toString() : rawId;
+
+  if (!id) {
+    throw new Error("Token subject is missing");
+  }
+
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "30d",
+  });
 };
 
 module.exports = generateToken;

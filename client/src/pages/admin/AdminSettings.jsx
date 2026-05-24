@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import SettingsManager from "../../components/admin/SettingsManager";
 
 function AdminSettings() {
-  return (
-    <AdminPlaceholder
-      title="Website settings"
-      description="Soon this page will let you control agency contact details, homepage content, and public settings."
-    />
-  );
+  return <SettingsManager />;
 }
 
 export default AdminSettings;

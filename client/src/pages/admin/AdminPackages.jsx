@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import PackageManager from "../../components/admin/PackageManager";
 
 function AdminPackages() {
-  return (
-    <AdminPlaceholder
-      title="Packages and website options"
-      description="Soon this page will let you manage website service options and package content."
-    />
-  );
+  return <PackageManager />;
 }
 
 export default AdminPackages;

@@ -44,6 +44,7 @@ const submitReview = asyncHandler(async (req, res) => {
     message,
     status: "Pending",
     isManual: false,
+    isVisible: false,
   });
 
   res.status(201).json({

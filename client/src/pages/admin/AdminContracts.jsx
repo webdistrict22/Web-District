@@ -1,12 +1,7 @@
-import AdminPlaceholder from "./AdminPlaceholder";
+import ContractManager from "../../components/admin/ContractManager";
 
 function AdminContracts() {
-  return (
-    <AdminPlaceholder
-      title="Contracts and proposals"
-      description="Soon this page will let you create contracts/proposals from requests and update their status."
-    />
-  );
+  return <ContractManager />;
 }
 
 export default AdminContracts;

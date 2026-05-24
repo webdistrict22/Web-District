@@ -1,5 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { CalendarDays, FileText, Home, LogOut, MessageSquare, UserRound } from "lucide-react";
+import {
+  CalendarDays,
+  FileText,
+  Home,
+  LogOut,
+  MessageSquare,
+  TrendingUp,
+  UserRound,
+} from "lucide-react";
 import Container from "../common/Container";
 import useAuth from "../../hooks/useAuth";
 
@@ -8,6 +16,7 @@ const clientLinks = [
   { label: "Requests", path: "/account/requests", icon: FileText },
   { label: "Appointments", path: "/account/appointments", icon: CalendarDays },
   { label: "Contracts", path: "/account/contracts", icon: FileText },
+  { label: "Project Status", path: "/account/project-status", icon: TrendingUp },
   { label: "Reviews", path: "/account/reviews", icon: MessageSquare },
   { label: "Profile", path: "/account/profile", icon: UserRound },
 ];
@@ -37,7 +46,7 @@ function DashboardLayout() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3">
+          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3 lg:sticky lg:top-24">
             <nav className="grid gap-2">
               {clientLinks.map((link) => {
                 const Icon = link.icon;

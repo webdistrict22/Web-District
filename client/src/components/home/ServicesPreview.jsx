@@ -1,13 +1,44 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import toast from "react-hot-toast";
 import api from "../../lib/axios";
+import { truncateText } from "../../lib/helpers";
 import Container from "../common/Container";
 import SectionHeader from "../common/SectionHeader";
 import Card from "../common/Card";
 import Button from "../common/Button";
-import Badge from "../common/Badge";
-import { services as fallbackServices } from "../../data/siteData";
+
+const serviceBlueprints = [
+  {
+    title: "Online Stores",
+    match: ["online", "store", "ecommerce", "e-commerce"],
+    description: "Product websites built to make browsing and buying feel clear.",
+    points: ["Product pages", "Cart direction", "Mobile checkout"],
+  },
+  {
+    title: "Business Websites",
+    match: ["business", "company", "companies"],
+    description: "Professional websites that explain the business fast.",
+    points: ["Clear pages", "Lead forms", "Trust sections"],
+  },
+  {
+    title: "Landing Pages",
+    match: ["landing", "campaign"],
+    description: "Focused pages for launches, offers, ads, and lead capture.",
+    points: ["Sharp message", "Strong CTA", "Fast mobile flow"],
+  },
+  {
+    title: "Custom Websites",
+    match: ["custom", "system", "portal"],
+    description: "Tailored web builds for workflows that need more than pages.",
+    points: ["Custom logic", "Dashboards", "Booking flows"],
+  },
+];
+
+const findPackage = (packages, matchTerms) =>
+  packages.find((item) => {
+    const text = `${item.name || ""} ${item.websiteType || ""}`.toLowerCase();
+    return matchTerms.some((term) => text.includes(term));
+  });
 
 function ServicesPreview() {
   const [packages, setPackages] = useState([]);
@@ -32,22 +63,28 @@ function ServicesPreview() {
   }, []);
 
   const displayItems = useMemo(() => {
-    if (packages.length) {
-      const featured = packages.filter((item) => item.isFeatured);
-      return (featured.length ? featured : packages).slice(0, 4);
-    }
+    return serviceBlueprints.map((service) => {
+      const packageItem = findPackage(packages, service.match);
+      const description = packageItem?.shortDescription || service.description;
+      const points = packageItem?.features?.length ? packageItem.features : service.points;
 
-    return fallbackServices.slice(0, 4);
+      return {
+        title: service.title,
+        description: truncateText(description, 105),
+        points: points.slice(0, 3),
+        priceLabel: packageItem?.priceLabel,
+      };
+    });
   }, [packages]);
 
   return (
-    <section className="py-20">
+    <section className="wd-section-black py-16 md:py-20">
       <Container>
-        <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <SectionHeader
             eyebrow="What we build"
-            title="Clean websites for different business goals."
-            description="Web District is not limited to one niche. We build the website type that fits the business goal."
+            title="Four clear website directions."
+            description="Pick the direction that matches the goal. We keep the structure clean from there."
           />
           <Button to="/services" variant="secondary">
             View services
@@ -55,60 +92,47 @@ function ServicesPreview() {
         </div>
 
         {isLoading ? (
-          <Card className="p-6">
-            <p className="text-[#94A3B8]">Loading website options...</p>
+          <Card className="wd-card-on-black p-6">
+            <p className="text-[#D9D4CC]">Loading website options...</p>
           </Card>
         ) : (
-          <div className="grid gap-5 md:grid-cols-2">
-            {displayItems.map((item) => {
-              const isFromDatabase = Boolean(item._id);
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {displayItems.map((item, index) => (
+              <Card
+                key={item.title}
+                className="wd-card-on-black flex min-h-[300px] flex-col p-6 transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/30"
+              >
+                <p className="font-display text-sm font-bold text-[#C4A77D]">
+                  0{index + 1}
+                </p>
 
-              const title = isFromDatabase ? item.name : item.title;
-              const description = isFromDatabase
-                ? item.shortDescription
-                : item.description;
-              const points = isFromDatabase
-                ? item.features?.slice(0, 4) || []
-                : item.points || [];
-              const label = isFromDatabase ? item.websiteType : "Service";
+                <h3 className="font-display mt-5 text-2xl font-bold tracking-[-0.04em]">
+                  {item.title}
+                </h3>
 
-              return (
-                <Card
-                  key={item._id || item.title}
-                  className="p-6 transition duration-300 hover:-translate-y-1 hover:border-[#C69A4E]/30"
-                >
-                  <div className="mb-5 flex items-start justify-between gap-4">
-                    <h3 className="font-display text-2xl font-bold tracking-[-0.04em]">
-                      {title}
-                    </h3>
+                <p className="mt-4 text-sm leading-6 text-[#D9D4CC]">
+                  {item.description}
+                </p>
 
-                    <Badge>{label}</Badge>
-                  </div>
-
-                  <p className="leading-7 text-[#94A3B8]">{description}</p>
-
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {points.map((point) => (
-                      <div
-                        key={point}
-                        className="flex items-center gap-2 text-sm text-[#CBD5E1]"
-                      >
-                        <CheckCircle2 size={16} className="text-[#C69A4E]" />
-                        {point}
-                      </div>
-                    ))}
-                  </div>
-
-                  {isFromDatabase && item.priceLabel && (
-                    <div className="mt-6 rounded-2xl border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-4">
-                      <p className="text-sm font-semibold text-[#F1D08B]">
-                        {item.priceLabel}
-                      </p>
+                <div className="mt-6 grid gap-3">
+                  {item.points.map((point) => (
+                    <div key={point} className="flex gap-2 text-sm text-[#D9D4CC]">
+                      <CheckCircle2
+                        size={16}
+                        className="mt-0.5 shrink-0 text-[#C4A77D]"
+                      />
+                      <span>{point}</span>
                     </div>
-                  )}
-                </Card>
-              );
-            })}
+                  ))}
+                </div>
+
+                {item.priceLabel && (
+                  <p className="mt-auto pt-5 text-sm font-semibold text-[#F8F7F4]">
+                    {item.priceLabel}
+                  </p>
+                )}
+              </Card>
+            ))}
           </div>
         )}
       </Container>

@@ -205,7 +205,7 @@ function RequestManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -213,7 +213,7 @@ function RequestManager() {
               Website requests
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               View website requests, filter by status or website type, update
               progress, and add internal admin notes.
             </p>
@@ -320,24 +320,24 @@ function AdminRequestCard({
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <StatusBadge status={request.status} />
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               {request.websiteType}
             </span>
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               {formatDate(request.createdAt)}
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {request.businessName || request.name}
           </h3>
 
-          <p className="mt-2 text-sm text-[#94A3B8]">
+          <p className="mt-2 text-sm text-[#D9D4CC]">
             Submitted by {request.name}
           </p>
 
-          <p className="mt-5 leading-8 text-[#CBD5E1]">
+          <p className="mt-5 leading-8 text-[#D9D4CC]">
             {request.projectDetails}
           </p>
 
@@ -369,11 +369,11 @@ function AdminRequestCard({
           </div>
 
           {request.client && (
-            <div className="mt-5 rounded-2xl border border-[#22D3EE]/15 bg-[#22D3EE]/5 p-4">
-              <p className="text-sm font-semibold text-[#A7F3FF]">
+            <div className="mt-5 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
+              <p className="text-sm font-semibold text-[#D9D4CC]">
                 Linked client account
               </p>
-              <p className="mt-1 text-sm text-[#94A3B8]">
+              <p className="mt-1 text-sm text-[#D9D4CC]">
                 {request.client.name} — {request.client.email}
               </p>
             </div>
@@ -426,7 +426,7 @@ function AdminRequestCard({
     type="button"
     onClick={() => onDelete(request._id)}
     disabled={isDeleting}
-    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
+    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
   >
     <Trash2 size={17} />
     {isDeleting ? "Deleting..." : "Delete"}
@@ -442,8 +442,8 @@ function AdminRequestCard({
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>
@@ -453,10 +453,10 @@ function StatCard({ label, value }) {
 function InfoItem({ icon: Icon, label, value }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C69A4E]" />
+      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
       <div className="min-w-0">
-        <p className="text-xs text-[#64748B]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#CBD5E1]">
+        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
           {value || "—"}
         </p>
       </div>
@@ -467,8 +467,8 @@ function InfoItem({ icon: Icon, label, value }) {
 function MiniInfo({ label, value }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#64748B]">{label}</p>
-      <p className="mt-1 text-sm font-medium text-[#CBD5E1]">
+      <p className="text-xs text-[#D9D4CC]">{label}</p>
+      <p className="mt-1 text-sm font-medium text-[#D9D4CC]">
         {value || "—"}
       </p>
     </div>

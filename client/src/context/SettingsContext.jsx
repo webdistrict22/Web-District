@@ -10,12 +10,12 @@ const fallbackSettings = {
   whatsapp: AGENCY.whatsapp,
   instagram: AGENCY.instagram,
   email: AGENCY.email,
-  heroHeadline: "Websites that make businesses look serious.",
+  heroHeadline: "Websites that make your business look serious.",
   heroSubtext:
-    "We build clean, modern websites for brands, businesses, and campaigns — from online stores to business websites and landing pages.",
-  primaryCTA: "Book your website",
-  secondaryCTA: "View our work",
-  footerText: "Clean websites for brands, businesses, and campaigns.",
+    "Clean websites for brands, stores, and businesses that need a stronger online presence.",
+  primaryCTA: "Start Your Project",
+  secondaryCTA: "View Our Work",
+  footerText: "Clean websites for brands, stores, and businesses.",
 };
 
 function SettingsProvider({ children }) {

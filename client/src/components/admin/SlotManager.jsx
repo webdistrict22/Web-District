@@ -169,7 +169,7 @@ function SlotManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -177,7 +177,7 @@ function SlotManager() {
               Available call slots
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Create and control the call times clients can book from the Start page.
             </p>
           </div>
@@ -198,7 +198,7 @@ function SlotManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit slot" : "Create slot"}
             </p>
             <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
@@ -261,9 +261,9 @@ function SlotManager() {
       <Card className="p-5">
         <div className="grid gap-4 md:grid-cols-[1fr_260px] md:items-end">
           <div>
-            <p className="mb-2 text-sm font-medium text-[#CBD5E1]">Slot list</p>
-            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-[#94A3B8]">
-              <Search size={17} className="text-[#C69A4E]" />
+            <p className="mb-2 text-sm font-medium text-[#D9D4CC]">Slot list</p>
+            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-[#D9D4CC]">
+              <Search size={17} className="text-[#C4A77D]" />
               <span className="text-sm">Filter call slots by status</span>
             </div>
           </div>
@@ -310,10 +310,10 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
   const status = slot.isBooked ? "Booked" : slot.isActive ? "Available" : "Inactive";
 
   const statusClass = slot.isBooked
-    ? "border-blue-300/25 bg-blue-300/10 text-blue-200"
+    ? "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
     : slot.isActive
-      ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-      : "border-red-300/25 bg-red-300/10 text-red-200";
+      ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+      : "border-[#D9D4CC]/18 bg-white/[0.025] text-[#D9D4CC]";
 
   return (
     <Card className="p-6">
@@ -327,14 +327,14 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
             {slot.date}
           </h3>
 
-          <div className="mt-3 flex flex-wrap gap-3 text-sm text-[#94A3B8]">
+          <div className="mt-3 flex flex-wrap gap-3 text-sm text-[#D9D4CC]">
             <span className="inline-flex items-center gap-2">
-              <CalendarDays size={16} className="text-[#C69A4E]" />
+              <CalendarDays size={16} className="text-[#C4A77D]" />
               {slot.date}
             </span>
 
             <span className="inline-flex items-center gap-2">
-              <Clock size={16} className="text-[#C69A4E]" />
+              <Clock size={16} className="text-[#C4A77D]" />
               {slot.startTime} - {slot.endTime}
             </span>
           </div>
@@ -343,7 +343,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
 
       {slot.notes && (
         <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-          <p className="text-sm leading-7 text-[#94A3B8]">{slot.notes}</p>
+          <p className="text-sm leading-7 text-[#D9D4CC]">{slot.notes}</p>
         </div>
       )}
 
@@ -365,7 +365,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
           type="button"
           onClick={() => onDelete(slot._id)}
           disabled={slot.isBooked || isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
@@ -373,7 +373,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
       </div>
 
       {slot.isBooked && (
-        <p className="mt-4 text-sm text-[#94A3B8]">
+        <p className="mt-4 text-sm text-[#D9D4CC]">
           Booked slots cannot be deleted or disabled until the appointment is removed.
         </p>
       )}
@@ -384,8 +384,8 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

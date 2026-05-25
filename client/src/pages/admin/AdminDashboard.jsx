@@ -26,7 +26,7 @@ const quickActions = [
   {
     title: "Manage call slots",
     description: "Create available times for clients to book calls.",
-    to: "/admin/slots",
+    to: "/admin/control/slots",
   },
   {
     title: "View appointments",
@@ -36,17 +36,17 @@ const quickActions = [
   {
     title: "Read contact messages",
     description: "View messages submitted from the contact page.",
-    to: "/admin/messages",
+    to: "/admin/clients/messages",
   },
   {
     title: "Manage testimonials",
     description: "Approve client reviews or add manual testimonials.",
-    to: "/admin/reviews",
+    to: "/admin/clients/reviews",
   },
   {
     title: "Manage selected work",
     description: "Add and edit projects shown on the Work page.",
-    to: "/admin/projects",
+    to: "/admin/control/projects",
   },
 ];
 
@@ -99,14 +99,14 @@ function AdminDashboard() {
         value: stats.messages.total,
         note: `${stats.messages.new} new`,
         icon: MessageSquare,
-        to: "/admin/messages",
+        to: "/admin/clients/messages",
       },
       {
         label: "Pending reviews",
         value: stats.reviews.pending,
         note: `${stats.reviews.approved} approved`,
         icon: Star,
-        to: "/admin/reviews",
+        to: "/admin/clients/reviews",
       },
       {
         label: "Clients",
@@ -120,21 +120,21 @@ function AdminDashboard() {
         value: stats.slots.available,
         note: `${stats.slots.booked} booked`,
         icon: Layers,
-        to: "/admin/slots",
+        to: "/admin/control/slots",
       },
       {
         label: "Visible projects",
         value: stats.projects.visible,
         note: `${stats.projects.featured} featured`,
         icon: FolderKanban,
-        to: "/admin/projects",
+        to: "/admin/control/projects",
       },
       {
         label: "Visible FAQ",
         value: stats.faqs.visible,
         note: `${stats.faqs.total} total`,
         icon: FileQuestion,
-        to: "/admin/faq",
+        to: "/admin/control/faq",
       },
     ];
   }, [dashboard]);
@@ -148,13 +148,13 @@ function AdminDashboard() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Overview
             </p>
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
               Manage the Web District platform.
             </h2>
-            <p className="mt-4 max-w-2xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
               Track the real activity behind requests, calls, messages, reviews,
               selected work, services, FAQ, and client accounts.
             </p>
@@ -185,7 +185,7 @@ function AdminDashboard() {
               {action.title}
             </h3>
 
-            <p className="mt-3 min-h-[84px] leading-7 text-[#94A3B8]">
+            <p className="mt-3 min-h-[84px] leading-7 text-[#D9D4CC]">
               {action.description}
             </p>
 
@@ -205,17 +205,17 @@ function StatCard({ stat }) {
   const Icon = stat.icon;
 
   return (
-    <Card className="p-5 transition duration-300 hover:-translate-y-1 hover:border-[#C69A4E]/35">
+    <Card className="p-5 transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/35">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-[#94A3B8]">{stat.label}</p>
-          <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+          <p className="text-sm text-[#D9D4CC]">{stat.label}</p>
+          <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
             {stat.value}
           </p>
-          <p className="mt-2 text-sm text-[#64748B]">{stat.note}</p>
+          <p className="mt-2 text-sm text-[#D9D4CC]">{stat.note}</p>
         </div>
 
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
           <Icon size={20} />
         </div>
       </div>
@@ -243,7 +243,7 @@ function LatestRequests({ items }) {
           />
         ))
       ) : (
-        <p className="text-sm text-[#94A3B8]">No requests yet.</p>
+        <p className="text-sm text-[#D9D4CC]">No requests yet.</p>
       )}
     </LatestCard>
   );
@@ -263,7 +263,7 @@ function LatestAppointments({ items }) {
           />
         ))
       ) : (
-        <p className="text-sm text-[#94A3B8]">No appointments yet.</p>
+        <p className="text-sm text-[#D9D4CC]">No appointments yet.</p>
       )}
     </LatestCard>
   );
@@ -271,7 +271,7 @@ function LatestAppointments({ items }) {
 
 function LatestMessages({ items }) {
   return (
-    <LatestCard title="Latest messages" actionTo="/admin/messages">
+    <LatestCard title="Latest messages" actionTo="/admin/clients/messages">
       {items.length ? (
         items.map((item) => (
           <LatestItem
@@ -283,7 +283,7 @@ function LatestMessages({ items }) {
           />
         ))
       ) : (
-        <p className="text-sm text-[#94A3B8]">No messages yet.</p>
+        <p className="text-sm text-[#D9D4CC]">No messages yet.</p>
       )}
     </LatestCard>
   );
@@ -312,11 +312,11 @@ function LatestItem({ title, subtitle, date, status }) {
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <StatusBadge status={status} />
-        <span className="text-xs text-[#64748B]">{formatDate(date)}</span>
+        <span className="text-xs text-[#D9D4CC]">{formatDate(date)}</span>
       </div>
 
-      <p className="font-semibold text-white">{title}</p>
-      <p className="mt-1 text-sm text-[#94A3B8]">{subtitle}</p>
+      <p className="font-semibold text-[#F8F7F4]">{title}</p>
+      <p className="mt-1 text-sm text-[#D9D4CC]">{subtitle}</p>
     </div>
   );
 }

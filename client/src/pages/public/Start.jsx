@@ -13,24 +13,28 @@ function Start() {
   const { isAuthenticated, user } = useAuth();
 
   return (
-    <main className="pb-20 pt-32">
-      <Container>
+    <main className="bg-[#080808]">
+      <section className="wd-section-black pt-32 pb-12">
+        <Container>
         <SectionHeader
           eyebrow="Start"
-          title="Start your website with Web District."
-          description="Choose the path that fits you best: submit a website request with your project details, or book a call to discuss the right direction first."
-          className="mb-10"
+          title="Start Your Project."
+          description="Send the details now, or book a call if you want to shape the direction first."
         />
+        </Container>
+      </section>
 
+      <section className="wd-section-black py-16 md:pb-20">
+        <Container>
         {isAuthenticated && (
-          <Card className="mb-8 border-[#C69A4E]/25 p-5">
+          <Card className="wd-card-on-black mb-8 border-[#C4A77D]/25 p-5">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
-                <p className="font-semibold text-white">
-                  You’re starting as {user?.name}
+                <p className="font-semibold text-[#F8F7F4]">
+                  You're starting as {user?.name}
                 </p>
-                <p className="mt-1 text-sm text-[#94A3B8]">
-                  Requests and appointments submitted while logged in will appear in your client dashboard.
+                <p className="mt-1 text-sm text-[#D9D4CC]">
+                  Your requests and appointments will appear in your dashboard.
                 </p>
               </div>
 
@@ -41,15 +45,23 @@ function Start() {
           </Card>
         )}
 
-        <StartOptions
-          activeOption={activeOption}
-          setActiveOption={setActiveOption}
-        />
+        <div className="grid gap-6 lg:grid-cols-[340px_1fr] lg:items-start">
+          <StartOptions
+            activeOption={activeOption}
+            setActiveOption={setActiveOption}
+            cardClassName="wd-card-on-black"
+          />
 
-        <div className="mt-10">
-          {activeOption === "request" ? <WebsiteRequestForm /> : <BookCallForm />}
+          <div>
+            {activeOption === "request" ? (
+              <WebsiteRequestForm className="wd-card-on-black" />
+            ) : (
+              <BookCallForm className="wd-card-on-black" />
+            )}
+          </div>
         </div>
-      </Container>
+        </Container>
+      </section>
     </main>
   );
 }

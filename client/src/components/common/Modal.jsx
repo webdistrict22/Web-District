@@ -17,22 +17,22 @@ function Modal({
         type="button"
         aria-label="Close modal overlay"
         onClick={onClose}
-        className="absolute inset-0 bg-[#020817]/80 backdrop-blur-md"
+        className="absolute inset-0 bg-[#080808]/84 backdrop-blur-md"
       />
 
       <div
-        className={`relative w-full ${maxWidth} overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0A1A2D] shadow-2xl`}
+        className={`relative w-full ${maxWidth} overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#080808] shadow-2xl`}
       >
         <div className="flex items-start justify-between gap-5 border-b border-white/10 p-6">
           <div>
             {title && (
-              <h2 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+              <h2 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
                 {title}
               </h2>
             )}
 
             {description && (
-              <p className="mt-2 max-w-xl text-sm leading-6 text-[#94A3B8]">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-[#D9D4CC]">
                 {description}
               </p>
             )}
@@ -41,7 +41,7 @@ function Modal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#94A3B8] transition hover:border-red-400/40 hover:text-red-300"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#D9D4CC] transition hover:border-[#C4A77D]/45 hover:text-[#F8F7F4]"
             aria-label="Close modal"
           >
             <X size={18} />

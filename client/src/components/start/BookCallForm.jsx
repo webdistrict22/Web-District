@@ -17,7 +17,7 @@ const initialForm = {
   notes: "",
 };
 
-function BookCallForm() {
+function BookCallForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
 
   const [slots, setSlots] = useState([]);
@@ -104,23 +104,23 @@ function BookCallForm() {
   };
 
   return (
-    <Card className="p-6 md:p-8">
+    <Card className={`p-6 md:p-8 ${className}`}>
       <div className="mb-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
           Book a call
         </p>
         <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
           Choose a time to talk.
         </h2>
-        <p className="mt-3 max-w-2xl leading-7 text-[#94A3B8]">
+        <p className="mt-3 max-w-2xl leading-7 text-[#D9D4CC]">
           Pick an available call slot and tell us what you want to discuss.
         </p>
       </div>
 
       {isAuthenticated && (
-        <div className="mb-6 rounded-2xl border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-4">
-          <p className="text-sm leading-7 text-[#F1D08B]">
-            You’re booking as {user?.name}. This appointment will appear in your
+        <div className="mb-6 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
+          <p className="text-sm leading-7 text-[#F8F7F4]">
+            You are booking as {user?.name}. This appointment will appear in your
             client dashboard.
           </p>
         </div>
@@ -131,7 +131,7 @@ function BookCallForm() {
         className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"
       >
         <div>
-          <p className="mb-4 font-semibold text-white">Available slots</p>
+          <p className="mb-4 font-semibold text-[#F8F7F4]">Available slots</p>
           <AvailableSlots
             slots={slots}
             selectedSlot={selectedSlot}

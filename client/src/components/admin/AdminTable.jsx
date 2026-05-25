@@ -28,7 +28,7 @@ function AdminTable({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="whitespace-nowrap px-5 py-4 text-left text-xs font-bold uppercase tracking-[0.2em] text-[#94A3B8]"
+                  className="whitespace-nowrap px-5 py-4 text-left text-xs font-bold uppercase tracking-[0.2em] text-[#D9D4CC]"
                 >
                   {column.label}
                 </th>
@@ -45,7 +45,7 @@ function AdminTable({
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className="px-5 py-4 text-sm text-[#CBD5E1]"
+                    className="px-5 py-4 text-sm text-[#D9D4CC]"
                   >
                     {typeof column.render === "function"
                       ? column.render(row)

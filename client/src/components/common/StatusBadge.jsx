@@ -1,29 +1,29 @@
 const statusStyles = {
-  New: "border-cyan-300/25 bg-cyan-300/10 text-cyan-200",
-  Read: "border-blue-300/25 bg-blue-300/10 text-blue-200",
-  Replied: "border-emerald-300/25 bg-emerald-300/10 text-emerald-200",
-  Archived: "border-slate-300/25 bg-slate-300/10 text-slate-200",
+  New: "border-[#C4A77D]/32 bg-[#C4A77D]/14 text-[#F8F7F4]",
+  Read: "border-white/10 bg-white/[0.04] text-[#D9D4CC]",
+  Replied: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
+  Archived: "border-[#D9D4CC]/18 bg-white/[0.025] text-[#D9D4CC]",
 
-  Reviewed: "border-blue-300/25 bg-blue-300/10 text-blue-200",
-  Accepted: "border-emerald-300/25 bg-emerald-300/10 text-emerald-200",
-  Rejected: "border-red-300/25 bg-red-300/10 text-red-200",
+  Reviewed: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
+  Accepted: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
+  Rejected: "border-[#64131A]/35 bg-[#64131A]/18 text-[#F8F7F4]",
 
-  Draft: "border-slate-300/25 bg-slate-300/10 text-slate-200",
-  Sent: "border-blue-300/25 bg-blue-300/10 text-blue-200",
-  "In Progress": "border-[#C69A4E]/30 bg-[#C69A4E]/12 text-[#F1D08B]",
-  Completed: "border-green-300/25 bg-green-300/10 text-green-200",
-  Cancelled: "border-red-300/25 bg-red-300/10 text-red-200",
+  Draft: "border-[#D9D4CC]/18 bg-white/[0.025] text-[#D9D4CC]",
+  Sent: "border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]",
+  "In Progress": "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]",
+  Completed: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
+  Cancelled: "border-[#64131A]/35 bg-[#64131A]/18 text-[#F8F7F4]",
 
-  Pending: "border-cyan-300/25 bg-cyan-300/10 text-cyan-200",
-  Approved: "border-emerald-300/25 bg-emerald-300/10 text-emerald-200",
+  Pending: "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]",
+  Approved: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
 
-  Rescheduled: "border-orange-300/25 bg-orange-300/10 text-orange-200",
-  Done: "border-green-300/25 bg-green-300/10 text-green-200",
+  Rescheduled: "border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]",
+  Done: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
 };
 
 function StatusBadge({ status = "New" }) {
   const style =
-    statusStyles[status] || "border-white/10 bg-white/[0.04] text-[#CBD5E1]";
+    statusStyles[status] || "border-white/10 bg-white/[0.04] text-[#D9D4CC]";
 
   return (
     <span

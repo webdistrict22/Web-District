@@ -2,16 +2,25 @@
 @import "tailwindcss";
 
 :root {
-  --wd-bg: #020817;
-  --wd-bg-2: #07111f;
-  --wd-card: #0a1a2d;
-  --wd-card-soft: rgba(10, 26, 45, 0.72);
-  --wd-text: #f5f8fc;
-  --wd-muted: #94a3b8;
-  --wd-gold: #c69a4e;
-  --wd-gold-soft: rgba(198, 154, 78, 0.16);
-  --wd-cyan: #22d3ee;
-  --wd-border: rgba(245, 248, 252, 0.1);
+  --wd-soft-white: #F8F7F4;
+  --wd-stone: #D9D4CC;
+  --wd-graphite: #202020;
+  --wd-champagne: #C4A77D;
+  --wd-oxblood: #64131A;
+
+  --wd-bg: #080808;
+  --wd-surface: rgba(248,247,244,0.06);
+  --wd-surface-strong: rgba(248,247,244,0.10);
+  --wd-text: #F8F7F4;
+  --wd-muted: #D9D4CC;
+  --wd-border: rgba(248,247,244,0.14);
+  --wd-border-light: rgba(32,32,32,0.14);
+  --wd-accent: #C4A77D;
+  --wd-accent-deep: #64131A;
+  --wd-accent-soft: rgba(196,167,125,0.16);
+  --wd-oxblood-soft: rgba(100,19,26,0.18);
+  --wd-panel: rgba(248,247,244,0.045);
+  --wd-panel-strong: rgba(248,247,244,0.075);
 }
 
 * {
@@ -25,8 +34,9 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 70% 0%, rgba(198, 154, 78, 0.08), transparent 32%),
-    radial-gradient(circle at 25% 12%, rgba(34, 211, 238, 0.06), transparent 28%),
+    radial-gradient(circle at 76% 0%, rgba(196, 167, 125, 0.10), transparent 32%),
+    radial-gradient(circle at 12% 18%, rgba(100, 19, 26, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(248, 247, 244, 0.035), transparent 38%),
     var(--wd-bg);
   color: var(--wd-text);
   font-family: "Inter", system-ui, sans-serif;
@@ -54,25 +64,46 @@ select {
 }
 
 .wd-card {
-  background: linear-gradient(180deg, rgba(10, 26, 45, 0.86), rgba(7, 17, 31, 0.82));
+  background:
+    linear-gradient(180deg, rgba(248, 247, 244, 0.045), rgba(248, 247, 244, 0.018)),
+    #0B0B0B;
   border: 1px solid var(--wd-border);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
 }
 
-.wd-gold-line {
+.wd-section-black {
+  background: var(--wd-bg);
+}
+
+.wd-card-on-black {
+  background:
+    linear-gradient(180deg, rgba(248, 247, 244, 0.042), rgba(248, 247, 244, 0.016)),
+    #0B0B0B;
+  border: 1px solid var(--wd-border);
+}
+
+.wd-champagne-glow {
+  background: radial-gradient(circle, rgba(196,167,125,0.22), transparent 60%);
+}
+
+.wd-accent-line {
   height: 1px;
   width: 74px;
-  background: linear-gradient(90deg, transparent, var(--wd-gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--wd-accent), transparent);
 }
 
 .wd-text-gradient {
-  background: linear-gradient(135deg, #ffffff, #f5f8fc 45%, #b8c1cf);
+  background: linear-gradient(135deg, var(--wd-soft-white), var(--wd-stone));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.wd-gold-gradient {
-  background: linear-gradient(135deg, #f1d08b, #c69a4e, #94682e);
+.wd-champagne-gradient {
+  background: linear-gradient(135deg, #9F7B43, #A8874F);
+}
+
+.wd-champagne-gradient:hover {
+  background: linear-gradient(135deg, #B89458, var(--wd-champagne));
 }
 
 .wd-noise {
@@ -92,7 +123,27 @@ select {
   mask-image: linear-gradient(to bottom, black, transparent);
 }
 
+.wd-navbar-ticker-track {
+  animation: wdTicker 16s linear infinite;
+}
+
+@keyframes wdTicker {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-navbar-ticker-track {
+    animation: none;
+  }
+}
+
 ::selection {
-  background: rgba(198, 154, 78, 0.35);
-  color: white;
+  background: rgba(196, 167, 125, 0.35);
+  color: var(--wd-soft-white);
 }

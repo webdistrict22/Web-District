@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
+import ReviewsPreview from "../../components/home/ReviewsPreview";
 import ProjectCard from "../../components/work/ProjectCard";
-import ProjectFilters from "../../components/work/ProjectFilters";
 import Loader from "../../components/common/Loader";
-import { workFilters, workProjects } from "../../data/demoProjects";
+import { mergeProjectsWithFallback } from "../../data/demoProjects";
 
 function Work() {
-  const [activeFilter, setActiveFilter] = useState("All");
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,68 +29,44 @@ function Work() {
     fetchProjects();
   }, []);
 
-  const displayProjects = projects.length ? projects : workProjects;
-
-  const dynamicFilters = useMemo(() => {
-    if (!projects.length) return workFilters;
-
-    const types = projects.map((project) => project.websiteType).filter(Boolean);
-    const tags = projects.flatMap((project) => project.tags || []);
-    const unique = Array.from(new Set(["All", ...types, ...tags]));
-
-    return unique;
-  }, [projects]);
-
-  const filteredProjects = useMemo(() => {
-    if (activeFilter === "All") return displayProjects;
-
-    return displayProjects.filter((project) => {
-      const type = project._id ? project.websiteType : project.type;
-      const tags = project.tags || [];
-
-      return type === activeFilter || tags.includes(activeFilter);
-    });
-  }, [activeFilter, displayProjects]);
+  const displayProjects = useMemo(
+    () => mergeProjectsWithFallback(projects),
+    [projects]
+  );
 
   return (
-    <main className="pb-20 pt-32">
-      <Container>
-        <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+    <main className="bg-[#080808]">
+      <section className="wd-section-black pt-36 pb-4 md:pt-40 md:pb-4">
+        <Container>
           <SectionHeader
             eyebrow="Some of our work"
             title="Selected websites with a serious direction."
-            description="A look at some Web District work across online stores, business websites, and future custom website directions."
+            description="A look at selected builds across stores, business sites, and custom directions."
           />
+        </Container>
+      </section>
 
-          <div className="rounded-[1.6rem] border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-5">
-            <p className="text-sm leading-7 text-[#F1D08B]">
-              This is a selected work page, not a limit. Web District can build
-              for brands, businesses, companies, campaigns, and custom digital
-              needs.
-            </p>
-          </div>
-        </section>
+      <section className="wd-section-black pt-4 pb-16 md:pt-6 md:pb-20">
+        <Container>
+          {isLoading ? (
+            <section>
+              <Loader text="Loading selected work..." />
+            </section>
+          ) : (
+            <section className="grid gap-6 md:grid-cols-2">
+              {displayProjects.map((project) => (
+                <ProjectCard
+                  key={project._id || project.slug}
+                  project={project}
+                  className="wd-card-on-black"
+                />
+              ))}
+            </section>
+          )}
+        </Container>
+      </section>
 
-        <section className="mt-10">
-          <ProjectFilters
-            filters={dynamicFilters}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-          />
-        </section>
-
-        {isLoading ? (
-          <section className="mt-10">
-            <Loader text="Loading selected work..." />
-          </section>
-        ) : (
-          <section className="mt-10 grid gap-6 md:grid-cols-2">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project._id || project.slug} project={project} />
-            ))}
-          </section>
-        )}
-      </Container>
+      <ReviewsPreview />
     </main>
   );
 }

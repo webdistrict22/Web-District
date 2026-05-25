@@ -5,33 +5,6 @@ import SectionHeader from "../common/SectionHeader";
 import Card from "../common/Card";
 import Button from "../common/Button";
 
-const fallbackReviews = [
-  {
-    name: "Client Name",
-    businessName: "Business Owner",
-    role: "Founder",
-    rating: 5,
-    message:
-      "Web District gave the website a clean, serious direction and made the process easier to understand.",
-  },
-  {
-    name: "Client Name",
-    businessName: "Brand Owner",
-    role: "Owner",
-    rating: 5,
-    message:
-      "The process felt clear from the beginning, and the website direction helped the business look more professional.",
-  },
-  {
-    name: "Client Name",
-    businessName: "Service Business",
-    role: "Manager",
-    rating: 5,
-    message:
-      "Clean design, easy communication, and a website structure that actually matched what the business needed.",
-  },
-];
-
 function ReviewsPreview() {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,45 +27,50 @@ function ReviewsPreview() {
     fetchReviews();
   }, []);
 
-  const displayReviews = useMemo(() => {
-    return reviews.length ? reviews.slice(0, 3) : fallbackReviews;
-  }, [reviews]);
+  const displayReviews = useMemo(() => reviews.slice(0, 3), [reviews]);
 
   return (
-    <section className="py-20">
+    <section className="wd-section-black pt-8 pb-20 md:pt-10 md:pb-24">
       <Container>
         <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <SectionHeader
-            eyebrow="Testimonials"
-            title="What clients say"
-            description="Approved reviews and testimonials that show how Web District helps businesses look more serious online."
+            eyebrow="Reviews"
+            title="Latest client words."
+            description="The newest approved reviews from clients who worked with Web District."
           />
 
           <Button to="/start" variant="secondary">
-            Start your website
+            Start Your Project
           </Button>
         </div>
 
         {isLoading ? (
           <Card className="p-6">
-            <p className="text-[#94A3B8]">Loading reviews...</p>
+            <p className="text-[#D9D4CC]">Loading reviews...</p>
+          </Card>
+        ) : !displayReviews.length ? (
+          <Card className="p-6">
+            <p className="text-[#F8F7F4]">No approved reviews yet.</p>
+            <p className="mt-2 text-sm text-[#D9D4CC]">
+              Approved reviews will appear here after they are added or
+              submitted by clients.
+            </p>
           </Card>
         ) : (
           <div className="grid gap-5 md:grid-cols-3">
             {displayReviews.map((review, index) => (
               <Card key={review._id || index} className="p-6">
-                <div className="mb-5 flex gap-1 text-[#C69A4E]">
-                  {"★".repeat(review.rating || 5)}
-                  {"☆".repeat(5 - (review.rating || 5))}
+                <div className="mb-5 inline-flex rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#F8F7F4]">
+                  Rating {review.rating || 5}/5
                 </div>
 
-                <p className="leading-7 text-[#CBD5E1]">“{review.message}”</p>
+                <p className="leading-7 text-[#D9D4CC]">"{review.message}"</p>
 
                 <div className="mt-6 border-t border-white/10 pt-4">
-                  <p className="font-semibold text-white">{review.name}</p>
-                  <p className="text-sm text-[#94A3B8]">
+                  <p className="font-semibold text-[#F8F7F4]">{review.name}</p>
+                  <p className="text-sm text-[#D9D4CC]">
                     {review.role || "Client"}
-                    {review.businessName ? ` — ${review.businessName}` : ""}
+                    {review.businessName ? ` - ${review.businessName}` : ""}
                   </p>
                 </div>
               </Card>

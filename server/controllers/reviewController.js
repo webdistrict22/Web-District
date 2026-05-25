@@ -1,4 +1,5 @@
 const Review = require("../models/Review");
+const Contract = require("../models/Contract");
 const asyncHandler = require("../middleware/asyncHandler");
 
 const createManualReview = asyncHandler(async (req, res) => {
@@ -35,8 +36,18 @@ const submitReview = asyncHandler(async (req, res) => {
     throw new Error("Review message is required");
   }
 
+  const contract = await Contract.findOne({ client: req.user._id }).select(
+    "_id"
+  );
+
+  if (!contract) {
+    res.status(403);
+    throw new Error("You need at least one contract before submitting a review");
+  }
+
   const review = await Review.create({
     client: req.user._id,
+    contract: contract._id,
     name: req.user.name,
     businessName: businessName || req.user.businessName,
     role,

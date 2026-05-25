@@ -4,7 +4,7 @@ import Footer from "./Footer";
 
 function PublicLayout() {
   return (
-    <div className="min-h-screen bg-[#020817] text-[#F5F8FC]">
+    <div className="min-h-screen bg-[#080808] text-[#F8F7F4]">
       <Navbar />
       <Outlet />
       <Footer />

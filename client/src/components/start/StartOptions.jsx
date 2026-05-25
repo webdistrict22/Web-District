@@ -1,65 +1,80 @@
-import { CalendarDays, FileText } from "lucide-react";
+import { CalendarDays, CheckCircle2, FileText } from "lucide-react";
 import Card from "../common/Card";
 
-function StartOptions({ activeOption, setActiveOption }) {
+function StartOptions({ activeOption, setActiveOption, cardClassName = "", className = "" }) {
   const options = [
     {
       id: "request",
       icon: FileText,
-      title: "Make a website request",
-      description:
-        "Best if you already know you need a website and want to submit your business details.",
+      title: "Send a project request",
+      description: "Best if you already know the website you need.",
     },
     {
       id: "call",
       icon: CalendarDays,
-      title: "Book a call appointment",
-      description:
-        "Best if you want to discuss your website direction first before submitting full details.",
+      title: "Book a call",
+      description: "Best if you want to discuss the direction first.",
     },
   ];
 
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {options.map((option) => {
-        const Icon = option.icon;
-        const isActive = activeOption === option.id;
+    <Card className={`p-6 lg:sticky lg:top-28 ${cardClassName} ${className}`}>
+      <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#C4A77D]">
+        Choose your way
+      </p>
 
-        return (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => setActiveOption(option.id)}
-            className="text-left"
-          >
-            <Card
-              className={`h-full p-6 transition duration-300 hover:-translate-y-1 ${
+      <h2 className="font-display mt-4 text-4xl font-bold leading-[0.95] tracking-[-0.06em] text-[#F8F7F4]">
+        Start with the path that fits.
+      </h2>
+
+      <p className="mt-4 text-sm leading-7 text-[#D9D4CC]">
+        Send the request now, or book a call if the direction needs shaping first.
+      </p>
+
+      <div className="mt-7 grid gap-3">
+        {options.map((option) => {
+          const Icon = option.icon;
+          const isActive = activeOption === option.id;
+
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => setActiveOption(option.id)}
+              className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition duration-300 hover:-translate-y-0.5 ${
                 isActive
-                  ? "border-[#C69A4E]/60 shadow-[0_0_40px_rgba(198,154,78,0.12)]"
-                  : ""
+                  ? "border-[#C4A77D]/55 bg-[#C4A77D]/14 text-[#F8F7F4]"
+                  : "border-white/10 bg-white/[0.03] text-[#D9D4CC] hover:border-[#C4A77D]/30 hover:text-[#F8F7F4]"
               }`}
             >
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
                 <Icon size={22} />
-              </div>
+              </span>
 
-              <h3 className="font-display text-2xl font-bold tracking-[-0.04em]">
-                {option.title}
-              </h3>
+              <span className="min-w-0">
+                <span className="block font-semibold text-[#F8F7F4]">
+                  {option.title}
+                </span>
 
-              <p className="mt-3 leading-7 text-[#94A3B8]">
-                {option.description}
-              </p>
+                <span className="mt-1 block text-sm leading-6 text-[#D9D4CC]">
+                  {option.description}
+                </span>
+              </span>
 
-              <div className="mt-5 flex items-center gap-3 text-sm font-semibold text-[#C69A4E]">
-                <span>{isActive ? "Selected" : "Choose this option"}</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#22D3EE]" />
-              </div>
-            </Card>
-          </button>
-        );
-      })}
-    </div>
+              {isActive && (
+                <CheckCircle2 size={18} className="mt-1 shrink-0 text-[#C4A77D]" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-7 border-t border-white/10 pt-5">
+        <p className="text-sm leading-7 text-[#D9D4CC]">
+          Logged-in clients can track requests and appointments from their dashboard.
+        </p>
+      </div>
+    </Card>
   );
 }
 

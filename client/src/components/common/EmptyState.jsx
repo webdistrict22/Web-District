@@ -9,13 +9,13 @@ function EmptyState({
 }) {
   return (
     <Card className="p-8 text-center">
-      <div className="mx-auto mb-5 h-14 w-14 rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10" />
+      <div className="mx-auto mb-5 h-14 w-14 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10" />
 
       <h3 className="font-display text-2xl font-bold tracking-[-0.04em]">
         {title}
       </h3>
 
-      <p className="mx-auto mt-3 max-w-xl leading-7 text-[#94A3B8]">
+      <p className="mx-auto mt-3 max-w-xl leading-7 text-[#D9D4CC]">
         {description}
       </p>
 

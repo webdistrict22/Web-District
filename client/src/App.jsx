@@ -13,20 +13,20 @@ function App() {
           position="top-right"
           toastOptions={{
             style: {
-              background: "#0A1A2D",
-              color: "#F5F8FC",
-              border: "1px solid rgba(245, 248, 252, 0.1)",
+              background: "#080808",
+              color: "#F8F7F4",
+              border: "1px solid rgba(248,247,244,0.14)",
             },
             success: {
               iconTheme: {
-                primary: "#C69A4E",
-                secondary: "#020817",
+                primary: "#C4A77D",
+                secondary: "#080808",
               },
             },
             error: {
               iconTheme: {
-                primary: "#ef4444",
-                secondary: "#ffffff",
+                primary: "#64131A",
+                secondary: "#F8F7F4",
               },
             },
           }}

@@ -14,7 +14,7 @@ const initialForm = {
   message: "",
 };
 
-function ContactForm() {
+function ContactForm({ className = "" }) {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,9 +48,9 @@ function ContactForm() {
   };
 
   return (
-    <Card className="p-6 md:p-8">
+    <Card className={`p-6 md:p-8 ${className}`}>
       <div className="mb-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
           Contact form
         </p>
 
@@ -58,8 +58,8 @@ function ContactForm() {
           Tell us what you need.
         </h2>
 
-        <p className="mt-3 leading-7 text-[#94A3B8]">
-          Send a short message about your business, website idea, or the problem you want your website to solve.
+        <p className="mt-3 leading-7 text-[#D9D4CC]">
+          Send the business, website idea, or question. Keep it simple.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ function ContactForm() {
 
         <Textarea
           label="Message *"
-          placeholder="Example: I want a business website for my company and I need pages for services, contact, and previous work."
+          placeholder="Example: I need a business website with services, contact, and selected work."
           value={form.message}
           onChange={(e) => updateField("message", e.target.value)}
         />

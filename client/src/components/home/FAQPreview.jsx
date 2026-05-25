@@ -46,14 +46,14 @@ function FAQPreview() {
           />
 
           <Button to="/start" variant="secondary">
-            Start a request
+            Start Your Project
           </Button>
         </div>
 
         <div className="grid gap-4">
           {isLoading ? (
             <Card className="p-6">
-              <p className="text-[#94A3B8]">Loading questions...</p>
+              <p className="text-[#D9D4CC]">Loading questions...</p>
             </Card>
           ) : (
             faqs.slice(0, 6).map((faq) => {
@@ -67,12 +67,12 @@ function FAQPreview() {
                     onClick={() => setActiveId(isActive ? "" : id)}
                     className="flex w-full items-center justify-between gap-5 p-6 text-left"
                   >
-                    <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-white">
+                    <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
                       {faq.question}
                     </h3>
 
                     <span
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#C69A4E] transition ${
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#C4A77D] transition ${
                         isActive ? "rotate-180" : ""
                       }`}
                     >
@@ -82,7 +82,7 @@ function FAQPreview() {
 
                   {isActive && (
                     <div className="border-t border-white/10 px-6 pb-6 pt-5">
-                      <p className="max-w-4xl leading-8 text-[#94A3B8]">
+                      <p className="max-w-4xl leading-8 text-[#D9D4CC]">
                         {faq.answer}
                       </p>
                     </div>

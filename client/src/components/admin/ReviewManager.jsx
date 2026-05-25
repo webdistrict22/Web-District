@@ -196,7 +196,7 @@ function ReviewManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -204,15 +204,15 @@ function ReviewManager() {
               Reviews and testimonials
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Manage public testimonials. Approve real client reviews, hide
               weak ones, or manually add polished testimonials after completed
               work.
             </p>
           </div>
 
-          <Button to="/" variant="secondary">
-            View homepage
+          <Button to="/work" variant="secondary">
+            View work page
           </Button>
         </div>
       </Card>
@@ -227,7 +227,7 @@ function ReviewManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit review" : "Add manual review"}
             </p>
 
@@ -373,7 +373,7 @@ function ReviewManager() {
       ) : (
         <EmptyState
           title="No reviews found"
-          description="Approved testimonials will appear publicly on the homepage."
+          description="Approved testimonials will appear publicly on the Work page."
         />
       )}
     </div>
@@ -389,45 +389,45 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
         <span
           className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
             review.isVisible
-              ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-              : "border-red-300/25 bg-red-300/10 text-red-200"
+              ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+              : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
           }`}
         >
           {review.isVisible ? "Visible" : "Hidden"}
         </span>
 
-        <span className="inline-flex rounded-full border border-[#C69A4E]/25 bg-[#C69A4E]/10 px-3 py-1 text-xs font-semibold text-[#F1D08B]">
+        <span className="inline-flex rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#F8F7F4]">
           {review.isManual ? "Manual" : "Client submitted"}
         </span>
 
-        <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+        <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
           {formatDate(review.createdAt)}
         </span>
       </div>
 
-      <div className="mb-4 flex gap-1 text-[#C69A4E]">
+      <div className="mb-4 flex gap-1 text-[#C4A77D]">
         {"★".repeat(review.rating || 5)}
         {"☆".repeat(5 - (review.rating || 5))}
       </div>
 
-      <p className="leading-8 text-[#CBD5E1]">“{review.message}”</p>
+      <p className="leading-8 text-[#D9D4CC]">“{review.message}”</p>
 
       <div className="mt-6 border-t border-white/10 pt-5">
-        <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-white">
+        <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
           {review.name}
         </h3>
 
-        <p className="mt-1 text-sm text-[#94A3B8]">
+        <p className="mt-1 text-sm text-[#D9D4CC]">
           {review.role || "Client"}
           {review.businessName ? ` — ${review.businessName}` : ""}
         </p>
 
         {review.client && (
-          <div className="mt-4 rounded-2xl border border-[#22D3EE]/15 bg-[#22D3EE]/5 p-4">
-            <p className="text-sm font-semibold text-[#A7F3FF]">
+          <div className="mt-4 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
+            <p className="text-sm font-semibold text-[#D9D4CC]">
               Linked client account
             </p>
-            <p className="mt-1 text-sm text-[#94A3B8]">
+            <p className="mt-1 text-sm text-[#D9D4CC]">
               {review.client.name} — {review.client.email}
             </p>
           </div>
@@ -476,7 +476,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
           type="button"
           onClick={() => onDelete(review._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
@@ -489,8 +489,8 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

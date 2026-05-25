@@ -35,19 +35,15 @@ const ClientReviews = lazy(() => import("../pages/client/ClientReviews"));
 const ClientProfile = lazy(() => import("../pages/client/ClientProfile"));
 
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
-const AdminRequests = lazy(() => import("../pages/admin/AdminRequests"));
+const AdminRequests = lazy(() => import("../components/admin/RequestManager"));
 const AdminAppointments = lazy(() =>
-  import("../pages/admin/AdminAppointments")
+  import("../components/admin/AppointmentManager")
 );
-const AdminSlots = lazy(() => import("../pages/admin/AdminSlots"));
-const AdminContracts = lazy(() => import("../pages/admin/AdminContracts"));
-const AdminProjects = lazy(() => import("../pages/admin/AdminProjects"));
-const AdminReviews = lazy(() => import("../pages/admin/AdminReviews"));
-const AdminFAQ = lazy(() => import("../pages/admin/AdminFAQ"));
-const AdminPackages = lazy(() => import("../pages/admin/AdminPackages"));
-const AdminClients = lazy(() => import("../pages/admin/AdminClients"));
-const AdminSettings = lazy(() => import("../pages/admin/AdminSettings"));
-const AdminMessages = lazy(() => import("../pages/admin/AdminMessages"));
+const AdminContracts = lazy(() => import("../components/admin/ContractManager"));
+const AdminClients = lazy(() =>
+  import("../components/admin/ClientControlManager")
+);
+const AdminControl = lazy(() => import("../components/admin/SettingsManager"));
 
 const NotFound = lazy(() => import("../pages/NotFound"));
 
@@ -112,15 +108,61 @@ function AppRoutes() {
             <Route index element={<AdminDashboard />} />
             <Route path="requests" element={<AdminRequests />} />
             <Route path="appointments" element={<AdminAppointments />} />
-            <Route path="slots" element={<AdminSlots />} />
             <Route path="contracts" element={<AdminContracts />} />
-            <Route path="projects" element={<AdminProjects />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="faq" element={<AdminFAQ />} />
-            <Route path="packages" element={<AdminPackages />} />
             <Route path="clients" element={<AdminClients />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="messages" element={<AdminMessages />} />
+            <Route
+              path="clients/reviews"
+              element={<AdminClients initialTab="reviews" />}
+            />
+            <Route
+              path="clients/messages"
+              element={<AdminClients initialTab="messages" />}
+            />
+            <Route path="control" element={<AdminControl />} />
+            <Route
+              path="control/slots"
+              element={<AdminControl initialTab="slots" />}
+            />
+            <Route
+              path="control/projects"
+              element={<AdminControl initialTab="projects" />}
+            />
+            <Route
+              path="control/faq"
+              element={<AdminControl initialTab="faq" />}
+            />
+            <Route
+              path="control/packages"
+              element={<AdminControl initialTab="packages" />}
+            />
+            <Route
+              path="slots"
+              element={<Navigate to="/admin/control/slots" replace />}
+            />
+            <Route
+              path="projects"
+              element={<Navigate to="/admin/control/projects" replace />}
+            />
+            <Route
+              path="faq"
+              element={<Navigate to="/admin/control/faq" replace />}
+            />
+            <Route
+              path="packages"
+              element={<Navigate to="/admin/control/packages" replace />}
+            />
+            <Route
+              path="settings"
+              element={<Navigate to="/admin/control" replace />}
+            />
+            <Route
+              path="reviews"
+              element={<Navigate to="/admin/clients/reviews" replace />}
+            />
+            <Route
+              path="messages"
+              element={<Navigate to="/admin/clients/messages" replace />}
+            />
           </Route>
 
           <Route path="/dashboard" element={<Navigate to="/account" replace />} />

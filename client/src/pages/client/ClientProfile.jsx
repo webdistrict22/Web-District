@@ -18,7 +18,7 @@ function ClientProfile() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Client portal
             </p>
 
@@ -26,7 +26,7 @@ function ClientProfile() {
               Profile information
             </h2>
 
-            <p className="mt-4 max-w-2xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
               This is the account information connected to your Web District
               workspace. Requests, calls, reviews, and future contracts are
               linked to this account.
@@ -41,15 +41,15 @@ function ClientProfile() {
 
       <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <Card className="p-6 md:p-8">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
             <UserRound size={28} />
           </div>
 
-          <h3 className="font-display mt-6 text-3xl font-bold tracking-[-0.05em] text-white">
+          <h3 className="font-display mt-6 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
             {user?.name || "Client"}
           </h3>
 
-          <p className="mt-2 text-[#94A3B8]">
+          <p className="mt-2 text-[#D9D4CC]">
             {user?.businessName || "No business name added"}
           </p>
 
@@ -66,7 +66,7 @@ function ClientProfile() {
 
         <div className="grid gap-5">
           <Card className="p-6">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Account note
             </p>
 
@@ -74,7 +74,7 @@ function ClientProfile() {
               Keep your requests linked.
             </h3>
 
-            <p className="mt-4 leading-7 text-[#94A3B8]">
+            <p className="mt-4 leading-7 text-[#D9D4CC]">
               When you submit a website request or book a call while logged in,
               it appears in your client dashboard automatically. If you submit
               while logged out, it will still reach Web District, but it will not
@@ -113,11 +113,11 @@ function ClientProfile() {
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C69A4E]" />
+      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
 
       <div className="min-w-0">
-        <p className="text-xs text-[#64748B]">{label}</p>
-        <p className="mt-1 break-words text-sm font-semibold text-[#CBD5E1]">
+        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="mt-1 break-words text-sm font-semibold text-[#D9D4CC]">
           {value || "—"}
         </p>
       </div>
@@ -128,7 +128,7 @@ function InfoRow({ icon: Icon, label, value }) {
 function QuickCard({ icon: Icon, title, description, to }) {
   return (
     <Card className="p-5">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
         <Icon size={20} />
       </div>
 
@@ -136,7 +136,7 @@ function QuickCard({ icon: Icon, title, description, to }) {
         {title}
       </h3>
 
-      <p className="mt-3 min-h-[72px] text-sm leading-6 text-[#94A3B8]">
+      <p className="mt-3 min-h-[72px] text-sm leading-6 text-[#D9D4CC]">
         {description}
       </p>
 

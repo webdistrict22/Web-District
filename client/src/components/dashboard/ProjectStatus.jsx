@@ -14,13 +14,13 @@ function ProjectStatus({ title, description, status = "Draft", steps = defaultSt
           <StatusBadge status={status} />
 
           {title && (
-            <h3 className="font-display mt-4 text-2xl font-bold tracking-[-0.04em] text-white">
+            <h3 className="font-display mt-4 text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
               {title}
             </h3>
           )}
 
           {description && (
-            <p className="mt-3 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
               {description}
             </p>
           )}
@@ -37,27 +37,27 @@ function ProjectStatus({ title, description, status = "Draft", steps = defaultSt
               key={step}
               className={`rounded-2xl border p-4 ${
                 isDone
-                  ? "border-[#C69A4E]/30 bg-[#C69A4E]/10"
+                  ? "border-[#C4A77D]/30 bg-[#C4A77D]/10"
                   : "border-white/10 bg-white/[0.025]"
               }`}
             >
               <div className="mb-3 flex items-center gap-2">
                 {isDone ? (
-                  <CheckCircle2 size={18} className="text-[#C69A4E]" />
+                  <CheckCircle2 size={18} className="text-[#C4A77D]" />
                 ) : (
-                  <CircleDashed size={18} className="text-[#64748B]" />
+                  <CircleDashed size={18} className="text-[#D9D4CC]" />
                 )}
 
                 <span
                   className={`text-sm font-semibold ${
-                    isCurrent ? "text-[#F1D08B]" : "text-[#CBD5E1]"
+                    isCurrent ? "text-[#F8F7F4]" : "text-[#D9D4CC]"
                   }`}
                 >
                   {step}
                 </span>
               </div>
 
-              <p className="text-xs leading-5 text-[#94A3B8]">
+              <p className="text-xs leading-5 text-[#D9D4CC]">
                 {isCurrent
                   ? "Current stage"
                   : isDone

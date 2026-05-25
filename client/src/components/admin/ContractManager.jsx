@@ -376,7 +376,7 @@ function ContractManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -384,7 +384,7 @@ function ContractManager() {
               Contracts and proposals
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Create proposals from website requests or call appointments, then
               track scope, timeline, pricing, deposit, client notes, and status.
             </p>
@@ -406,7 +406,7 @@ function ContractManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit contract" : "Create contract"}
             </p>
 
@@ -704,12 +704,12 @@ function AdminContractCard({
       <div className="mb-5 flex flex-wrap gap-3">
         <StatusBadge status={contract.status} />
 
-        <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+        <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
           {contract.websiteType}
         </span>
 
         {contract.clientNotes && (
-          <span className="rounded-full border border-[#22D3EE]/25 bg-[#22D3EE]/10 px-3 py-1 text-xs font-semibold text-[#A7F3FF]">
+          <span className="rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
             Has client note
           </span>
         )}
@@ -742,7 +742,7 @@ function AdminContractCard({
           type="button"
           onClick={() => onDelete(contract._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
@@ -833,8 +833,8 @@ function suggestFeatures(websiteType) {
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

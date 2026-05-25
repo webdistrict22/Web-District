@@ -18,9 +18,9 @@ function ProcessPreview() {
         <div className="grid gap-4 md:grid-cols-5">
           {processSteps.map((step, index) => (
             <Card key={step.title} className="p-5">
-              <p className="font-display text-sm text-[#C69A4E]">0{index + 1}</p>
+              <p className="font-display text-sm text-[#C4A77D]">0{index + 1}</p>
               <h3 className="font-display mt-4 text-xl font-bold">{step.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[#94A3B8]">{step.description}</p>
+              <p className="mt-3 text-sm leading-6 text-[#D9D4CC]">{step.description}</p>
             </Card>
           ))}
         </div>

@@ -18,11 +18,13 @@ function Button({
 
   const variants = {
     primary:
-      "wd-gold-gradient text-[#020817] shadow-[0_0_34px_rgba(198,154,78,0.18)] hover:-translate-y-0.5",
+      "wd-champagne-gradient text-[#080808] shadow-[0_14px_34px_rgba(168,135,79,0.20)] hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(184,148,88,0.26)]",
     secondary:
-      "border border-white/10 bg-white/[0.03] text-[#F5F8FC] hover:border-[#C69A4E]/45 hover:bg-white/[0.06]",
+      "border border-white/10 bg-white/[0.035] text-[#F8F7F4] hover:border-[#C4A77D]/55 hover:bg-white/[0.06] hover:text-[#C4A77D]",
+    secondaryLight:
+      "border border-[#080808]/15 bg-[#080808]/5 text-[#080808] hover:border-[#64131A]/35 hover:bg-[#64131A]/8",
     ghost:
-      "text-[#94A3B8] hover:text-[#F5F8FC]",
+      "text-[#D9D4CC] hover:text-[#C4A77D]",
   };
 
   const content = (
@@ -36,7 +38,7 @@ function Button({
 
   if (to && !disabled) {
     return (
-      <Link to={to} className={finalClass} {...props}>
+      <Link to={to} className={finalClass} onClick={onClick} {...props}>
         {content}
       </Link>
     );
@@ -44,7 +46,7 @@ function Button({
 
   if (href && !disabled) {
     return (
-      <a href={href} className={finalClass} {...props}>
+      <a href={href} className={finalClass} onClick={onClick} {...props}>
         {content}
       </a>
     );

@@ -1,15 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import {
   CalendarDays,
-  FileQuestion,
   FileText,
-  FolderKanban,
   Home,
   Layers,
   LogOut,
-  MessageSquare,
-  Settings,
-  Star,
   UsersRound,
 } from "lucide-react";
 import Container from "../common/Container";
@@ -19,46 +14,19 @@ const adminLinks = [
   { label: "Overview", path: "/admin", icon: Home },
   { label: "Requests", path: "/admin/requests", icon: FileText },
   { label: "Appointments", path: "/admin/appointments", icon: CalendarDays },
-  { label: "Slots", path: "/admin/slots", icon: Layers },
   { label: "Contracts", path: "/admin/contracts", icon: FileText },
-  { label: "Projects", path: "/admin/projects", icon: FolderKanban },
-  { label: "Reviews", path: "/admin/reviews", icon: Star },
-  { label: "FAQ", path: "/admin/faq", icon: FileQuestion },
-  { label: "Packages", path: "/admin/packages", icon: Layers },
   { label: "Clients", path: "/admin/clients", icon: UsersRound },
-  { label: "Settings", path: "/admin/settings", icon: Settings },
-  { label: "Messages", path: "/admin/messages", icon: MessageSquare },
+  { label: "Control", path: "/admin/control", icon: Layers },
 ];
 
 function AdminLayout() {
   const { user, logout } = useAuth();
 
   return (
-    <main className="min-h-screen bg-[#020817] pb-20 pt-28">
+    <main className="min-h-screen bg-[#080808] pb-20 pt-10 md:pt-14">
       <Container>
-        <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-sm text-[#F1D08B]">Admin dashboard</p>
-            <h1 className="font-display mt-1 text-3xl font-bold tracking-[-0.05em]">
-              Web District Control Center
-            </h1>
-            <p className="mt-2 text-sm text-[#94A3B8]">
-              Logged in as {user?.email}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F5F8FC] transition hover:border-red-400/40 hover:text-red-300"
-          >
-            <LogOut size={17} />
-            Logout
-          </button>
-        </div>
-
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit max-h-[calc(100vh-120px)] overflow-y-auto rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3 lg:sticky lg:top-24">
+          <aside className="h-fit max-h-[calc(100vh-80px)] overflow-y-auto rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-3 lg:sticky lg:top-8">
             <nav className="grid gap-2">
               {adminLinks.map((link) => {
                 const Icon = link.icon;
@@ -71,8 +39,8 @@ function AdminLayout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                         isActive
-                          ? "bg-[#C69A4E]/15 text-[#F1D08B]"
-                          : "text-[#94A3B8] hover:bg-white/[0.04] hover:text-white"
+                          ? "border border-[#C4A77D]/30 bg-[#C4A77D]/14 text-[#F8F7F4]"
+                          : "border border-transparent text-[#D9D4CC] hover:bg-white/[0.04] hover:text-[#C4A77D]"
                       }`
                     }
                   >
@@ -82,6 +50,39 @@ function AdminLayout() {
                 );
               })}
             </nav>
+
+            <div className="mt-4 rounded-[1.35rem] border border-[#C4A77D]/22 bg-[linear-gradient(135deg,rgba(196,167,125,0.12),rgba(100,19,26,0.10))] p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#C4A77D]">
+                Admin dashboard
+              </p>
+
+              <h1 className="font-display mt-2 text-2xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
+                Web District Control Center
+              </h1>
+
+              <p className="mt-2 break-words text-sm text-[#D9D4CC]">
+                {user?.email}
+              </p>
+
+              <div className="mt-4 grid gap-2">
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/50 hover:text-[#C4A77D]"
+                >
+                  <Home size={17} />
+                  Go home
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
+                >
+                  <LogOut size={17} />
+                  Logout
+                </button>
+              </div>
+            </div>
           </aside>
 
           <section>

@@ -18,8 +18,8 @@ function WhyWebDistrict() {
           <div className="grid gap-4 sm:grid-cols-2">
             {whyPoints.map((point) => (
               <Card key={point} className="flex items-center gap-3 p-5">
-                <CheckCircle2 size={20} className="text-[#C69A4E]" />
-                <p className="font-medium text-[#F5F8FC]">{point}</p>
+                <CheckCircle2 size={20} className="text-[#C4A77D]" />
+                <p className="font-medium text-[#F8F7F4]">{point}</p>
               </Card>
             ))}
           </div>

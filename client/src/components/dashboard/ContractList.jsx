@@ -120,24 +120,24 @@ function ContractList({
                 <div className="mb-4 flex flex-wrap gap-3">
                   <StatusBadge status={contract.status} />
 
-                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
                     {contract.websiteType}
                   </span>
 
-                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
                     {formatDate(contract.createdAt)}
                   </span>
                 </div>
 
-                <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+                <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
                   {contract.title}
                 </h3>
 
-                <p className="mt-2 text-sm text-[#94A3B8]">
+                <p className="mt-2 text-sm text-[#D9D4CC]">
                   {contract.businessName || contract.clientName}
                 </p>
 
-                <p className="mt-5 max-w-4xl leading-8 text-[#CBD5E1]">
+                <p className="mt-5 max-w-4xl leading-8 text-[#D9D4CC]">
                   {contract.scopeSummary}
                 </p>
               </div>
@@ -196,22 +196,22 @@ function ContractList({
             </div>
 
             {contract.paymentNotes && (
-              <div className="mt-5 rounded-2xl border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-4">
-                <p className="text-sm font-semibold text-[#F1D08B]">
+              <div className="mt-5 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
+                <p className="text-sm font-semibold text-[#F8F7F4]">
                   Payment notes
                 </p>
-                <p className="mt-2 leading-7 text-[#F1D08B]/85">
+                <p className="mt-2 leading-7 text-[#F8F7F4]/85">
                   {contract.paymentNotes}
                 </p>
               </div>
             )}
 
             {contract.clientNotes && (
-              <div className="mt-5 rounded-2xl border border-[#22D3EE]/15 bg-[#22D3EE]/5 p-4">
-                <p className="text-sm font-semibold text-[#A7F3FF]">
+              <div className="mt-5 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
+                <p className="text-sm font-semibold text-[#D9D4CC]">
                   Client note
                 </p>
-                <p className="mt-2 leading-7 text-[#A7F3FF]/85">
+                <p className="mt-2 leading-7 text-[#D9D4CC]/85">
                   {contract.clientNotes}
                 </p>
               </div>
@@ -293,10 +293,10 @@ function ContractList({
 function InfoItem({ icon: Icon, label, value }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C69A4E]" />
+      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
       <div>
-        <p className="text-xs text-[#64748B]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#CBD5E1]">
+        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
           {value || "—"}
         </p>
       </div>
@@ -308,20 +308,20 @@ function ListBlock({ icon: Icon, title, items = [] }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <div className="mb-3 flex items-center gap-2">
-        <Icon size={17} className="text-[#C69A4E]" />
-        <p className="text-sm font-semibold text-white">{title}</p>
+        <Icon size={17} className="text-[#C4A77D]" />
+        <p className="text-sm font-semibold text-[#F8F7F4]">{title}</p>
       </div>
 
       {items.length ? (
         <div className="grid gap-2">
           {items.map((item) => (
-            <p key={item} className="text-sm text-[#CBD5E1]">
+            <p key={item} className="text-sm text-[#D9D4CC]">
               • {item}
             </p>
           ))}
         </div>
       ) : (
-        <p className="text-sm text-[#94A3B8]">Not added yet.</p>
+        <p className="text-sm text-[#D9D4CC]">Not added yet.</p>
       )}
     </div>
   );

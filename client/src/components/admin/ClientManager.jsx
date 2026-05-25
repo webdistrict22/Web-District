@@ -142,7 +142,7 @@ function ClientManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -150,7 +150,7 @@ function ClientManager() {
               Clients
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               View client accounts and their linked website requests, call
               appointments, and reviews.
             </p>
@@ -243,7 +243,7 @@ function ClientCard({
   return (
     <Card
       className={`p-6 transition ${
-        isSelected ? "border-[#C69A4E]/50" : "hover:border-[#C69A4E]/25"
+        isSelected ? "border-[#C4A77D]/50" : "hover:border-[#C4A77D]/25"
       }`}
     >
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
@@ -252,23 +252,23 @@ function ClientCard({
             <span
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
                 client.isActive
-                  ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-                  : "border-red-300/25 bg-red-300/10 text-red-200"
+                  ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+                  : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
               }`}
             >
               {client.isActive ? "Active" : "Disabled"}
             </span>
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               Joined {formatDate(client.createdAt)}
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {client.name}
           </h3>
 
-          <p className="mt-1 text-sm text-[#94A3B8]">
+          <p className="mt-1 text-sm text-[#D9D4CC]">
             {client.businessName || "No business name added"}
           </p>
         </div>
@@ -317,7 +317,7 @@ function ClientDetailsPanel({ data, isLoading }) {
   if (!data) {
     return (
       <Card className="sticky top-24 h-fit p-6">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
           <UserRound size={24} />
         </div>
 
@@ -325,7 +325,7 @@ function ClientDetailsPanel({ data, isLoading }) {
           Select a client
         </h3>
 
-        <p className="mt-3 leading-7 text-[#94A3B8]">
+        <p className="mt-3 leading-7 text-[#D9D4CC]">
           Click Details on any client account to view linked requests,
           appointments, and reviews.
         </p>
@@ -342,23 +342,23 @@ function ClientDetailsPanel({ data, isLoading }) {
           <span
             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
               client.isActive
-                ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-                : "border-red-300/25 bg-red-300/10 text-red-200"
+                ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+                : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
             }`}
           >
             {client.isActive ? "Active" : "Disabled"}
           </span>
 
-          <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+          <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
             Client account
           </span>
         </div>
 
-        <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+        <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
           {client.name}
         </h3>
 
-        <p className="mt-2 text-[#94A3B8]">
+        <p className="mt-2 text-[#D9D4CC]">
           {client.businessName || "No business name added"}
         </p>
 
@@ -428,7 +428,7 @@ function ActivityBlock({ title, icon: Icon, items, renderItem, emptyText }) {
   return (
     <Card className="p-6">
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#C69A4E]/25 bg-[#C69A4E]/10 text-[#F1D08B]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
           <Icon size={18} />
         </div>
 
@@ -441,7 +441,7 @@ function ActivityBlock({ title, icon: Icon, items, renderItem, emptyText }) {
         {items?.length ? (
           items.map(renderItem)
         ) : (
-          <p className="text-sm text-[#94A3B8]">{emptyText}</p>
+          <p className="text-sm text-[#D9D4CC]">{emptyText}</p>
         )}
       </div>
     </Card>
@@ -453,11 +453,11 @@ function ActivityItem({ title, subtitle, date, status }) {
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <StatusBadge status={status} />
-        <span className="text-xs text-[#64748B]">{formatDate(date)}</span>
+        <span className="text-xs text-[#D9D4CC]">{formatDate(date)}</span>
       </div>
 
-      <p className="font-semibold text-white">{title}</p>
-      <p className="mt-1 line-clamp-2 text-sm text-[#94A3B8]">{subtitle}</p>
+      <p className="font-semibold text-[#F8F7F4]">{title}</p>
+      <p className="mt-1 line-clamp-2 text-sm text-[#D9D4CC]">{subtitle}</p>
     </div>
   );
 }
@@ -465,10 +465,10 @@ function ActivityItem({ title, subtitle, date, status }) {
 function InfoItem({ icon: Icon, label, value }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C69A4E]" />
+      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
       <div className="min-w-0">
-        <p className="text-xs text-[#64748B]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#CBD5E1]">
+        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
           {value || "—"}
         </p>
       </div>
@@ -479,8 +479,8 @@ function InfoItem({ icon: Icon, label, value }) {
 function MiniStat({ label, value }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#64748B]">{label}</p>
-      <p className="font-display mt-1 text-2xl font-bold text-white">{value}</p>
+      <p className="text-xs text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-1 text-2xl font-bold text-[#F8F7F4]">{value}</p>
     </div>
   );
 }
@@ -488,8 +488,8 @@ function MiniStat({ label, value }) {
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

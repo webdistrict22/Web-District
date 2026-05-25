@@ -55,18 +55,24 @@ function Signup() {
   };
 
   return (
-    <main className="pb-20 pt-32">
-      <Container>
+    <main className="bg-[#080808]">
+      <section className="wd-section-black pt-32 pb-10">
+        <Container>
         <div className="mx-auto max-w-2xl">
           <SectionHeader
             eyebrow="Signup"
             title="Create your client account."
             description="Use your account later to track requests, appointments, contracts, and project updates."
             center
-            className="mb-10"
           />
+        </div>
+        </Container>
+      </section>
 
-          <Card className="p-6 md:p-8">
+      <section className="wd-section-black py-12 md:pb-20">
+        <Container>
+        <div className="mx-auto max-w-2xl">
+          <Card className="wd-card-on-black p-6 md:p-8">
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid gap-5 md:grid-cols-2">
                 <Input
@@ -112,15 +118,16 @@ function Signup() {
               </Button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#94A3B8]">
+            <p className="mt-6 text-center text-sm text-[#D9D4CC]">
               Already have an account?{" "}
-              <Link to="/login" className="font-semibold text-[#F1D08B]">
+              <Link to="/login" className="font-semibold text-[#F8F7F4]">
                 Login
               </Link>
             </p>
           </Card>
         </div>
-      </Container>
+        </Container>
+      </section>
     </main>
   );
 }

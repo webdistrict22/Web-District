@@ -45,7 +45,7 @@ function ClientProjectStatus() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Client portal
             </p>
 
@@ -53,7 +53,7 @@ function ClientProjectStatus() {
               Project status
             </h2>
 
-            <p className="mt-4 max-w-2xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
               Track the progress of proposals and active projects from contract
               status.
             </p>
@@ -95,16 +95,16 @@ function ProjectStatusCard({ contract }) {
           <div className="mb-4 flex flex-wrap gap-3">
             <StatusBadge status={contract.status} />
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               {contract.websiteType}
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {contract.title}
           </h3>
 
-          <p className="mt-3 max-w-3xl leading-7 text-[#94A3B8]">
+          <p className="mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
             {contract.scopeSummary}
           </p>
         </div>
@@ -120,27 +120,27 @@ function ProjectStatusCard({ contract }) {
               key={step}
               className={`rounded-2xl border p-4 ${
                 isDone
-                  ? "border-[#C69A4E]/30 bg-[#C69A4E]/10"
+                  ? "border-[#C4A77D]/30 bg-[#C4A77D]/10"
                   : "border-white/10 bg-white/[0.025]"
               }`}
             >
               <div className="mb-3 flex items-center gap-2">
                 {isDone ? (
-                  <CheckCircle2 size={18} className="text-[#C69A4E]" />
+                  <CheckCircle2 size={18} className="text-[#C4A77D]" />
                 ) : (
-                  <CircleDashed size={18} className="text-[#64748B]" />
+                  <CircleDashed size={18} className="text-[#D9D4CC]" />
                 )}
 
                 <span
                   className={`text-sm font-semibold ${
-                    isCurrent ? "text-[#F1D08B]" : "text-[#CBD5E1]"
+                    isCurrent ? "text-[#F8F7F4]" : "text-[#D9D4CC]"
                   }`}
                 >
                   {step}
                 </span>
               </div>
 
-              <p className="text-xs leading-5 text-[#94A3B8]">
+              <p className="text-xs leading-5 text-[#D9D4CC]">
                 {isCurrent ? "Current stage" : isDone ? "Completed stage" : "Upcoming stage"}
               </p>
             </div>

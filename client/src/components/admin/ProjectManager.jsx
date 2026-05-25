@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, Plus, Star, Trash2 } from "lucide-react";
+import { Eye, EyeOff, ImagePlus, Plus, Star, Trash2, X } from "lucide-react";
 import api from "../../lib/axios";
 import Card from "../common/Card";
 import Button from "../common/Button";
@@ -46,6 +46,7 @@ function ProjectManager() {
   const [visibilityFilter, setVisibilityFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [deletingId, setDeletingId] = useState("");
 
   const updateField = (field, value) => {
@@ -255,12 +256,64 @@ function ProjectManager() {
     }
   };
 
+  const handleProjectImageUpload = async (event) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+
+    if (!files.length) return;
+
+    try {
+      setIsUploadingImage(true);
+
+      const uploadedUrls = [];
+
+      for (const file of files) {
+        const uploadData = new FormData();
+        uploadData.append("image", file);
+
+        const { data } = await api.post("/uploads/project-image", uploadData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        uploadedUrls.push(data.imageUrl);
+      }
+
+      updateField(
+        "imagesText",
+        [...textToArray(form.imagesText), ...uploadedUrls].join("\n")
+      );
+
+      toast.success(
+        uploadedUrls.length === 1
+          ? "Image uploaded successfully."
+          : `${uploadedUrls.length} images uploaded successfully.`
+      );
+    } catch (error) {
+      toast.error(error.message || "Failed to upload image.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleRemoveImage = (imageIndex) => {
+    updateField(
+      "imagesText",
+      textToArray(form.imagesText)
+        .filter((_, index) => index !== imageIndex)
+        .join("\n")
+    );
+  };
+
+  const imageUrls = textToArray(form.imagesText);
+
   return (
     <div className="grid gap-5">
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -268,7 +321,7 @@ function ProjectManager() {
               Projects / selected work
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Manage the selected projects shown on the website. Keep the public
               wording focused on “Some of our work” so Web District feels broad
               and flexible.
@@ -291,7 +344,7 @@ function ProjectManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit project" : "Create project"}
             </p>
             <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
@@ -376,13 +429,77 @@ function ProjectManager() {
               rows={5}
             />
 
-            <Textarea
-              label="Image URLs"
-              placeholder={"Optional for now. Write one image URL per line.\nLater we can add Cloudinary uploads."}
-              value={form.imagesText}
-              onChange={(e) => updateField("imagesText", e.target.value)}
-              rows={5}
-            />
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                <div>
+                  <p className="text-sm font-medium text-[#D9D4CC]">
+                    Project images
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[#D9D4CC]">
+                    Upload images through backend Cloudinary upload.
+                  </p>
+                </div>
+
+                <label
+                  htmlFor="project-image-upload"
+                  className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/50 ${
+                    isUploadingImage ? "pointer-events-none opacity-60" : ""
+                  }`}
+                >
+                  <ImagePlus size={17} />
+                  {isUploadingImage ? "Uploading..." : "Upload image"}
+                </label>
+
+                <input
+                  id="project-image-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleProjectImageUpload}
+                  disabled={isUploadingImage}
+                />
+              </div>
+
+              <p className="mt-4 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4 text-sm leading-6 text-[#F8F7F4]">
+                Uses CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and
+                CLOUDINARY_API_SECRET from the backend environment.
+              </p>
+
+              <div className="mt-5 grid gap-3">
+                {imageUrls.length ? (
+                  imageUrls.map((url, index) => (
+                    <div
+                      key={`${url}-${index}`}
+                      className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3 sm:grid-cols-[96px_1fr_auto] sm:items-center"
+                    >
+                      <img
+                        src={url}
+                        alt=""
+                        className="h-20 w-full rounded-xl border border-white/10 object-cover sm:w-24"
+                      />
+
+                      <p className="break-all text-xs leading-5 text-[#D9D4CC]">
+                        {url}
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
+                        aria-label="Remove image"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 text-sm text-[#D9D4CC]">
+                    No images uploaded yet.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
@@ -513,11 +630,11 @@ function AdminProjectCard({
 }) {
   return (
     <Card className="overflow-hidden">
-      <div className="h-52 border-b border-white/10 bg-[radial-gradient(circle_at_70%_20%,rgba(198,154,78,0.20),transparent_30%),linear-gradient(135deg,#0A1A2D,#020817)] p-5">
+      <div className="h-52 border-b border-white/10 bg-[radial-gradient(circle_at_70%_20%,rgba(196,167,125,0.20),transparent_30%),linear-gradient(135deg,#080808,#0B0B0B)] p-5">
         <div className="flex h-full items-end rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-5">
           <div>
-            <p className="text-sm text-[#94A3B8]">{project.websiteType}</p>
-            <h3 className="font-display mt-2 text-3xl font-bold tracking-[-0.06em] text-white">
+            <p className="text-sm text-[#D9D4CC]">{project.websiteType}</p>
+            <h3 className="font-display mt-2 text-3xl font-bold tracking-[-0.06em] text-[#F8F7F4]">
               {project.title}
             </h3>
           </div>
@@ -531,26 +648,26 @@ function AdminProjectCard({
           <span
             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
               project.isVisible
-                ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-                : "border-red-300/25 bg-red-300/10 text-red-200"
+                ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+                : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
             }`}
           >
             {project.isVisible ? "Visible" : "Hidden"}
           </span>
 
           {project.isFeatured && (
-            <span className="inline-flex rounded-full border border-[#C69A4E]/25 bg-[#C69A4E]/10 px-3 py-1 text-xs font-semibold text-[#F1D08B]">
+            <span className="inline-flex rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#F8F7F4]">
               Featured
             </span>
           )}
         </div>
 
-        <p className="leading-7 text-[#94A3B8]">{project.shortDescription}</p>
+        <p className="leading-7 text-[#D9D4CC]">{project.shortDescription}</p>
 
         {project.businessType && (
           <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-            <p className="text-xs text-[#64748B]">Business type</p>
-            <p className="mt-1 font-semibold text-[#CBD5E1]">
+            <p className="text-xs text-[#D9D4CC]">Business type</p>
+            <p className="mt-1 font-semibold text-[#D9D4CC]">
               {project.businessType}
             </p>
           </div>
@@ -558,12 +675,12 @@ function AdminProjectCard({
 
         {project.keyFeatures?.length > 0 && (
           <div className="mt-5">
-            <p className="mb-3 text-sm font-semibold text-white">
+            <p className="mb-3 text-sm font-semibold text-[#F8F7F4]">
               Key features
             </p>
             <div className="grid gap-2">
               {project.keyFeatures.slice(0, 5).map((feature) => (
-                <p key={feature} className="text-sm text-[#CBD5E1]">
+                <p key={feature} className="text-sm text-[#D9D4CC]">
                   • {feature}
                 </p>
               ))}
@@ -600,7 +717,7 @@ function AdminProjectCard({
             type="button"
             onClick={() => onDelete(project._id)}
             disabled={isDeleting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Trash2 size={17} />
             {isDeleting ? "Deleting..." : "Delete"}
@@ -614,8 +731,8 @@ function AdminProjectCard({
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

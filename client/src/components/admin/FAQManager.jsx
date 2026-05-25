@@ -180,7 +180,7 @@ function FAQManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -188,7 +188,7 @@ function FAQManager() {
               FAQ management
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Add and manage questions that help clients understand the Web
               District process before they submit a request.
             </p>
@@ -210,7 +210,7 @@ function FAQManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit FAQ" : "Create FAQ"}
             </p>
             <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
@@ -338,27 +338,27 @@ function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
             <span
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
                 faq.isVisible
-                  ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-                  : "border-red-300/25 bg-red-300/10 text-red-200"
+                  ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+                  : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
               }`}
             >
               {faq.isVisible ? "Visible" : "Hidden"}
             </span>
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               {faq.category}
             </span>
 
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#94A3B8]">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               Order {faq.order}
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {faq.question}
           </h3>
 
-          <p className="mt-4 max-w-4xl leading-8 text-[#94A3B8]">
+          <p className="mt-4 max-w-4xl leading-8 text-[#D9D4CC]">
             {faq.answer}
           </p>
         </div>
@@ -382,7 +382,7 @@ function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
             type="button"
             onClick={() => onDelete(faq._id)}
             disabled={isDeleting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Trash2 size={17} />
             {isDeleting ? "Deleting..." : "Delete"}
@@ -396,8 +396,8 @@ function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

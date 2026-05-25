@@ -10,18 +10,19 @@ function Contact() {
   const { settings } = useSettings();
 
   return (
-    <main className="pb-20 pt-32">
-      <Container>
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+    <main className="bg-[#080808]">
+      <section className="wd-section-black pt-32 pb-14 md:pb-16">
+        <Container>
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <SectionHeader
               eyebrow="Contact"
-              title="Tell us what you need and we’ll guide you."
-              description="Start with a message, WhatsApp, Instagram, or email. If you already know what website you need, the Start page is the fastest way to submit your request."
+              title="Tell us what you need."
+              description="Message us directly, or use the Start page if you already know the website direction."
             />
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button to="/start">Start a request</Button>
+              <Button to="/start">Start Your Project</Button>
 
               <Button
                 href={getWhatsappLink(
@@ -29,25 +30,32 @@ function Contact() {
                   "Hi Web District, I want to ask about building a website."
                 )}
                 variant="secondary"
+                target="_blank"
+                rel="noreferrer"
               >
-                WhatsApp us
+                WhatsApp
               </Button>
-            </div>
-
-            <div className="mt-10 rounded-[1.6rem] border border-[#C69A4E]/20 bg-[#C69A4E]/8 p-5">
-              <p className="text-sm leading-7 text-[#F1D08B]">
-                For the clearest start, include your business name, website type, deadline if any, and whether you already have content or branding.
-              </p>
             </div>
           </div>
 
-          <ContactForm />
+          <div className="rounded-[1.6rem] border border-[#C4A77D]/20 bg-[#0B0B0B] p-5">
+            <p className="text-sm leading-7 text-[#F8F7F4]">
+              For a faster reply, include your business name, website type,
+              and deadline if you have one.
+            </p>
+          </div>
         </div>
+        </Container>
+      </section>
 
-        <div className="mt-14">
-          <ContactCards />
-        </div>
-      </Container>
+      <section className="wd-section-black py-16 md:pb-20">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <ContactForm className="wd-card-on-black" />
+            <ContactCards cardClassName="wd-card-on-black" />
+          </div>
+        </Container>
+      </section>
     </main>
   );
 }

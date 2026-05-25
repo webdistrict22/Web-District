@@ -22,7 +22,7 @@ const initialForm = {
   preferredContactMethod: "WhatsApp",
 };
 
-function WebsiteRequestForm() {
+function WebsiteRequestForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
 
   const [form, setForm] = useState(() => ({
@@ -78,17 +78,17 @@ function WebsiteRequestForm() {
   };
 
   return (
-    <Card className="p-6 md:p-8">
+    <Card className={`p-6 md:p-8 ${className}`}>
       <div className="mb-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
           Website request
         </p>
         <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
           Tell us what you need.
         </h2>
-        <p className="mt-3 max-w-2xl leading-7 text-[#94A3B8]">
-          Share your business details and the website direction you need. Web
-          District will review it and guide you to the next step.
+        <p className="mt-3 max-w-2xl leading-7 text-[#D9D4CC]">
+          Share the business, goal, and website direction. We'll review it
+          and contact you with the next step.
         </p>
       </div>
 
@@ -184,7 +184,7 @@ function WebsiteRequestForm() {
 
         <Textarea
           label="Project details *"
-          placeholder="Tell us about your business, website goal, pages, features, and anything important."
+          placeholder="Tell us about your business, website goal, key pages, and important features."
           value={form.projectDetails}
           onChange={(e) => updateField("projectDetails", e.target.value)}
         />

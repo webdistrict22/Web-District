@@ -249,7 +249,7 @@ function PackageManager() {
       <Card className="p-6 md:p-8">
         <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               Admin dashboard
             </p>
 
@@ -257,7 +257,7 @@ function PackageManager() {
               Packages and website options
             </h2>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#94A3B8]">
+            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
               Manage the website directions shown on the site. Keep them clear,
               premium, and flexible instead of making Web District feel limited.
             </p>
@@ -279,7 +279,7 @@ function PackageManager() {
       <Card className="p-6 md:p-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C69A4E]">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit option" : "Create option"}
             </p>
             <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
@@ -476,47 +476,47 @@ function PackageCard({
         <span
           className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
             packageItem.isVisible
-              ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-200"
-              : "border-red-300/25 bg-red-300/10 text-red-200"
+              ? "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]"
+              : "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
           }`}
         >
           {packageItem.isVisible ? "Visible" : "Hidden"}
         </span>
 
         {packageItem.isFeatured && (
-          <span className="inline-flex rounded-full border border-[#C69A4E]/25 bg-[#C69A4E]/10 px-3 py-1 text-xs font-semibold text-[#F1D08B]">
+          <span className="inline-flex rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#F8F7F4]">
             Featured
           </span>
         )}
 
         {packageItem.isCustom && (
-          <span className="inline-flex rounded-full border border-[#22D3EE]/25 bg-[#22D3EE]/10 px-3 py-1 text-xs font-semibold text-[#A7F3FF]">
+          <span className="inline-flex rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
             Custom
           </span>
         )}
       </div>
 
-      <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-white">
+      <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
         {packageItem.name}
       </h3>
 
-      <p className="mt-4 leading-7 text-[#94A3B8]">
+      <p className="mt-4 leading-7 text-[#D9D4CC]">
         {packageItem.shortDescription}
       </p>
 
       <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-        <p className="text-xs text-[#64748B]">Price label</p>
-        <p className="mt-1 font-semibold text-[#F1D08B]">
+        <p className="text-xs text-[#D9D4CC]">Price label</p>
+        <p className="mt-1 font-semibold text-[#F8F7F4]">
           {packageItem.priceLabel || "Custom quote"}
         </p>
       </div>
 
       {packageItem.features?.length > 0 && (
         <div className="mt-5">
-          <p className="mb-3 text-sm font-semibold text-white">Features</p>
+          <p className="mb-3 text-sm font-semibold text-[#F8F7F4]">Features</p>
           <div className="grid gap-2">
             {packageItem.features.slice(0, 5).map((feature) => (
-              <p key={feature} className="text-sm text-[#CBD5E1]">
+              <p key={feature} className="text-sm text-[#D9D4CC]">
                 • {feature}
               </p>
             ))}
@@ -553,21 +553,21 @@ function PackageCard({
           type="button"
           onClick={() => onDelete(packageItem._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-400/10 px-5 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
         </button>
       </div>
-    </Card>
+    </Card> 
   );
 }
 
 function StatCard({ label, value }) {
   return (
     <Card className="p-5">
-      <p className="text-sm text-[#94A3B8]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-white">
+      <p className="text-sm text-[#D9D4CC]">{label}</p>
+      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
         {value}
       </p>
     </Card>

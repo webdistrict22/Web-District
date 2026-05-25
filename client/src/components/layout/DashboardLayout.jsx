@@ -25,11 +25,11 @@ function DashboardLayout() {
   const { user, logout } = useAuth();
 
   return (
-    <main className="min-h-screen bg-[#020817] pb-20 pt-28">
+    <main className="min-h-screen bg-[#080808] pb-20 pt-28">
       <Container>
-        <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5 md:flex-row md:items-center">
+        <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">
           <div>
-            <p className="text-sm text-[#94A3B8]">Client portal</p>
+            <p className="text-sm text-[#D9D4CC]">Client portal</p>
             <h1 className="font-display mt-1 text-3xl font-bold tracking-[-0.05em]">
               Welcome, {user?.name}
             </h1>
@@ -38,7 +38,7 @@ function DashboardLayout() {
           <button
             type="button"
             onClick={logout}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F5F8FC] transition hover:border-red-400/40 hover:text-red-300"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
           >
             <LogOut size={17} />
             Logout
@@ -46,7 +46,7 @@ function DashboardLayout() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-[#0A1A2D]/70 p-3 lg:sticky lg:top-24">
+          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-3 lg:sticky lg:top-24">
             <nav className="grid gap-2">
               {clientLinks.map((link) => {
                 const Icon = link.icon;
@@ -59,8 +59,8 @@ function DashboardLayout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                         isActive
-                          ? "bg-[#C69A4E]/15 text-[#F1D08B]"
-                          : "text-[#94A3B8] hover:bg-white/[0.04] hover:text-white"
+                          ? "border border-[#C4A77D]/30 bg-[#C4A77D]/14 text-[#F8F7F4]"
+                          : "border border-transparent text-[#D9D4CC] hover:bg-white/[0.04] hover:text-[#C4A77D]"
                       }`
                     }
                   >

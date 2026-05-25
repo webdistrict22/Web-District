@@ -11,26 +11,26 @@ export const services = [
   {
     title: "Online Stores",
     description:
-      "Clean e-commerce websites for brands that need product pages, cart, checkout, offers, and a serious buying experience.",
-    points: ["Product pages", "Cart & checkout", "Order flow", "Admin-ready structure"],
+      "Product websites built to make browsing and buying feel clear.",
+    points: ["Product pages", "Cart direction", "Mobile checkout"],
   },
   {
     title: "Business Websites",
     description:
-      "Professional websites for companies, factories, service providers, and businesses that need trust and leads.",
-    points: ["Company pages", "Service sections", "Lead forms", "Clear business structure"],
+      "Professional websites that explain the business fast.",
+    points: ["Clear pages", "Lead forms", "Trust sections"],
   },
   {
     title: "Landing Pages",
     description:
-      "Focused pages for campaigns, launches, ads, offers, and lead capture without overcomplicating the experience.",
-    points: ["Campaign structure", "Strong CTA", "Fast loading", "Mobile-first layout"],
+      "Focused pages for launches, offers, ads, and lead capture.",
+    points: ["Sharp message", "Strong CTA", "Fast mobile flow"],
   },
   {
     title: "Custom Websites",
     description:
-      "Custom web systems and experiences built around your exact business process, not a generic template.",
-    points: ["Custom logic", "Dashboards", "Booking flows", "Client portals"],
+      "Tailored web builds for workflows that need more than pages.",
+    points: ["Custom logic", "Dashboards", "Booking flows"],
   },
 ];
 
@@ -46,7 +46,7 @@ export const featuredProjects = [
     name: "S8 Factory",
     type: "Business Website",
     description:
-      "A bold business website for a clothing factory, designed to present the factory, showcase partners, and guide visitors to production requests.",
+      "A bold business website for a clothing factory with a direct path to start.",
     tags: ["Business Website", "Factory", "Appointments"],
   },
 ];

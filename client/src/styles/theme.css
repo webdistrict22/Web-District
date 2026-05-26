@@ -1,15 +1,18 @@
 :root {
-  --wd-soft-white: #F8F7F4;
-  --wd-stone: #D9D4CC;
-  --wd-graphite: #202020;
+  color-scheme: dark;
+  background-color: #0B0B0A;
+  color: #F3EEE4;
+  --wd-soft-white: #F3EEE4;
+  --wd-stone: #D6CFC2;
+  --wd-graphite: #1B1B19;
   --wd-champagne: #C4A77D;
   --wd-oxblood: #64131A;
 
-  --wd-bg: #080808;
+  --wd-bg: #0B0B0A;
   --wd-surface: rgba(248,247,244,0.06);
   --wd-surface-strong: rgba(248,247,244,0.10);
-  --wd-text: #F8F7F4;
-  --wd-muted: #D9D4CC;
+  --wd-text: #F3EEE4;
+  --wd-muted: #D6CFC2;
   --wd-border: rgba(248,247,244,0.14);
   --wd-border-light: rgba(32,32,32,0.14);
   --wd-accent: #C4A77D;

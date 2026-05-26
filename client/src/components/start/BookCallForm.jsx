@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -19,6 +20,7 @@ const initialForm = {
 
 function BookCallForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
@@ -93,7 +95,8 @@ function BookCallForm({ className = "" }) {
       });
 
       setSelectedSlot("");
-      fetchSlots();
+
+      navigate("/success?type=call");
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to book appointment."

@@ -14,7 +14,7 @@ function Start() {
 
   return (
     <main className="bg-[#080808]">
-      <section className="wd-section-black pt-32 pb-12">
+      <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <SectionHeader
           eyebrow="Start"
@@ -24,7 +24,7 @@ function Start() {
         </Container>
       </section>
 
-      <section className="wd-section-black py-16 md:pb-20">
+      <section className="wd-section-black pt-6 pb-16 md:pt-8 md:pb-20">
         <Container>
         {isAuthenticated && (
           <Card className="wd-card-on-black mb-8 border-[#C4A77D]/25 p-5">

@@ -2,11 +2,21 @@ const Contract = require("../models/Contract");
 const WebsiteRequest = require("../models/WebsiteRequest");
 const Appointment = require("../models/Appointment");
 const asyncHandler = require("../middleware/asyncHandler");
-const { notifyContractAccepted } = require("../utils/notificationService");
+const {
+  notifyContractAccepted,
+  notifyContractClientNote,
+  sendContractAcceptedToClient,
+  sendContractStatusToClient,
+  sendContractToClient,
+} = require("../utils/notificationService");
 
 const textArray = (value) => {
   if (Array.isArray(value)) return value;
   return [];
+};
+
+const shouldNotifyClientAboutContract = (contract) => {
+  return Boolean(contract.clientEmail && contract.status !== "Draft");
 };
 
 const createContract = asyncHandler(async (req, res) => {
@@ -65,6 +75,12 @@ const createContract = asyncHandler(async (req, res) => {
     adminNotes,
     clientNotes,
   });
+
+  if (shouldNotifyClientAboutContract(contract)) {
+    sendContractToClient(contract).catch((error) => {
+      console.error("Contract client email failed:", error.message);
+    });
+  }
 
   res.status(201).json({
     success: true,
@@ -128,6 +144,12 @@ const createContractFromRequest = asyncHandler(async (req, res) => {
 
   request.status = "Contract Sent";
   await request.save();
+
+  if (shouldNotifyClientAboutContract(contract)) {
+    sendContractToClient(contract).catch((error) => {
+      console.error("Contract client email failed:", error.message);
+    });
+  }
 
   res.status(201).json({
     success: true,
@@ -196,6 +218,12 @@ const createContractFromAppointment = asyncHandler(async (req, res) => {
 
   appointment.status = "Accepted";
   await appointment.save();
+
+  if (shouldNotifyClientAboutContract(contract)) {
+    sendContractToClient(contract).catch((error) => {
+      console.error("Contract client email failed:", error.message);
+    });
+  }
 
   res.status(201).json({
     success: true,
@@ -284,6 +312,8 @@ const updateContract = asyncHandler(async (req, res) => {
     throw new Error("Contract not found");
   }
 
+  const previousStatus = contract.status;
+
   const fields = [
     "client",
     "request",
@@ -321,6 +351,21 @@ const updateContract = asyncHandler(async (req, res) => {
   }
 
   const updatedContract = await contract.save();
+
+  if (
+    req.body.status !== undefined &&
+    updatedContract.status !== previousStatus &&
+    shouldNotifyClientAboutContract(updatedContract)
+  ) {
+    const notifier =
+      previousStatus === "Draft" && updatedContract.status === "Sent"
+        ? sendContractToClient
+        : sendContractStatusToClient;
+
+    notifier(updatedContract).catch((error) => {
+      console.error("Contract status email failed:", error.message);
+    });
+  }
 
   res.json({
     success: true,
@@ -361,6 +406,10 @@ const acceptContract = asyncHandler(async (req, res) => {
     console.error("Contract accepted email notification failed:", error.message);
   });
 
+  sendContractAcceptedToClient(updatedContract).catch((error) => {
+    console.error("Contract accepted client email failed:", error.message);
+  });
+
   res.json({
     success: true,
     message: "Contract accepted successfully",
@@ -386,6 +435,10 @@ const updateClientContractNote = asyncHandler(async (req, res) => {
   contract.clientNotes = clientNotes || "";
 
   const updatedContract = await contract.save();
+
+  notifyContractClientNote(updatedContract).catch((error) => {
+    console.error("Contract client note email failed:", error.message);
+  });
 
   res.json({
     success: true,

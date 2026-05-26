@@ -10,6 +10,7 @@ import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import Badge from "../common/Badge";
+import { confirmAction } from "../../lib/alerts";
 
 const initialForm = {
   title: "",
@@ -235,9 +236,11 @@ function ProjectManager() {
   };
 
   const handleDelete = async (projectId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete project?",
+      message: "This will permanently remove this selected work project.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

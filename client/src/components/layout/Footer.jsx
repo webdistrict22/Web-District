@@ -64,13 +64,6 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col justify-between gap-4 border-t border-white/10 pt-6 text-sm text-[#D9D4CC] md:flex-row">
-          <p>
-            Copyright {new Date().getFullYear()} {settings.agencyName || "Web District"}.
-            All rights reserved.
-          </p>
-          <p>Websites that make your business look serious.</p>
-        </div>
       </div>
     </footer>
   );

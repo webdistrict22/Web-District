@@ -8,7 +8,7 @@ function Home() {
   return (
     <>
       <PageMeta
-        title="Premium Web Studio"
+        title="Strategic Web Agency"
         description="Web District builds clean, professional websites for brands, businesses, campaigns, and custom digital needs."
       />
 

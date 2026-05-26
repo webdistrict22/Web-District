@@ -20,6 +20,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
+import { confirmAction } from "../../lib/alerts";
 
 const appointmentStatuses = ["Pending", "Accepted", "Cancelled", "Rescheduled", "Done"];
 
@@ -152,9 +153,12 @@ function AppointmentManager() {
   };
 
   const handleDeleteAppointment = async (appointmentId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this appointment? The call slot will become available again."
-    );
+    const confirmed = await confirmAction({
+      title: "Delete appointment?",
+      message:
+        "This will delete the appointment and make the call slot available again.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

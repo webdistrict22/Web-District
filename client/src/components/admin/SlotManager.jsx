@@ -9,6 +9,7 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import { confirmAction } from "../../lib/alerts";
 
 const initialForm = {
   date: "",
@@ -143,9 +144,11 @@ function SlotManager() {
   };
 
   const handleDelete = async (slotId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this call slot?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete call slot?",
+      message: "This will permanently remove this available call slot.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

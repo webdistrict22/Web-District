@@ -30,18 +30,20 @@ function ReviewsPreview() {
   const displayReviews = useMemo(() => reviews.slice(0, 3), [reviews]);
 
   return (
-    <section className="wd-section-black pt-8 pb-20 md:pt-10 md:pb-24">
+    <section className="wd-section-black pt-0 pb-20 md:pt-2 md:pb-24">
       <Container>
-        <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <SectionHeader
-            eyebrow="Reviews"
-            title="Latest client words."
-            description="The newest approved reviews from clients who worked with Web District."
-          />
-
-          <Button to="/start" variant="secondary">
+        <div className="mb-8 flex justify-center">
+          <Button to="/start" className="w-full md:w-[360px] lg:w-[420px]">
             Start Your Project
           </Button>
+        </div>
+
+        <div className="mb-10">
+          <SectionHeader
+            eyebrow="Reviews"
+            title="Our clients words."
+            description="A word from clients who worked with Web District."
+          />
         </div>
 
         {isLoading ? (

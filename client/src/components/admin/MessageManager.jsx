@@ -18,6 +18,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
+import { confirmAction } from "../../lib/alerts";
 
 const messageStatuses = ["New", "Read", "Replied", "Archived"];
 
@@ -150,9 +151,11 @@ function MessageManager() {
   };
 
   const handleDeleteMessage = async (messageId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this contact message?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete contact message?",
+      message: "This will permanently remove this contact message.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

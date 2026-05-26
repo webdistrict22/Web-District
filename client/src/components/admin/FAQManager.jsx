@@ -9,6 +9,7 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import { confirmAction } from "../../lib/alerts";
 
 const initialForm = {
   question: "",
@@ -154,9 +155,11 @@ function FAQManager() {
   };
 
   const handleDelete = async (faqId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this FAQ?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete FAQ?",
+      message: "This will permanently remove this question and answer.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

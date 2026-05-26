@@ -5,6 +5,7 @@ const asyncHandler = require("../middleware/asyncHandler");
 const {
   notifyNewAppointment,
   sendAppointmentConfirmationToClient,
+  sendAppointmentStatusToClient,
 } = require("../utils/notificationService");
 
 // @desc    Create appointment
@@ -150,6 +151,8 @@ const getAppointmentById = asyncHandler(async (req, res) => {
     throw new Error("Appointment not found");
   }
 
+  const previousStatus = appointment.status;
+
   res.json({
     success: true,
     appointment,
@@ -189,6 +192,15 @@ const updateAppointment = asyncHandler(async (req, res) => {
   const populatedAppointment = await Appointment.findById(updatedAppointment._id)
     .populate("slot")
     .populate("client", "name email phone businessName");
+
+  if (
+    req.body.status !== undefined &&
+    populatedAppointment.status !== previousStatus
+  ) {
+    sendAppointmentStatusToClient(populatedAppointment).catch((error) => {
+      console.error("Appointment status email failed:", error.message);
+    });
+  }
 
   res.json({
     success: true,

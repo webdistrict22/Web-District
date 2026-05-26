@@ -12,6 +12,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import ContractList from "../dashboard/ContractList";
+import { confirmAction } from "../../lib/alerts";
 
 const statuses = [
   "Draft",
@@ -344,7 +345,12 @@ function ContractManager() {
   };
 
   const handleDelete = async (contractId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this contract?");
+    const confirmed = await confirmAction({
+      title: "Delete contract?",
+      message: "This will permanently remove this contract/proposal.",
+      confirmText: "Delete",
+    });
+
     if (!confirmed) return;
 
     try {

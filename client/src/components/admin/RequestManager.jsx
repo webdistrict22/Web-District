@@ -19,6 +19,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
+import { confirmAction } from "../../lib/alerts";
 
 const requestStatuses = [
   "New",
@@ -162,9 +163,11 @@ function RequestManager() {
   };
 
   const handleDeleteRequest = async (requestId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this website request?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete website request?",
+      message: "This will permanently remove this submitted website request.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

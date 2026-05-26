@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -24,6 +25,7 @@ const initialForm = {
 
 function WebsiteRequestForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState(() => ({
     ...initialForm,
@@ -68,6 +70,8 @@ function WebsiteRequestForm({ className = "" }) {
         phone: user?.phone || "",
         email: user?.email || "",
       });
+
+      navigate("/success?type=request");
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to submit website request."
@@ -190,15 +194,9 @@ function WebsiteRequestForm({ className = "" }) {
         />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="text-[#F8F7F4]">
             {isLoading ? "Submitting..." : "Submit website request"}
           </Button>
-
-          {isAuthenticated && (
-            <Button to="/account/requests" variant="secondary">
-              My requests
-            </Button>
-          )}
         </div>
       </form>
     </Card>

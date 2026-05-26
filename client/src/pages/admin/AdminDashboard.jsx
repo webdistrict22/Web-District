@@ -6,7 +6,6 @@ import {
   FileText,
   FolderKanban,
   Layers,
-  MessageSquare,
   Star,
   UsersRound,
 } from "lucide-react";
@@ -32,11 +31,6 @@ const quickActions = [
     title: "View appointments",
     description: "Check booked calls and add notes after conversations.",
     to: "/admin/appointments",
-  },
-  {
-    title: "Read contact messages",
-    description: "View messages submitted from the contact page.",
-    to: "/admin/clients/messages",
   },
   {
     title: "Manage testimonials",
@@ -95,13 +89,6 @@ function AdminDashboard() {
         to: "/admin/appointments",
       },
       {
-        label: "Contact messages",
-        value: stats.messages.total,
-        note: `${stats.messages.new} new`,
-        icon: MessageSquare,
-        to: "/admin/clients/messages",
-      },
-      {
         label: "Pending reviews",
         value: stats.reviews.pending,
         note: `${stats.reviews.approved} approved`,
@@ -155,8 +142,8 @@ function AdminDashboard() {
               Manage the Web District platform.
             </h2>
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              Track the real activity behind requests, calls, messages, reviews,
-              selected work, services, FAQ, and client accounts.
+              Track the real activity behind requests, calls, reviews, selected
+              work, services, FAQ, and client accounts.
             </p>
           </div>
 
@@ -172,10 +159,9 @@ function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-3">
+      <div className="grid gap-5 xl:grid-cols-2">
         <LatestRequests items={dashboard?.latest?.requests || []} />
         <LatestAppointments items={dashboard?.latest?.appointments || []} />
-        <LatestMessages items={dashboard?.latest?.messages || []} />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
@@ -264,26 +250,6 @@ function LatestAppointments({ items }) {
         ))
       ) : (
         <p className="text-sm text-[#D9D4CC]">No appointments yet.</p>
-      )}
-    </LatestCard>
-  );
-}
-
-function LatestMessages({ items }) {
-  return (
-    <LatestCard title="Latest messages" actionTo="/admin/clients/messages">
-      {items.length ? (
-        items.map((item) => (
-          <LatestItem
-            key={item._id}
-            title={item.name}
-            subtitle={item.subject || item.email}
-            date={item.createdAt}
-            status={item.status}
-          />
-        ))
-      ) : (
-        <p className="text-sm text-[#D9D4CC]">No messages yet.</p>
       )}
     </LatestCard>
   );

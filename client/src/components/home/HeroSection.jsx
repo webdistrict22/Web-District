@@ -3,9 +3,9 @@ import Button from "../common/Button";
 import Container from "../common/Container";
 import useSettings from "../../hooks/useSettings";
 
-const defaultHeadline = "Websites that make your business look serious.";
+const defaultHeadline = "Your brand, brought online with care.";
 const defaultSubline =
-  "Clean websites for brands, stores, and businesses that need a stronger online presence.";
+  "Elegant websites for brands ready to look more polished, trusted, and complete online.";
 
 const legacyHeadline = "Websites that make businesses look serious.";
 const legacySubtextStart = "We build clean, modern websites";
@@ -41,14 +41,14 @@ function HeroSection() {
   const secondaryCTA = normalizeCTA(settings.secondaryCTA, "View Our Work");
 
   return (
-    <section className="wd-section-black wd-noise relative isolate overflow-hidden pt-32 pb-12 md:pt-36 md:pb-14">
+    <section className="wd-section-black wd-noise relative isolate overflow-hidden pt-32 pb-6 md:pt-36 md:pb-8">
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_76%_22%,rgba(196,167,125,0.18),transparent_34%),radial-gradient(circle_at_16%_78%,rgba(100,19,26,0.18),transparent_32%),linear-gradient(120deg,#080808,#0B0B0B_52%,#080808)]" />
       <div className="absolute inset-0 z-0 bg-[linear-gradient(90deg,rgba(8,8,8,0.94)_0%,rgba(8,8,8,0.74)_40%,rgba(8,8,8,0.42)_72%,rgba(8,8,8,0.30)_100%),linear-gradient(180deg,rgba(8,8,8,0.18),rgba(8,8,8,0.88))]" />
       <div className="absolute right-[-12%] top-[18%] z-0 h-80 w-80 rounded-full bg-[#C4A77D]/18 blur-[100px]" />
       <div className="absolute inset-x-0 bottom-0 z-0 h-32 bg-gradient-to-t from-[#080808] to-transparent" />
 
       <Container>
-        <div className="relative z-10 flex min-h-[560px] items-center py-10 md:min-h-[620px]">
+        <div className="relative z-10 flex min-h-[440px] items-center py-8 md:min-h-[500px]">
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}

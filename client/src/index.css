@@ -137,8 +137,23 @@ select {
   }
 }
 
+@keyframes wdLoader {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  50% {
+    transform: translateX(95%);
+  }
+
+  100% {
+    transform: translateX(220%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .wd-navbar-ticker-track {
+  .wd-navbar-ticker-track,
+  .animate-\[wdLoader_1\.15s_ease-in-out_infinite\] {
     animation: none;
   }
 }

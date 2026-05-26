@@ -10,6 +10,7 @@ import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import Badge from "../common/Badge";
+import { confirmAction } from "../../lib/alerts";
 
 const initialForm = {
   name: "",
@@ -223,9 +224,11 @@ function PackageManager() {
   };
 
   const handleDelete = async (packageId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this package?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete package?",
+      message: "This will permanently remove this website option.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

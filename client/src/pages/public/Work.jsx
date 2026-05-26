@@ -46,7 +46,7 @@ function Work() {
         </Container>
       </section>
 
-      <section className="wd-section-black pt-4 pb-16 md:pt-6 md:pb-20">
+      <section className="wd-section-black pt-4 pb-10 md:pt-6 md:pb-12">
         <Container>
           {isLoading ? (
             <section>

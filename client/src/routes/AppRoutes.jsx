@@ -18,9 +18,12 @@ const CaseStudy = lazy(() => import("../pages/public/CaseStudy"));
 const Process = lazy(() => import("../pages/public/Process"));
 const Start = lazy(() => import("../pages/public/Start"));
 const Contact = lazy(() => import("../pages/public/Contact"));
+const Success = lazy(() => import("../pages/public/Success"));
 
 const Login = lazy(() => import("../pages/auth/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 
 const ClientDashboard = lazy(() => import("../pages/client/ClientDashboard"));
 const ClientRequests = lazy(() => import("../pages/client/ClientRequests"));
@@ -52,7 +55,7 @@ function AppRoutes() {
     <BrowserRouter>
       <ScrollToTop />
 
-      <Suspense fallback={<Loader text="Loading page..." />}>
+      <Suspense fallback={<Loader page text="Loading" />}>
         <Routes>
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<Home />} />
@@ -62,6 +65,7 @@ function AppRoutes() {
             <Route path="process" element={<Process />} />
             <Route path="start" element={<Start />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="success" element={<Success />} />
             <Route
               path="login"
               element={
@@ -78,6 +82,8 @@ function AppRoutes() {
                 </PublicOnlyRoute>
               }
             />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password/:token" element={<ResetPassword />} />
           </Route>
 
           <Route
@@ -113,10 +119,6 @@ function AppRoutes() {
             <Route
               path="clients/reviews"
               element={<AdminClients initialTab="reviews" />}
-            />
-            <Route
-              path="clients/messages"
-              element={<AdminClients initialTab="messages" />}
             />
             <Route path="control" element={<AdminControl />} />
             <Route
@@ -161,7 +163,7 @@ function AppRoutes() {
             />
             <Route
               path="messages"
-              element={<Navigate to="/admin/clients/messages" replace />}
+              element={<Navigate to="/admin/clients" replace />}
             />
           </Route>
 

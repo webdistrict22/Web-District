@@ -1,6 +1,10 @@
 const WebsiteRequest = require("../models/WebsiteRequest");
 const asyncHandler = require("../middleware/asyncHandler");
-const { notifyNewWebsiteRequest } = require("../utils/notificationService");
+const {
+  notifyNewWebsiteRequest,
+  sendWebsiteRequestConfirmationToClient,
+  sendWebsiteRequestStatusToClient,
+} = require("../utils/notificationService");
 
 // @desc    Create website request
 // @route   POST /api/requests
@@ -44,6 +48,10 @@ const createWebsiteRequest = asyncHandler(async (req, res) => {
 
   notifyNewWebsiteRequest(websiteRequest).catch((error) => {
     console.error("Website request email notification failed:", error.message);
+  });
+
+  sendWebsiteRequestConfirmationToClient(websiteRequest).catch((error) => {
+    console.error("Website request client email failed:", error.message);
   });
 
   res.status(201).json({
@@ -119,6 +127,8 @@ const getWebsiteRequestById = asyncHandler(async (req, res) => {
     throw new Error("Website request not found");
   }
 
+  const previousStatus = request.status;
+
   res.json({
     success: true,
     request,
@@ -159,6 +169,12 @@ const updateWebsiteRequest = asyncHandler(async (req, res) => {
   });
 
   const updatedRequest = await request.save();
+
+  if (req.body.status !== undefined && updatedRequest.status !== previousStatus) {
+    sendWebsiteRequestStatusToClient(updatedRequest).catch((error) => {
+      console.error("Website request status email failed:", error.message);
+    });
+  }
 
   res.json({
     success: true,

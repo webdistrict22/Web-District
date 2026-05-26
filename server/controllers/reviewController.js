@@ -1,6 +1,11 @@
 const Review = require("../models/Review");
 const Contract = require("../models/Contract");
 const asyncHandler = require("../middleware/asyncHandler");
+const {
+  notifyReviewSubmitted,
+  sendReviewDecisionToClient,
+  sendReviewSubmittedConfirmationToClient,
+} = require("../utils/notificationService");
 
 const createManualReview = asyncHandler(async (req, res) => {
   const { name, businessName, role, rating, message, status, isVisible } = req.body;
@@ -58,6 +63,16 @@ const submitReview = asyncHandler(async (req, res) => {
     isVisible: false,
   });
 
+  notifyReviewSubmitted(review).catch((error) => {
+    console.error("Review owner email notification failed:", error.message);
+  });
+
+  sendReviewSubmittedConfirmationToClient(review, req.user.email).catch(
+    (error) => {
+      console.error("Review client email failed:", error.message);
+    }
+  );
+
   res.status(201).json({
     success: true,
     message: "Review submitted and waiting for approval",
@@ -98,6 +113,8 @@ const updateReview = asyncHandler(async (req, res) => {
     throw new Error("Review not found");
   }
 
+  const previousStatus = review.status;
+
   const fields = ["name", "businessName", "role", "rating", "message", "status", "isVisible"];
 
   fields.forEach((field) => {
@@ -107,6 +124,25 @@ const updateReview = asyncHandler(async (req, res) => {
   });
 
   const updatedReview = await review.save();
+
+  if (
+    req.body.status !== undefined &&
+    updatedReview.status !== previousStatus &&
+    updatedReview.client
+  ) {
+    const populatedReview = await Review.findById(updatedReview._id).populate(
+      "client",
+      "email"
+    );
+
+    if (populatedReview?.client?.email) {
+      sendReviewDecisionToClient(updatedReview, populatedReview.client.email).catch(
+        (error) => {
+          console.error("Review decision email failed:", error.message);
+        }
+      );
+    }
+  }
 
   res.json({
     success: true,

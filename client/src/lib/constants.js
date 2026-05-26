@@ -1,6 +1,6 @@
 export const AGENCY = {
   name: "Web District",
-  tagline: "Premium Web Studio",
+  tagline: "Strategic Web Agency",
   phone: "01130696935",
   whatsapp: "01130696935",
   instagram: "web__district",
@@ -14,6 +14,7 @@ export const ROUTES = {
   process: "/process",
   start: "/start",
   contact: "/contact",
+  success: "/success",
   login: "/login",
   signup: "/signup",
   account: "/account",

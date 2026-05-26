@@ -60,26 +60,21 @@ function Services() {
         description="Explore Web District website services including online stores, business websites, landing pages, and custom websites."
       />
 
-      <section className="wd-section-black pt-32 pb-14 md:pb-16">
+      <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <SectionHeader
             eyebrow="Services"
             title="Websites built around the business goal."
-            description="Choose the website direction. We shape the structure, visuals, and launch path."
+            description="You choose the website direction. We shape the structure, visuals, and launch path."
           />
 
-          <div className="rounded-[1.6rem] border border-[#C4A77D]/20 bg-[#0B0B0B] p-5">
-            <p className="text-sm leading-7 text-[#F8F7F4]">
-              Selling, presenting, collecting leads, or running custom logic.
-              The build follows the goal.
-            </p>
-          </div>
+
         </section>
         </Container>
       </section>
 
-      <section className="wd-section-black py-16">
+      <section className="wd-section-black pt-6 pb-16 md:pt-8">
         <Container>
         {isLoading ? (
           <section>
@@ -120,8 +115,8 @@ function Services() {
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <Button to="/start">Start Your Project</Button>
-              <Button to="/contact" variant="secondary">
-                Ask first
+              <Button to="/process#process-questions" variant="secondary">
+                View Questions & Answers
               </Button>
             </div>
           </div>

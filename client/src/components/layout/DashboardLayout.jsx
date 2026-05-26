@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import {
   CalendarDays,
   FileText,
@@ -35,14 +35,24 @@ function DashboardLayout() {
             </h1>
           </div>
 
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
-          >
-            <LogOut size={17} />
-            Logout
-          </button>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/50 hover:text-[#C4A77D]"
+            >
+              <Home size={17} />
+              Go home
+            </Link>
+
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
+            >
+              <LogOut size={17} />
+              Logout
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">

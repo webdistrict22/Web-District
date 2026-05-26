@@ -1,4 +1,4 @@
-const tickerHook = "BE TAKEN SERIOUSLY ONLINE";
+const tickerHook = "WEBSITES YOUR BRAND GROWS WITH";
 
 function NavbarTicker() {
   return (

@@ -93,6 +93,15 @@ function Login() {
                 onChange={(e) => updateField("password", e.target.value)}
               />
 
+              <div className="-mt-2 text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm font-semibold text-[#D9D4CC] transition hover:text-[#C4A77D]"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>

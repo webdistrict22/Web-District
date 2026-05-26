@@ -11,6 +11,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
+import { confirmAction } from "../../lib/alerts";
 
 const initialForm = {
   name: "",
@@ -170,9 +171,11 @@ function ReviewManager() {
   };
 
   const handleDelete = async (reviewId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this review?"
-    );
+    const confirmed = await confirmAction({
+      title: "Delete review?",
+      message: "This will permanently remove this review/testimonial.",
+      confirmText: "Delete",
+    });
 
     if (!confirmed) return;
 

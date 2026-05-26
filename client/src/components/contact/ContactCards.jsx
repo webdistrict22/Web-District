@@ -11,7 +11,7 @@ function ContactCards({ cardClassName = "" }) {
     {
       title: "WhatsApp",
       value: settings.whatsapp,
-      description: "Fastest way to start.",
+      description: "Message us directly.",
       icon: MessageCircle,
       href: getWhatsappLink(
         settings.whatsapp || "01130696935",

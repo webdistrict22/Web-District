@@ -2,7 +2,6 @@ import { useState } from "react";
 import Card from "../common/Card";
 import ClientManager from "./ClientManager";
 import ReviewManager from "./ReviewManager";
-import MessageManager from "./MessageManager";
 
 const clientTabs = [
   {
@@ -16,12 +15,6 @@ const clientTabs = [
     label: "Reviews",
     description: "Approve and add testimonials.",
     Component: ReviewManager,
-  },
-  {
-    id: "messages",
-    label: "Messages",
-    description: "Contact form conversations.",
-    Component: MessageManager,
   },
 ];
 
@@ -48,12 +41,12 @@ function ClientControlManager({ initialTab = "accounts" }) {
         </h2>
 
         <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-          Manage client accounts, reviews, and contact messages from one place.
+          Manage client accounts and reviews from one place.
         </p>
       </Card>
 
       <Card className="p-3">
-        <div className="grid gap-2 md:grid-cols-3">
+        <div className="grid gap-2 md:grid-cols-2">
           {clientTabs.map((tab) => (
             <button
               key={tab.id}

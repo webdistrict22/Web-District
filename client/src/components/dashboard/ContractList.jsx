@@ -15,6 +15,7 @@ import StatusBadge from "../common/StatusBadge";
 import EmptyState from "../common/EmptyState";
 import Textarea from "../common/Textarea";
 import { formatDate } from "../../lib/helpers";
+import { confirmAction } from "../../lib/alerts";
 
 function ContractList({
   contracts = [],
@@ -52,9 +53,12 @@ function ContractList({
   };
 
   const handleAccept = async (contract) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to accept this proposal?"
-    );
+    const confirmed = await confirmAction({
+      title: "Accept proposal?",
+      message:
+        "This will mark the Web District proposal as accepted and notify the team.",
+      confirmText: "Accept",
+    });
 
     if (!confirmed) return;
 

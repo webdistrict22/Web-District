@@ -58,14 +58,24 @@ function HeroSection() {
           >
             <h1
               className="font-display text-5xl font-extrabold leading-[0.98] tracking-[-0.07em] text-[#F3EEE4] md:text-7xl"
-              style={{ textShadow: "0 8px 28px rgba(0,0,0,0.55)" }}
+              style={{
+                color: "#F3EEE4",
+                WebkitTextFillColor: "#F3EEE4",
+                forcedColorAdjust: "none",
+                textShadow: "0 8px 28px rgba(0,0,0,0.55)",
+              }}
             >
               {headline}
             </h1>
 
             <p
               className="mt-6 max-w-2xl text-lg leading-8 text-[#D6CFC2]"
-              style={{ textShadow: "0 8px 28px rgba(0,0,0,0.55)" }}
+              style={{
+                color: "#D6CFC2",
+                WebkitTextFillColor: "#D6CFC2",
+                forcedColorAdjust: "none",
+                textShadow: "0 8px 28px rgba(0,0,0,0.55)",
+              }}
             >
               {subline}
             </p>

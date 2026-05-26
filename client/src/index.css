@@ -43,6 +43,16 @@ body,
   min-height: 100%;
   background-color: #0B0B0A;
   color: #F3EEE4;
+  forced-color-adjust: none;
+}
+
+@supports (color-scheme: only dark) {
+  :root,
+  html,
+  body,
+  #root {
+    color-scheme: only dark;
+  }
 }
 
 body {
@@ -69,6 +79,7 @@ textarea,
 select {
   font: inherit;
   color-scheme: dark;
+  forced-color-adjust: none;
 }
 
 select option {
@@ -121,11 +132,26 @@ select option {
 }
 
 .wd-champagne-gradient {
-  background: linear-gradient(135deg, #9F7B43, #A8874F);
+  background-color: #A8874F !important;
+  background-image: linear-gradient(135deg, #9F7B43 0%, #A8874F 100%) !important;
+  color: #F3EEE4 !important;
+  -webkit-text-fill-color: #F3EEE4;
+  forced-color-adjust: none;
+  color-scheme: dark;
 }
 
 .wd-champagne-gradient:hover {
-  background: linear-gradient(135deg, #B89458, var(--wd-champagne));
+  background-color: #B89458 !important;
+  background-image: linear-gradient(135deg, #B89458 0%, var(--wd-champagne) 100%) !important;
+  color: #F3EEE4 !important;
+  -webkit-text-fill-color: #F3EEE4;
+}
+
+@supports (color-scheme: only dark) {
+  .wd-champagne-gradient,
+  .wd-champagne-gradient:hover {
+    color-scheme: only dark;
+  }
 }
 
 .wd-noise {

@@ -23,6 +23,12 @@
   --wd-panel-strong: rgba(248,247,244,0.075);
 }
 
+@supports (color-scheme: only dark) {
+  :root {
+    color-scheme: only dark;
+  }
+}
+
 .wd-section-black {
   background: var(--wd-bg);
 }

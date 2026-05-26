@@ -154,6 +154,24 @@ select option {
   }
 }
 
+.wd-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.wd-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.wd-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(196, 167, 125, 0.45);
+  border-radius: 999px;
+}
+
+.wd-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 167, 125, 0.65);
+}
+
 .wd-noise {
   position: relative;
 }

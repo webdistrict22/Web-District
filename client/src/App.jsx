@@ -1,4 +1,6 @@
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import AuthProvider from "./context/AuthContext";
 import SettingsProvider from "./context/SettingsContext";
 import WelcomeIntro from "./components/common/WelcomeIntro";
@@ -51,6 +53,9 @@ function App() {
             },
           }}
         />
+
+        <Analytics />
+        <SpeedInsights />
       </SettingsProvider>
     </AuthProvider>
   );

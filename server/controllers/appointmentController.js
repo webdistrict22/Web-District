@@ -74,13 +74,24 @@ const createAppointment = asyncHandler(async (req, res) => {
     .populate("slot")
     .populate("client", "name email phone businessName");
 
-  notifyNewAppointment(populatedAppointment).catch((error) => {
-    console.error("Appointment owner email notification failed:", error.message);
-  });
+  notifyNewAppointment(populatedAppointment)
+    .then((result) =>
+      console.log("[Email] Appointment notification:", result)
+    )
+    .catch((error) => {
+      console.error("[Email] Appointment notification failed:", error.message);
+    });
 
-  sendAppointmentConfirmationToClient(populatedAppointment).catch((error) => {
-    console.error("Appointment client email confirmation failed:", error.message);
-  });
+  sendAppointmentConfirmationToClient(populatedAppointment)
+    .then((result) =>
+      console.log("[Email] Appointment client confirmation:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Appointment client confirmation failed:",
+        error.message
+      );
+    });
 
   res.status(201).json({
     success: true,
@@ -197,9 +208,13 @@ const updateAppointment = asyncHandler(async (req, res) => {
     req.body.status !== undefined &&
     populatedAppointment.status !== previousStatus
   ) {
-    sendAppointmentStatusToClient(populatedAppointment).catch((error) => {
-      console.error("Appointment status email failed:", error.message);
-    });
+    sendAppointmentStatusToClient(populatedAppointment)
+      .then((result) =>
+        console.log("[Email] Appointment status email:", result)
+      )
+      .catch((error) => {
+        console.error("[Email] Appointment status email failed:", error.message);
+      });
   }
 
   res.json({

@@ -1,17 +1,35 @@
 const nodemailer = require("nodemailer");
 
+const cleanEnv = (key) => (process.env[key] || "").trim();
+
 const isEmailConfigured = () => {
-  return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  return Boolean(cleanEnv("EMAIL_USER") && cleanEnv("EMAIL_PASS"));
+};
+
+const getEmailConfig = () => {
+  const emailUser = cleanEnv("EMAIL_USER");
+  const emailPass = cleanEnv("EMAIL_PASS");
+  const ownerEmail = cleanEnv("OWNER_EMAIL");
+  const fromName = cleanEnv("EMAIL_FROM_NAME") || "Web District";
+  const allowSelfSigned = cleanEnv("EMAIL_ALLOW_SELF_SIGNED") === "true";
+
+  return {
+    emailUser,
+    emailPass,
+    ownerEmail,
+    fromName,
+    allowSelfSigned,
+  };
 };
 
 const createTransporter = () => {
-  const allowSelfSigned = process.env.EMAIL_ALLOW_SELF_SIGNED === "true";
+  const { emailUser, emailPass, allowSelfSigned } = getEmailConfig();
 
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: emailUser,
+      pass: emailPass,
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
@@ -33,7 +51,49 @@ const formatEmailError = (error) => {
   return parts.join(" | ");
 };
 
+const normalizeEmailResultError = (error) => ({
+  success: false,
+  message: error.message,
+  error: error.message,
+  code: error.code || null,
+  command: error.command || null,
+  responseCode: error.responseCode || null,
+});
+
+const verifyEmailTransport = async () => {
+  if (!isEmailConfigured()) {
+    return {
+      success: false,
+      message: "EMAIL_USER or EMAIL_PASS missing",
+      code: null,
+      command: null,
+    };
+  }
+
+  try {
+    const transporter = createTransporter();
+
+    await transporter.verify();
+
+    return {
+      success: true,
+      message: "Email transporter verified",
+    };
+  } catch (error) {
+    console.error("Email transporter verify failed:", formatEmailError(error));
+
+    return {
+      success: false,
+      message: error.message,
+      code: error.code || null,
+      command: error.command || null,
+    };
+  }
+};
+
 const sendEmail = async ({ to, subject, html, text }) => {
+  const { emailUser, fromName } = getEmailConfig();
+
   if (!isEmailConfigured()) {
     console.warn("Email skipped: EMAIL_USER or EMAIL_PASS missing");
     return {
@@ -43,7 +103,9 @@ const sendEmail = async ({ to, subject, html, text }) => {
     };
   }
 
-  if (!to) {
+  const recipient = String(to || "").trim();
+
+  if (!recipient) {
     console.warn("Email skipped: recipient is missing.");
     return {
       success: false,
@@ -54,12 +116,10 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
   const transporter = createTransporter();
 
-  const fromName = process.env.EMAIL_FROM_NAME || "Web District";
-
   try {
     const info = await transporter.sendMail({
-      from: `"${fromName}" <${process.env.EMAIL_USER}>`,
-      to,
+      from: `"${fromName}" <${emailUser}>`,
+      to: recipient,
       subject,
       text,
       html,
@@ -72,14 +132,10 @@ const sendEmail = async ({ to, subject, html, text }) => {
   } catch (error) {
     console.error("Email send failed:", formatEmailError(error));
 
-    return {
-      success: false,
-      error: error.message,
-      code: error.code,
-      command: error.command,
-      responseCode: error.responseCode,
-    };
+    return normalizeEmailResultError(error);
   }
 };
 
 module.exports = sendEmail;
+module.exports.verifyEmailTransport = verifyEmailTransport;
+module.exports.getEmailConfig = getEmailConfig;

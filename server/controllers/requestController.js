@@ -46,13 +46,27 @@ const createWebsiteRequest = asyncHandler(async (req, res) => {
     preferredContactMethod,
   });
 
-  notifyNewWebsiteRequest(websiteRequest).catch((error) => {
-    console.error("Website request email notification failed:", error.message);
-  });
+  notifyNewWebsiteRequest(websiteRequest)
+    .then((result) =>
+      console.log("[Email] Website request notification:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Website request notification failed:",
+        error.message
+      );
+    });
 
-  sendWebsiteRequestConfirmationToClient(websiteRequest).catch((error) => {
-    console.error("Website request client email failed:", error.message);
-  });
+  sendWebsiteRequestConfirmationToClient(websiteRequest)
+    .then((result) =>
+      console.log("[Email] Website request client confirmation:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Website request client confirmation failed:",
+        error.message
+      );
+    });
 
   res.status(201).json({
     success: true,
@@ -171,9 +185,16 @@ const updateWebsiteRequest = asyncHandler(async (req, res) => {
   const updatedRequest = await request.save();
 
   if (req.body.status !== undefined && updatedRequest.status !== previousStatus) {
-    sendWebsiteRequestStatusToClient(updatedRequest).catch((error) => {
-      console.error("Website request status email failed:", error.message);
-    });
+    sendWebsiteRequestStatusToClient(updatedRequest)
+      .then((result) =>
+        console.log("[Email] Website request status email:", result)
+      )
+      .catch((error) => {
+        console.error(
+          "[Email] Website request status email failed:",
+          error.message
+        );
+      });
   }
 
   res.json({

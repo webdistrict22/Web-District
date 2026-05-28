@@ -44,13 +44,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const token = generateToken(user);
 
-  notifyNewClientSignup(user).catch((error) => {
-    console.error("Signup email notification failed:", error.message);
-  });
+  notifyNewClientSignup(user)
+    .then((result) => console.log("[Email] Signup notification:", result))
+    .catch((error) => {
+      console.error("[Email] Signup notification failed:", error.message);
+    });
 
-  sendWelcomeEmailToClient(user).catch((error) => {
-    console.error("Signup welcome email failed:", error.message);
-  });
+  sendWelcomeEmailToClient(user)
+    .then((result) => console.log("[Email] Signup welcome email:", result))
+    .catch((error) => {
+      console.error("[Email] Signup welcome email failed:", error.message);
+    });
 
   res.status(201).json({
     success: true,

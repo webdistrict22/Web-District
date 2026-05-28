@@ -1,6 +1,22 @@
 const sendEmail = require("./sendEmail");
 
-const getOwnerEmail = () => process.env.OWNER_EMAIL || process.env.EMAIL_USER;
+const cleanEnv = (key) => (process.env[key] || "").trim();
+
+const getOwnerEmail = () => cleanEnv("OWNER_EMAIL") || cleanEnv("EMAIL_USER");
+
+const previewEmail = (email = "") => {
+  const value = String(email || "").trim();
+
+  if (!value) return "missing";
+
+  const [localPart, domain] = value.split("@");
+
+  if (!domain) {
+    return `${value.slice(0, 3)}***`;
+  }
+
+  return `${localPart.slice(0, 3)}***@${domain}`;
+};
 
 const getClientUrl = (path = "") => {
   const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
@@ -102,14 +118,53 @@ const emailLayout = ({ title, intro, rows = [], ctaText, ctaUrl }) => {
   `;
 };
 
-const safeSend = async (payload) => {
+const logEmailResult = (label, result) => {
+  if (result?.success) {
+    console.log(`[Email] ${label} sent:`, {
+      success: true,
+      messageId: result.messageId,
+    });
+    return;
+  }
+
+  if (result?.skipped) {
+    console.warn(`[Email] ${label} skipped:`, {
+      reason: result.reason,
+    });
+    return;
+  }
+
+  console.error(`[Email] ${label} failed:`, {
+    message: result?.message || result?.error || "Unknown email error",
+    code: result?.code || null,
+    command: result?.command || null,
+  });
+};
+
+const safeSend = async (payload, label = "Email notification") => {
   try {
-    return await sendEmail(payload);
+    console.log(`[Email] Sending ${label}...`, {
+      to: previewEmail(payload.to),
+      subject: payload.subject,
+    });
+
+    const result = await sendEmail(payload);
+
+    logEmailResult(label, result);
+
+    return result;
   } catch (error) {
-    console.error("Email notification failed:", error.message);
+    console.error(`[Email] ${label} failed:`, {
+      message: error.message,
+      code: error.code || null,
+      command: error.command || null,
+    });
     return {
       success: false,
+      message: error.message,
       error: error.message,
+      code: error.code || null,
+      command: error.command || null,
     };
   }
 };
@@ -124,56 +179,65 @@ const notifyNewClientSignup = async (user) => {
     { label: "Created date", value: formatDate(user.createdAt) },
   ];
 
-  return safeSend({
-    to: getOwnerEmail(),
-    subject: `New Client Signup \u2014 ${user.name}`,
-    html: emailLayout({
-      title: "New client account",
-      intro: "A new client created a Web District account.",
-      rows,
-      ctaText: "Open Admin",
-      ctaUrl: getClientUrl("/admin/clients"),
-    }),
-    text: rowsToText("New client signup", rows),
-  });
+  return safeSend(
+    {
+      to: getOwnerEmail(),
+      subject: `New Client Signup \u2014 ${user.name}`,
+      html: emailLayout({
+        title: "New client account",
+        intro: "A new client created a Web District account.",
+        rows,
+        ctaText: "Open Admin",
+        ctaUrl: getClientUrl("/admin/clients"),
+      }),
+      text: rowsToText("New client signup", rows),
+    },
+    "new client signup notification"
+  );
 };
 
 const sendWelcomeEmailToClient = async (user) =>
-  safeSend({
-    to: user.email,
-    subject: "Welcome to Web District",
-    html: emailLayout({
-      title: "Welcome to Web District",
-      intro:
-        "Your account is ready. You can use it to track requests, appointments, contracts, project status, and reviews.",
-      rows: [
-        { label: "Name", value: user.name },
-        { label: "Business", value: user.businessName },
-        { label: "Email", value: user.email },
-      ],
-      ctaText: "Open Account",
-      ctaUrl: getClientUrl("/account"),
-    }),
-    text: "Welcome to Web District. Your account is ready.",
-  });
+  safeSend(
+    {
+      to: user.email,
+      subject: "Welcome to Web District",
+      html: emailLayout({
+        title: "Welcome to Web District",
+        intro:
+          "Your account is ready. You can use it to track requests, appointments, contracts, project status, and reviews.",
+        rows: [
+          { label: "Name", value: user.name },
+          { label: "Business", value: user.businessName },
+          { label: "Email", value: user.email },
+        ],
+        ctaText: "Open Account",
+        ctaUrl: getClientUrl("/account"),
+      }),
+      text: "Welcome to Web District. Your account is ready.",
+    },
+    "client welcome email"
+  );
 
 const sendPasswordResetEmail = async (user, resetUrl) =>
-  safeSend({
-    to: user.email,
-    subject: "Reset your Web District password",
-    html: emailLayout({
-      title: "Reset your password",
-      intro:
-        "We received a request to reset your Web District account password. This link expires in 10 minutes.",
-      rows: [
-        { label: "Account", value: user.email },
-        { label: "Name", value: user.name },
-      ],
-      ctaText: "Reset Password",
-      ctaUrl: resetUrl,
-    }),
-    text: `Reset your Web District password: ${resetUrl}`,
-  });
+  safeSend(
+    {
+      to: user.email,
+      subject: "Reset your Web District password",
+      html: emailLayout({
+        title: "Reset your password",
+        intro:
+          "We received a request to reset your Web District account password. This link expires in 10 minutes.",
+        rows: [
+          { label: "Account", value: user.email },
+          { label: "Name", value: user.name },
+        ],
+        ctaText: "Reset Password",
+        ctaUrl: resetUrl,
+      }),
+      text: `Reset your Web District password: ${resetUrl}`,
+    },
+    "password reset email"
+  );
 
 const notifyNewWebsiteRequest = async (request) => {
   const rows = [
@@ -191,18 +255,21 @@ const notifyNewWebsiteRequest = async (request) => {
     { label: "Created date", value: formatDate(request.createdAt) },
   ];
 
-  return safeSend({
-    to: getOwnerEmail(),
-    subject: `New website request - ${request.businessName || request.name}`,
-    html: emailLayout({
-      title: "New website request",
-      intro: "A new website request was submitted through the Start page.",
-      rows,
-      ctaText: "Open Requests",
-      ctaUrl: getClientUrl("/admin/requests"),
-    }),
-    text: rowsToText("New website request", rows),
-  });
+  return safeSend(
+    {
+      to: getOwnerEmail(),
+      subject: `New website request - ${request.businessName || request.name}`,
+      html: emailLayout({
+        title: "New website request",
+        intro: "A new website request was submitted through the Start page.",
+        rows,
+        ctaText: "Open Requests",
+        ctaUrl: getClientUrl("/admin/requests"),
+      }),
+      text: rowsToText("New website request", rows),
+    },
+    "new website request notification"
+  );
 };
 
 const sendWebsiteRequestConfirmationToClient = async (request) =>
@@ -244,56 +311,62 @@ const sendWebsiteRequestStatusToClient = async (request) =>
   });
 
 const notifyNewAppointment = async (appointment) =>
-  safeSend({
-    to: getOwnerEmail(),
-    subject: `New call appointment - ${appointment.businessName || appointment.name}`,
-    html: emailLayout({
-      title: "New call appointment",
-      intro: "A client booked a call appointment through the Start page.",
-      rows: [
-        { label: "Name", value: appointment.name },
-        { label: "Business", value: appointment.businessName },
-        { label: "Phone", value: appointment.phone },
-        { label: "Email", value: appointment.email },
-        { label: "Topic", value: appointment.topic },
-        { label: "Notes", value: appointment.notes },
-        {
-          label: "Slot",
-          value: appointment.slot
-            ? `${appointment.slot.date} - ${appointment.slot.startTime} to ${appointment.slot.endTime}`
-            : "Slot not loaded",
-        },
-      ],
-      ctaText: "Open Appointments",
-      ctaUrl: getClientUrl("/admin/appointments"),
-    }),
-    text: `New appointment from ${appointment.name}`,
-  });
+  safeSend(
+    {
+      to: getOwnerEmail(),
+      subject: `New call appointment - ${appointment.businessName || appointment.name}`,
+      html: emailLayout({
+        title: "New call appointment",
+        intro: "A client booked a call appointment through the Start page.",
+        rows: [
+          { label: "Name", value: appointment.name },
+          { label: "Business", value: appointment.businessName },
+          { label: "Phone", value: appointment.phone },
+          { label: "Email", value: appointment.email },
+          { label: "Topic", value: appointment.topic },
+          { label: "Notes", value: appointment.notes },
+          {
+            label: "Slot",
+            value: appointment.slot
+              ? `${appointment.slot.date} - ${appointment.slot.startTime} to ${appointment.slot.endTime}`
+              : "Slot not loaded",
+          },
+        ],
+        ctaText: "Open Appointments",
+        ctaUrl: getClientUrl("/admin/appointments"),
+      }),
+      text: `New appointment from ${appointment.name}`,
+    },
+    "new appointment notification"
+  );
 
 const sendAppointmentConfirmationToClient = async (appointment) =>
-  safeSend({
-    to: appointment.email,
-    subject: "Your Web District call is booked",
-    html: emailLayout({
-      title: "Your call is booked",
-      intro:
-        "Your call appointment with Web District has been booked successfully. We will use the call to understand your business and website direction.",
-      rows: [
-        { label: "Name", value: appointment.name },
-        { label: "Business", value: appointment.businessName },
-        { label: "Topic", value: appointment.topic },
-        {
-          label: "Slot",
-          value: appointment.slot
-            ? `${appointment.slot.date} - ${appointment.slot.startTime} to ${appointment.slot.endTime}`
-            : "Slot not loaded",
-        },
-      ],
-      ctaText: "Open Appointments",
-      ctaUrl: getClientUrl("/account/appointments"),
-    }),
-    text: "Your Web District call appointment is booked.",
-  });
+  safeSend(
+    {
+      to: appointment.email,
+      subject: "Your Web District call is booked",
+      html: emailLayout({
+        title: "Your call is booked",
+        intro:
+          "Your call appointment with Web District has been booked successfully. We will use the call to understand your business and website direction.",
+        rows: [
+          { label: "Name", value: appointment.name },
+          { label: "Business", value: appointment.businessName },
+          { label: "Topic", value: appointment.topic },
+          {
+            label: "Slot",
+            value: appointment.slot
+              ? `${appointment.slot.date} - ${appointment.slot.startTime} to ${appointment.slot.endTime}`
+              : "Slot not loaded",
+          },
+        ],
+        ctaText: "Open Appointments",
+        ctaUrl: getClientUrl("/account/appointments"),
+      }),
+      text: "Your Web District call appointment is booked.",
+    },
+    "appointment confirmation email"
+  );
 
 const sendAppointmentStatusToClient = async (appointment) =>
   safeSend({
@@ -320,22 +393,25 @@ const sendAppointmentStatusToClient = async (appointment) =>
   });
 
 const notifyContactMessage = async (message) =>
-  safeSend({
-    to: getOwnerEmail(),
-    subject: `New contact message - ${message.subject || "Website inquiry"}`,
-    html: emailLayout({
-      title: "New contact message",
-      intro: "A new message was submitted through the Contact page.",
-      rows: [
-        { label: "Name", value: message.name },
-        { label: "Email", value: message.email },
-        { label: "Phone", value: message.phone },
-        { label: "Subject", value: message.subject },
-        { label: "Message", value: message.message },
-      ],
-    }),
-    text: `New contact message from ${message.name}`,
-  });
+  safeSend(
+    {
+      to: getOwnerEmail(),
+      subject: `New contact message - ${message.subject || "Website inquiry"}`,
+      html: emailLayout({
+        title: "New contact message",
+        intro: "A new message was submitted through the Contact page.",
+        rows: [
+          { label: "Name", value: message.name },
+          { label: "Email", value: message.email },
+          { label: "Phone", value: message.phone },
+          { label: "Subject", value: message.subject },
+          { label: "Message", value: message.message },
+        ],
+      }),
+      text: `New contact message from ${message.name}`,
+    },
+    "contact message notification"
+  );
 
 const notifyReviewSubmitted = async (review) =>
   safeSend({
@@ -435,28 +511,31 @@ const sendContractStatusToClient = async (contract) =>
   });
 
 const notifyContractAccepted = async (contract) =>
-  safeSend({
-    to: getOwnerEmail(),
-    subject: `Contract accepted - ${contract.businessName || contract.clientName}`,
-    html: emailLayout({
-      title: "Contract accepted",
-      intro: "A client accepted a proposal/contract from their dashboard.",
-      rows: [
-        { label: "Contract", value: contract.title },
-        { label: "Client", value: contract.clientName },
-        { label: "Business", value: contract.businessName },
-        { label: "Email", value: contract.clientEmail },
-        { label: "Phone", value: contract.clientPhone },
-        { label: "Website type", value: contract.websiteType },
-        { label: "Total price", value: formatMoney(contract.totalPrice) },
-        { label: "Deposit", value: formatMoney(contract.depositAmount) },
-        { label: "Client note", value: contract.clientNotes },
-      ],
-      ctaText: "Open Contracts",
-      ctaUrl: getClientUrl("/admin/contracts"),
-    }),
-    text: `Contract accepted by ${contract.clientName}`,
-  });
+  safeSend(
+    {
+      to: getOwnerEmail(),
+      subject: `Contract accepted - ${contract.businessName || contract.clientName}`,
+      html: emailLayout({
+        title: "Contract accepted",
+        intro: "A client accepted a proposal/contract from their dashboard.",
+        rows: [
+          { label: "Contract", value: contract.title },
+          { label: "Client", value: contract.clientName },
+          { label: "Business", value: contract.businessName },
+          { label: "Email", value: contract.clientEmail },
+          { label: "Phone", value: contract.clientPhone },
+          { label: "Website type", value: contract.websiteType },
+          { label: "Total price", value: formatMoney(contract.totalPrice) },
+          { label: "Deposit", value: formatMoney(contract.depositAmount) },
+          { label: "Client note", value: contract.clientNotes },
+        ],
+        ctaText: "Open Contracts",
+        ctaUrl: getClientUrl("/admin/contracts"),
+      }),
+      text: `Contract accepted by ${contract.clientName}`,
+    },
+    "contract accepted notification"
+  );
 
 const sendContractAcceptedToClient = async (contract) =>
   safeSend({

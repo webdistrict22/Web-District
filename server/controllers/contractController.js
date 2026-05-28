@@ -77,9 +77,11 @@ const createContract = asyncHandler(async (req, res) => {
   });
 
   if (shouldNotifyClientAboutContract(contract)) {
-    sendContractToClient(contract).catch((error) => {
-      console.error("Contract client email failed:", error.message);
-    });
+    sendContractToClient(contract)
+      .then((result) => console.log("[Email] Contract client email:", result))
+      .catch((error) => {
+        console.error("[Email] Contract client email failed:", error.message);
+      });
   }
 
   res.status(201).json({
@@ -146,9 +148,11 @@ const createContractFromRequest = asyncHandler(async (req, res) => {
   await request.save();
 
   if (shouldNotifyClientAboutContract(contract)) {
-    sendContractToClient(contract).catch((error) => {
-      console.error("Contract client email failed:", error.message);
-    });
+    sendContractToClient(contract)
+      .then((result) => console.log("[Email] Contract client email:", result))
+      .catch((error) => {
+        console.error("[Email] Contract client email failed:", error.message);
+      });
   }
 
   res.status(201).json({
@@ -220,9 +224,11 @@ const createContractFromAppointment = asyncHandler(async (req, res) => {
   await appointment.save();
 
   if (shouldNotifyClientAboutContract(contract)) {
-    sendContractToClient(contract).catch((error) => {
-      console.error("Contract client email failed:", error.message);
-    });
+    sendContractToClient(contract)
+      .then((result) => console.log("[Email] Contract client email:", result))
+      .catch((error) => {
+        console.error("[Email] Contract client email failed:", error.message);
+      });
   }
 
   res.status(201).json({
@@ -362,9 +368,11 @@ const updateContract = asyncHandler(async (req, res) => {
         ? sendContractToClient
         : sendContractStatusToClient;
 
-    notifier(updatedContract).catch((error) => {
-      console.error("Contract status email failed:", error.message);
-    });
+    notifier(updatedContract)
+      .then((result) => console.log("[Email] Contract status email:", result))
+      .catch((error) => {
+        console.error("[Email] Contract status email failed:", error.message);
+      });
   }
 
   res.json({
@@ -402,13 +410,27 @@ const acceptContract = asyncHandler(async (req, res) => {
 
   const updatedContract = await contract.save();
 
-  notifyContractAccepted(updatedContract).catch((error) => {
-    console.error("Contract accepted email notification failed:", error.message);
-  });
+  notifyContractAccepted(updatedContract)
+    .then((result) =>
+      console.log("[Email] Contract accepted notification:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Contract accepted notification failed:",
+        error.message
+      );
+    });
 
-  sendContractAcceptedToClient(updatedContract).catch((error) => {
-    console.error("Contract accepted client email failed:", error.message);
-  });
+  sendContractAcceptedToClient(updatedContract)
+    .then((result) =>
+      console.log("[Email] Contract accepted client email:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Contract accepted client email failed:",
+        error.message
+      );
+    });
 
   res.json({
     success: true,
@@ -436,9 +458,16 @@ const updateClientContractNote = asyncHandler(async (req, res) => {
 
   const updatedContract = await contract.save();
 
-  notifyContractClientNote(updatedContract).catch((error) => {
-    console.error("Contract client note email failed:", error.message);
-  });
+  notifyContractClientNote(updatedContract)
+    .then((result) =>
+      console.log("[Email] Contract client note notification:", result)
+    )
+    .catch((error) => {
+      console.error(
+        "[Email] Contract client note notification failed:",
+        error.message
+      );
+    });
 
   res.json({
     success: true,

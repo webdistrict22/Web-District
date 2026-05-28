@@ -21,9 +21,11 @@ const createContactMessage = asyncHandler(async (req, res) => {
     message,
   });
 
-  notifyContactMessage(contactMessage).catch((error) => {
-    console.error("Contact message email notification failed:", error.message);
-  });
+  notifyContactMessage(contactMessage)
+    .then((result) => console.log("[Email] Contact notification:", result))
+    .catch((error) => {
+      console.error("[Email] Contact notification failed:", error.message);
+    });
 
   res.status(201).json({
     success: true,

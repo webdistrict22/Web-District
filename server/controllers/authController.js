@@ -8,6 +8,16 @@ const {
   sendWelcomeEmailToClient,
 } = require("../utils/notificationService");
 
+const serializeAuthUser = (user) => ({
+  _id: user._id.toString(),
+  name: user.name,
+  businessName: user.businessName,
+  email: user.email,
+  phone: user.phone,
+  role: user.role,
+  isActive: user.isActive,
+});
+
 const registerUser = asyncHandler(async (req, res) => {
   const { name, businessName, email, phone, password } = req.body;
 
@@ -34,42 +44,19 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const token = generateToken(user);
 
-  const signupEmailResults = await Promise.allSettled([
-    notifyNewClientSignup(user),
-    sendWelcomeEmailToClient(user),
-  ]);
+  notifyNewClientSignup(user).catch((error) => {
+    console.error("Signup email notification failed:", error.message);
+  });
 
-  signupEmailResults.forEach((result, index) => {
-    const label =
-      index === 0
-        ? "Signup owner email notification"
-        : "Signup client welcome email";
-
-    if (result.status === "rejected") {
-      console.error(`${label} failed:`, result.reason?.message || result.reason);
-      return;
-    }
-
-    if (!result.value?.success) {
-      console.error(
-        `${label} failed:`,
-        result.value?.reason || result.value?.error || "Unknown email error"
-      );
-    }
+  sendWelcomeEmailToClient(user).catch((error) => {
+    console.error("Signup welcome email failed:", error.message);
   });
 
   res.status(201).json({
     success: true,
     message: "Account created successfully",
     token,
-    user: {
-      id: user._id,
-      name: user.name,
-      businessName: user.businessName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-    },
+    user: serializeAuthUser(user),
   });
 });
 
@@ -99,28 +86,14 @@ const loginUser = asyncHandler(async (req, res) => {
     success: true,
     message: "Logged in successfully",
     token,
-    user: {
-      id: user._id,
-      name: user.name,
-      businessName: user.businessName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-    },
+    user: serializeAuthUser(user),
   });
 });
 
 const getMe = asyncHandler(async (req, res) => {
   res.json({
     success: true,
-    user: {
-      id: req.user._id,
-      name: req.user.name,
-      businessName: req.user.businessName,
-      email: req.user.email,
-      phone: req.user.phone,
-      role: req.user.role,
-    },
+    user: serializeAuthUser(req.user),
   });
 });
 
@@ -215,14 +188,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     success: true,
     message: "Password reset successfully",
     token: authToken,
-    user: {
-      id: user._id,
-      name: user.name,
-      businessName: user.businessName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-    },
+    user: serializeAuthUser(user),
   });
 });
 

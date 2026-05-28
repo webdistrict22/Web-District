@@ -127,8 +127,6 @@ const getWebsiteRequestById = asyncHandler(async (req, res) => {
     throw new Error("Website request not found");
   }
 
-  const previousStatus = request.status;
-
   res.json({
     success: true,
     request,
@@ -145,6 +143,8 @@ const updateWebsiteRequest = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Website request not found");
   }
+
+  const previousStatus = request.status;
 
   const allowedFields = [
     "status",

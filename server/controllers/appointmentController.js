@@ -151,8 +151,6 @@ const getAppointmentById = asyncHandler(async (req, res) => {
     throw new Error("Appointment not found");
   }
 
-  const previousStatus = appointment.status;
-
   res.json({
     success: true,
     appointment,
@@ -169,6 +167,8 @@ const updateAppointment = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Appointment not found");
   }
+
+  const previousStatus = appointment.status;
 
   const allowedFields = [
     "status",

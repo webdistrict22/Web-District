@@ -15,6 +15,26 @@ const formatMoney = (value) => {
   return amount ? `${amount.toLocaleString()} EGP` : "Not set";
 };
 
+const formatDate = (value) => {
+  const date = value ? new Date(value) : new Date();
+
+  return Number.isNaN(date.getTime()) ? "Not available" : date.toISOString();
+};
+
+const rowsToText = (title, rows = []) =>
+  [
+    title,
+    ...rows.map((row) => `${row.label}: ${formatDisplayValue(row.value)}`),
+  ].join("\n");
+
+const formatDisplayValue = (value) => {
+  if (value === undefined || value === null || value === "") {
+    return "Not provided";
+  }
+
+  return String(value);
+};
+
 const escapeHtml = (value = "") =>
   String(value)
     .replace(/&/g, "&amp;")
@@ -33,7 +53,7 @@ const emailLayout = ({ title, intro, rows = [], ctaText, ctaUrl }) => {
             ${escapeHtml(row.label)}
           </td>
           <td style="padding:13px 12px;border-top:1px solid rgba(248,247,244,0.12);color:#F8F7F4;font-size:14px;font-weight:700;vertical-align:top;">
-            ${escapeHtml(row.value || "Not provided")}
+            ${escapeHtml(formatDisplayValue(row.value))}
           </td>
         </tr>
       `
@@ -94,25 +114,29 @@ const safeSend = async (payload) => {
   }
 };
 
-const notifyNewClientSignup = async (user) =>
-  safeSend({
+const notifyNewClientSignup = async (user) => {
+  const rows = [
+    { label: "Name", value: user.name },
+    { label: "Business name", value: user.businessName },
+    { label: "Email", value: user.email },
+    { label: "Phone", value: user.phone },
+    { label: "Role", value: user.role },
+    { label: "Created date", value: formatDate(user.createdAt) },
+  ];
+
+  return safeSend({
     to: getOwnerEmail(),
-    subject: `New Web District account - ${user.name}`,
+    subject: `New Client Signup \u2014 ${user.name}`,
     html: emailLayout({
       title: "New client account",
       intro: "A new client created a Web District account.",
-      rows: [
-        { label: "Name", value: user.name },
-        { label: "Business", value: user.businessName },
-        { label: "Email", value: user.email },
-        { label: "Phone", value: user.phone },
-        { label: "Role", value: user.role },
-      ],
+      rows,
       ctaText: "Open Admin",
       ctaUrl: getClientUrl("/admin/clients"),
     }),
-    text: `New client account: ${user.name} (${user.email})`,
+    text: rowsToText("New client signup", rows),
   });
+};
 
 const sendWelcomeEmailToClient = async (user) =>
   safeSend({
@@ -151,31 +175,35 @@ const sendPasswordResetEmail = async (user, resetUrl) =>
     text: `Reset your Web District password: ${resetUrl}`,
   });
 
-const notifyNewWebsiteRequest = async (request) =>
-  safeSend({
+const notifyNewWebsiteRequest = async (request) => {
+  const rows = [
+    { label: "Name", value: request.name },
+    { label: "Business", value: request.businessName },
+    { label: "Phone", value: request.phone },
+    { label: "Email", value: request.email },
+    { label: "Website type", value: request.websiteType },
+    { label: "Brand identity", value: request.hasBrandIdentity },
+    { label: "Content ready", value: request.hasContentReady },
+    { label: "Budget", value: request.budgetRange },
+    { label: "Deadline", value: request.deadline },
+    { label: "Preferred contact", value: request.preferredContactMethod },
+    { label: "Project details", value: request.projectDetails },
+    { label: "Created date", value: formatDate(request.createdAt) },
+  ];
+
+  return safeSend({
     to: getOwnerEmail(),
     subject: `New website request - ${request.businessName || request.name}`,
     html: emailLayout({
       title: "New website request",
       intro: "A new website request was submitted through the Start page.",
-      rows: [
-        { label: "Name", value: request.name },
-        { label: "Business", value: request.businessName },
-        { label: "Phone", value: request.phone },
-        { label: "Email", value: request.email },
-        { label: "Website type", value: request.websiteType },
-        { label: "Brand identity", value: request.hasBrandIdentity },
-        { label: "Content ready", value: request.hasContentReady },
-        { label: "Budget", value: request.budgetRange },
-        { label: "Deadline", value: request.deadline },
-        { label: "Preferred contact", value: request.preferredContactMethod },
-        { label: "Project details", value: request.projectDetails },
-      ],
+      rows,
       ctaText: "Open Requests",
       ctaUrl: getClientUrl("/admin/requests"),
     }),
-    text: `New website request from ${request.name}`,
+    text: rowsToText("New website request", rows),
   });
+};
 
 const sendWebsiteRequestConfirmationToClient = async (request) =>
   safeSend({

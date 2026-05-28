@@ -16,8 +16,6 @@ import Card from "../../components/common/Card";
 import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink } from "../../lib/helpers";
 
-const lastUpdated = "May 28, 2026";
-
 const includedItems = [
   {
     title: "Small content edits",
@@ -289,24 +287,27 @@ function WebsiteCare() {
             <div className="grid gap-8 lg:grid-cols-[1fr_0.75fr] lg:items-center">
               <div>
                 <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                  Keep it fresh
+                  Ready when you are
                 </p>
                 <h2 className="font-display text-4xl font-bold tracking-[-0.06em] text-[#F8F7F4] md:text-5xl">
-                  Need help keeping your website fresh?
+                  Start a new website or keep this one cared for.
                 </h2>
                 <p className="mt-5 max-w-2xl leading-8 text-[#D9D4CC]">
-                  Tell us what kind of support you need, and we'll suggest the
-                  right monthly care plan.
+                  Launch something new with Web District, or ask us about
+                  monthly support for updates, fixes, and improvements.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <Button href={whatsappLink} target="_blank" rel="noreferrer">
+                <Button to="/start">Start Your Project</Button>
+                <Button
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="secondary"
+                >
                   <MessageCircle size={17} />
                   Ask About Website Care
-                </Button>
-                <Button to="/contact" variant="secondary">
-                  Contact Web District
                 </Button>
               </div>
             </div>

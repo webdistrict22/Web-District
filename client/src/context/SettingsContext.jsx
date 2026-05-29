@@ -18,29 +18,55 @@ const fallbackSettings = {
   footerText: "Clean websites for brands, stores, and businesses.",
 };
 
+const scheduleAfterPaint = (callback) => {
+  if (typeof window === "undefined") return undefined;
+
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout: 1800 });
+
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timerId = window.setTimeout(callback, 700);
+
+  return () => window.clearTimeout(timerId);
+};
+
 function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(fallbackSettings);
-  const [isSettingsLoading, setIsSettingsLoading] = useState(true);
+  const [isSettingsLoading, setIsSettingsLoading] = useState(false);
 
-  const fetchSettings = async () => {
+  const fetchSettings = async (signal) => {
     try {
       setIsSettingsLoading(true);
 
-      const { data } = await api.get("/settings/public");
+      const { data } = await api.get("/settings/public", { signal });
 
       setSettings({
         ...fallbackSettings,
         ...(data.settings || {}),
       });
     } catch (error) {
-      setSettings(fallbackSettings);
+      if (!signal?.aborted) {
+        setSettings(fallbackSettings);
+      }
     } finally {
-      setIsSettingsLoading(false);
+      if (!signal?.aborted) {
+        setIsSettingsLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchSettings();
+    const controller = new AbortController();
+    const cancelScheduledFetch = scheduleAfterPaint(() => {
+      fetchSettings(controller.signal);
+    });
+
+    return () => {
+      controller.abort();
+      cancelScheduledFetch?.();
+    };
   }, []);
 
   const value = {

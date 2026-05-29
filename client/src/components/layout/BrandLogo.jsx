@@ -16,6 +16,11 @@ function BrandLogo({ size = "md", showText = true }) {
           <img
             src={logoSrc}
             alt="Web District"
+            width={size === "lg" ? 112 : 96}
+            height={size === "lg" ? 64 : 48}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             onError={() => setIsFailed(true)}
             className="h-full w-full object-cover"
           />

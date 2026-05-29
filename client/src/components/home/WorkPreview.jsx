@@ -11,30 +11,50 @@ import Badge from "../common/Badge";
 import Button from "../common/Button";
 import ProjectCover from "../work/ProjectCover";
 
+const scheduleAfterPaint = (callback) => {
+  if (typeof window === "undefined") return undefined;
+
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout: 1600 });
+
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timerId = window.setTimeout(callback, 650);
+
+  return () => window.clearTimeout(timerId);
+};
+
 function WorkPreview() {
   const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (signal) => {
     try {
-      setIsLoading(true);
-
       const { data } = await api.get("/projects/public", {
         params: {
           featured: "true",
         },
+        signal,
       });
 
       setProjects(data.projects || []);
     } catch (error) {
-      setProjects([]);
-    } finally {
-      setIsLoading(false);
+      if (!signal?.aborted) {
+        setProjects([]);
+      }
     }
   };
 
   useEffect(() => {
-    fetchProjects();
+    const controller = new AbortController();
+    const cancelScheduledFetch = scheduleAfterPaint(() => {
+      fetchProjects(controller.signal);
+    });
+
+    return () => {
+      controller.abort();
+      cancelScheduledFetch?.();
+    };
   }, []);
 
   const displayProjects = useMemo(() => {
@@ -58,68 +78,66 @@ function WorkPreview() {
           </Button>
         </div>
 
-        {isLoading ? (
-          <Card className="wd-card-on-black p-6">
-            <p className="text-[#D9D4CC]">Loading selected work...</p>
-          </Card>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2">
-            {displayProjects.map((project) => {
-              const isDatabaseProject = Boolean(project._id);
-              const name = isDatabaseProject ? project.title : project.name;
-              const type = isDatabaseProject ? project.websiteType : project.type;
-              const description = isDatabaseProject
-                ? project.shortDescription
-                : project.description;
-              const image = isDatabaseProject
-                ? project.images?.[0]
-                : project.coverImage || project.image;
-              const slug = project.slug;
-              const isComingSoon = project.isComingSoon;
+        <div className="grid gap-5 md:grid-cols-2">
+          {displayProjects.map((project) => {
+            const isDatabaseProject = Boolean(project._id);
+            const name = isDatabaseProject ? project.title : project.name;
+            const type = isDatabaseProject ? project.websiteType : project.type;
+            const description = isDatabaseProject
+              ? project.shortDescription
+              : project.description;
+            const image = isDatabaseProject
+              ? project.images?.[0]
+              : project.coverImage || project.image;
+            const slug = project.slug;
+            const isComingSoon = project.isComingSoon;
 
-              const card = (
-                <Card
-                  key={project._id || project.slug}
-                  className={`wd-card-on-black group h-full overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/30 ${
-                    isComingSoon ? "opacity-80" : "cursor-pointer"
-                  }`}
+            const card = (
+              <Card
+                key={project._id || project.slug}
+                className={`wd-card-on-black group h-full overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/30 ${
+                  isComingSoon ? "opacity-80" : "cursor-pointer"
+                }`}
+              >
+                <ProjectCover
+                  image={image}
+                  name={name}
+                  className="h-72 border-b border-white/10"
                 >
-                  <ProjectCover image={image} name={name} className="h-72 border-b border-white/10">
-                    <div className="absolute bottom-5 left-5 right-5">
-                      <Badge>{type}</Badge>
-                      <h3 className="font-display mt-4 text-3xl font-bold tracking-[-0.05em]">
-                        {name}
-                      </h3>
-                    </div>
-                  </ProjectCover>
-
-                  <div className="p-6">
-                    <p className="text-sm leading-6 text-[#D9D4CC]">
-                      {truncateText(description, 130)}
-                    </p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#C4A77D]">
-                      {isComingSoon ? "Case study coming soon" : "Open case study"}
-                      <ArrowUpRight size={16} />
-                    </span>
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <Badge>{type}</Badge>
+                    <h3 className="font-display mt-4 text-3xl font-bold tracking-[-0.05em]">
+                      {name}
+                    </h3>
                   </div>
-                </Card>
-              );
+                </ProjectCover>
 
-              if (isComingSoon) return card;
+                <div className="p-6">
+                  <p className="text-sm leading-6 text-[#D9D4CC]">
+                    {truncateText(description, 130)}
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#C4A77D]">
+                    {isComingSoon ? "Case study coming soon" : "Open case study"}
+                    <ArrowUpRight size={16} />
+                  </span>
+                </div>
+              </Card>
+            );
 
-              return (
-                <Link
-                  key={project._id || project.slug}
-                  to={`/work/${slug}`}
-                  className="block h-full rounded-[1.6rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C4A77D]"
-                  aria-label={`Open ${name} case study`}
-                >
-                  {card}
-                </Link>
-              );
-            })}
-          </div>
-        )}
+            if (isComingSoon) return card;
+
+            return (
+              <Link
+                key={project._id || project.slug}
+                to={`/work/${slug}`}
+                className="block h-full rounded-[1.6rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C4A77D]"
+                aria-label={`Open ${name} case study`}
+              >
+                {card}
+              </Link>
+            );
+          })}
+        </div>
       </Container>
     </section>
   );

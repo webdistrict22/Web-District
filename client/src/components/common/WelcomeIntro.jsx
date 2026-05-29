@@ -42,6 +42,7 @@ function markWelcomeSeen() {
 function WelcomeIntro() {
   const [isVisible, setIsVisible] = useState(shouldShowWelcome);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
 
   const prefersReducedMotion = useMemo(() => {
@@ -52,8 +53,8 @@ function WelcomeIntro() {
   useEffect(() => {
     if (!isVisible) return undefined;
 
-    const leaveDelay = prefersReducedMotion ? 950 : 1950;
-    const unmountDelay = prefersReducedMotion ? 1250 : 2350;
+    const leaveDelay = prefersReducedMotion ? 300 : 1120;
+    const unmountDelay = prefersReducedMotion ? 420 : 1380;
 
     const leaveTimer = window.setTimeout(() => {
       markWelcomeSeen();
@@ -94,7 +95,7 @@ function WelcomeIntro() {
               linear-gradient(180deg, #0B0B0A 0%, #0B0B0A 52%, #1B1B19 100%);
             color: #F3EEE4;
             opacity: 1;
-            transition: opacity 420ms ease, visibility 420ms ease;
+            transition: opacity 220ms ease, visibility 220ms ease;
           }
 
           .wd-welcome-intro.is-leaving {
@@ -134,10 +135,10 @@ function WelcomeIntro() {
             justify-content: center;
             overflow: hidden;
             border: 1px solid rgba(196,167,125,0.30);
-            border-radius: 26px;
+            border-radius: 22px;
             background: rgba(11,11,10,0.78);
-            box-shadow: 0 28px 90px rgba(0,0,0,0.48);
-            animation: wdWelcomeLogo 850ms cubic-bezier(.2,.8,.2,1) both;
+            box-shadow: 0 18px 48px rgba(0,0,0,0.38);
+            animation: wdWelcomeLogo 360ms cubic-bezier(.2,.8,.2,1) both;
           }
 
           .wd-welcome-logo-wrap::after {
@@ -149,11 +150,14 @@ function WelcomeIntro() {
           }
 
           .wd-welcome-logo {
-            position: relative;
+            position: absolute;
+            inset: 0;
             z-index: 1;
             height: 100%;
             width: 100%;
             object-fit: cover;
+            opacity: 1;
+            transition: opacity 160ms ease;
           }
 
           .wd-welcome-fallback {
@@ -166,6 +170,10 @@ function WelcomeIntro() {
             color: #F3EEE4;
           }
 
+          .wd-welcome-logo.is-loading {
+            opacity: 0;
+          }
+
           .wd-welcome-title {
             margin: 28px 0 0;
             font-family: "Sora", system-ui, sans-serif;
@@ -174,7 +182,7 @@ function WelcomeIntro() {
             letter-spacing: -0.06em;
             line-height: 0.98;
             color: #F3EEE4;
-            animation: wdWelcomeText 800ms 360ms cubic-bezier(.2,.8,.2,1) both;
+            animation: wdWelcomeText 360ms 80ms cubic-bezier(.2,.8,.2,1) both;
           }
 
           .wd-welcome-subline {
@@ -183,7 +191,7 @@ function WelcomeIntro() {
             font-size: clamp(0.95rem, 2.6vw, 1.08rem);
             line-height: 1.7;
             color: #D6CFC2;
-            animation: wdWelcomeText 800ms 520ms cubic-bezier(.2,.8,.2,1) both;
+            animation: wdWelcomeText 360ms 140ms cubic-bezier(.2,.8,.2,1) both;
           }
 
           .wd-welcome-progress {
@@ -194,7 +202,7 @@ function WelcomeIntro() {
             overflow: hidden;
             border-radius: 999px;
             background: rgba(243,238,228,0.12);
-            animation: wdWelcomeText 600ms 650ms ease both;
+            animation: wdWelcomeText 260ms 180ms ease both;
           }
 
           .wd-welcome-progress span {
@@ -204,7 +212,7 @@ function WelcomeIntro() {
             border-radius: inherit;
             background: linear-gradient(90deg, transparent, #C4A77D, #9A7446, transparent);
             transform-origin: left;
-            animation: wdWelcomeProgress 1600ms 240ms ease both;
+            animation: wdWelcomeProgress 980ms 120ms ease both;
           }
 
           @keyframes wdWelcomeLogo {
@@ -249,21 +257,36 @@ function WelcomeIntro() {
               animation-duration: 1ms;
               animation-delay: 0ms;
             }
+
+            .wd-welcome-intro {
+              transition-duration: 80ms;
+            }
           }
         `}
       </style>
 
       <div className="wd-welcome-panel">
         <div className="wd-welcome-logo-wrap">
-          {!logoFailed ? (
+          {(!logoLoaded || logoFailed) && (
+            <span className="wd-welcome-fallback">Web District</span>
+          )}
+
+          {!logoFailed && (
             <img
               src={logoSrc}
               alt="Web District"
-              className="wd-welcome-logo"
-              onError={() => setLogoFailed(true)}
+              width="164"
+              height="92"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className={`wd-welcome-logo ${logoLoaded ? "" : "is-loading"}`}
+              onLoad={() => setLogoLoaded(true)}
+              onError={() => {
+                setLogoFailed(true);
+                setLogoLoaded(false);
+              }}
             />
-          ) : (
-            <span className="wd-welcome-fallback">Web District</span>
           )}
         </div>
 

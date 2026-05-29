@@ -11,6 +11,10 @@ function Loader({ text = "Loading...", page = false }) {
         <img
           src={logoSrc}
           alt="Web District"
+          width="112"
+          height="64"
+          loading="eager"
+          decoding="async"
           onError={() => setLogoFailed(true)}
           className="h-full w-full object-cover"
         />

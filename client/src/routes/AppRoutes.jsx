@@ -6,12 +6,12 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import AdminLayout from "../components/layout/AdminLayout";
 import Loader from "../components/common/Loader";
 import ScrollToTop from "../components/common/ScrollToTop";
+import Home from "../pages/public/Home";
 
 import ProtectedRoute from "./ProtectedRoute";
 import PublicOnlyRoute from "./PublicOnlyRoute";
 import AdminRoute from "./AdminRoute";
 
-const Home = lazy(() => import("../pages/public/Home"));
 const Services = lazy(() => import("../pages/public/Services"));
 const Work = lazy(() => import("../pages/public/Work"));
 const CaseStudy = lazy(() => import("../pages/public/CaseStudy"));

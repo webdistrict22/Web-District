@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 
-function ProjectCover({ image, name, className = "", children }) {
+function ProjectCover({
+  image,
+  name,
+  className = "",
+  children,
+  imageLoading = "lazy",
+  fetchPriority = "auto",
+}) {
   const [canShowImage, setCanShowImage] = useState(Boolean(image));
 
   useEffect(() => {
@@ -29,6 +36,9 @@ function ProjectCover({ image, name, className = "", children }) {
         <img
           src={image}
           alt={name}
+          loading={imageLoading}
+          decoding="async"
+          fetchPriority={fetchPriority}
           onError={() => setCanShowImage(false)}
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />

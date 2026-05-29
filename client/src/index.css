@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -221,6 +220,25 @@ select option {
   .wd-navbar-ticker-track,
   .animate-\[wdLoader_1\.15s_ease-in-out_infinite\] {
     animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .wd-card {
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+  }
+
+  .wd-noise::before {
+    opacity: 0.025;
+    background-size: 64px 64px;
+  }
+
+  .wd-navbar-ticker-track {
+    animation-duration: 24s;
   }
 }
 

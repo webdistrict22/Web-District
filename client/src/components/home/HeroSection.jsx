@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import Button from "../common/Button";
 import Container from "../common/Container";
 import useSettings from "../../hooks/useSettings";
@@ -45,24 +44,19 @@ function HeroSection() {
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_76%_22%,rgba(196,167,125,0.18),transparent_34%),radial-gradient(circle_at_16%_78%,rgba(100,19,26,0.16),transparent_32%),linear-gradient(120deg,#0B0B0A,#080808_52%,#0B0B0A)]" />
       <div className="absolute inset-0 z-0 hidden bg-[linear-gradient(90deg,rgba(11,11,10,0.92)_0%,rgba(11,11,10,0.72)_45%,rgba(11,11,10,0.52)_100%)] md:block" />
       <div className="absolute inset-0 z-0 bg-[rgba(11,11,10,0.88)] md:hidden" />
-      <div className="absolute right-[-12%] top-[18%] z-0 h-80 w-80 rounded-full bg-[#C4A77D]/18 blur-[100px]" />
+      <div className="absolute right-[-10%] top-[18%] z-0 hidden h-72 w-72 rounded-full bg-[#C4A77D]/14 blur-[56px] md:block" />
       <div className="absolute inset-x-0 bottom-0 z-0 h-32 bg-gradient-to-t from-[#0B0B0A] to-transparent" />
 
       <Container>
         <div className="relative z-10 flex min-h-[440px] items-center py-8 md:min-h-[500px]">
-          <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65 }}
-            className="max-w-4xl"
-          >
+          <div className="max-w-4xl">
             <h1
               className="font-display text-5xl font-extrabold leading-[0.98] tracking-[-0.07em] text-[#F3EEE4] md:text-7xl"
               style={{
                 color: "#F3EEE4",
                 WebkitTextFillColor: "#F3EEE4",
                 forcedColorAdjust: "none",
-                textShadow: "0 8px 28px rgba(0,0,0,0.55)",
+                textShadow: "0 5px 18px rgba(0,0,0,0.46)",
               }}
             >
               {headline}
@@ -74,7 +68,7 @@ function HeroSection() {
                 color: "#D6CFC2",
                 WebkitTextFillColor: "#D6CFC2",
                 forcedColorAdjust: "none",
-                textShadow: "0 8px 28px rgba(0,0,0,0.55)",
+                textShadow: "0 4px 16px rgba(0,0,0,0.42)",
               }}
             >
               {subline}
@@ -86,7 +80,7 @@ function HeroSection() {
                 {secondaryCTA}
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </Container>
     </section>

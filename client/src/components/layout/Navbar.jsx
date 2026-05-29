@@ -26,7 +26,7 @@ function Navbar() {
   }, [isMenuOpen]);
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#080808]/94 shadow-[0_16px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+    <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#080808]/96 shadow-[0_12px_38px_rgba(0,0,0,0.24)] backdrop-blur-sm md:backdrop-blur-xl">
       <nav className="wd-container flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <BrandLogo />

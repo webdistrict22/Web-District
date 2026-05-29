@@ -62,6 +62,7 @@ function ShowcaseGallery({ images = [], name }) {
               alt={lead.alt}
               className="h-full w-full rounded-[1.2rem] object-contain"
               loading="lazy"
+              decoding="async"
             />
           </div>
           {lead.title && (
@@ -84,6 +85,7 @@ function ShowcaseGallery({ images = [], name }) {
                       alt={image.alt}
                       className="h-full w-full rounded-[1rem] object-contain"
                       loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   {image.title && (
@@ -142,7 +144,13 @@ function CaseStudySection({ project }) {
         </div>
 
         <Card className="wd-card-on-black group overflow-hidden">
-          <ProjectCover image={image} name={name} className="min-h-[360px] lg:min-h-[520px]">
+          <ProjectCover
+            image={image}
+            name={name}
+            className="min-h-[360px] lg:min-h-[520px]"
+            imageLoading="eager"
+            fetchPriority="high"
+          >
             <div className="absolute bottom-6 left-6 right-6">
               <h2 className="font-display text-3xl font-bold tracking-[-0.05em]">
                 {name} - {type}

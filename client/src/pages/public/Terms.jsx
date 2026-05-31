@@ -134,8 +134,8 @@ function Terms() {
                 </h2>
                 <p className="mt-4 max-w-2xl leading-8 text-[#D9D4CC]">
                   Start a project when you are ready, contact Web District with
-                  any questions, or review monthly Website Care for support
-                  after launch.
+                  any questions, or review monthly Website Care inside our
+                  services for support after launch.
                 </p>
               </div>
 
@@ -146,7 +146,7 @@ function Terms() {
                 <Button to="/contact" variant="secondary">
                   Contact Web District
                 </Button>
-                <Button to="/website-care" variant="secondary">
+                <Button to="/services" variant="secondary">
                   Website Care
                 </Button>
               </div>

@@ -21,7 +21,6 @@ const Contact = lazy(() => import("../pages/public/Contact"));
 const Success = lazy(() => import("../pages/public/Success"));
 const Terms = lazy(() => import("../pages/public/Terms"));
 const Privacy = lazy(() => import("../pages/public/Privacy"));
-const WebsiteCare = lazy(() => import("../pages/public/WebsiteCare"));
 
 const Login = lazy(() => import("../pages/auth/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
@@ -71,7 +70,6 @@ function AppRoutes() {
             <Route path="success" element={<Success />} />
             <Route path="terms" element={<Terms />} />
             <Route path="privacy" element={<Privacy />} />
-            <Route path="website-care" element={<WebsiteCare />} />
             <Route
               path="login"
               element={
@@ -166,10 +164,6 @@ function AppRoutes() {
             <Route
               path="reviews"
               element={<Navigate to="/admin/clients/reviews" replace />}
-            />
-            <Route
-              path="messages"
-              element={<Navigate to="/admin/clients" replace />}
             />
           </Route>
 

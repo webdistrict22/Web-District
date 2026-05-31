@@ -9,7 +9,6 @@ const footerText =
   "We don't just build websites. We craft digital work that feels like art.";
 
 const legalLinks = [
-  { label: "Website Care", path: "/website-care" },
   { label: "Terms & Conditions", path: "/terms" },
   { label: "Privacy Policy", path: "/privacy" },
 ];

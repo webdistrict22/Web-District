@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Web District">
-  <rect width="64" height="64" rx="14" fill="#202020"/>
-  <rect x="5" y="5" width="54" height="54" rx="11" fill="#202020" stroke="#C4A77D" stroke-width="3"/>
-  <path fill="#F8F7F4" d="M14 20h6l4 17 5-17h6l5 17 4-17h6l-7 24h-6l-5-16-5 16h-6L14 20z"/>
-  <path fill="#C4A77D" d="M48 20h2c7 0 11 5 11 12s-4 12-11 12h-2V20zm3 6v12c3-.4 5-2.5 5-6s-2-5.6-5-6z"/>
-</svg>

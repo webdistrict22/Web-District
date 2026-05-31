@@ -2,7 +2,6 @@ const User = require("../models/User");
 const WebsiteRequest = require("../models/WebsiteRequest");
 const Appointment = require("../models/Appointment");
 const CallSlot = require("../models/CallSlot");
-const ContactMessage = require("../models/ContactMessage");
 const Review = require("../models/Review");
 const Project = require("../models/Project");
 const Package = require("../models/Package");
@@ -24,9 +23,6 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
     totalSlots,
     availableSlots,
     bookedSlots,
-    totalMessages,
-    newMessages,
-    repliedMessages,
     totalContracts,
     sentContracts,
     activeContracts,
@@ -58,10 +54,6 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
     CallSlot.countDocuments(),
     CallSlot.countDocuments({ isActive: true, isBooked: false }),
     CallSlot.countDocuments({ isBooked: true }),
-
-    ContactMessage.countDocuments(),
-    ContactMessage.countDocuments({ status: "New" }),
-    ContactMessage.countDocuments({ status: "Replied" }),
 
     Contract.countDocuments(),
     Contract.countDocuments({ status: "Sent" }),
@@ -95,11 +87,6 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
     .limit(5)
     .select("name businessName topic status slot createdAt");
 
-  const latestMessages = await ContactMessage.find()
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .select("name email subject status createdAt");
-
   const latestContracts = await Contract.find()
     .sort({ createdAt: -1 })
     .limit(5)
@@ -127,11 +114,6 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
         total: totalSlots,
         available: availableSlots,
         booked: bookedSlots,
-      },
-      messages: {
-        total: totalMessages,
-        new: newMessages,
-        replied: repliedMessages,
       },
       contracts: {
         total: totalContracts,
@@ -162,7 +144,6 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
     latest: {
       requests: latestRequests,
       appointments: latestAppointments,
-      messages: latestMessages,
       contracts: latestContracts,
     },
   });

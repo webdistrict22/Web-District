@@ -392,27 +392,6 @@ const sendAppointmentStatusToClient = async (appointment) =>
     text: `Your Web District call status is ${appointment.status}.`,
   });
 
-const notifyContactMessage = async (message) =>
-  safeSend(
-    {
-      to: getOwnerEmail(),
-      subject: `New contact message - ${message.subject || "Website inquiry"}`,
-      html: emailLayout({
-        title: "New contact message",
-        intro: "A new message was submitted through the Contact page.",
-        rows: [
-          { label: "Name", value: message.name },
-          { label: "Email", value: message.email },
-          { label: "Phone", value: message.phone },
-          { label: "Subject", value: message.subject },
-          { label: "Message", value: message.message },
-        ],
-      }),
-      text: `New contact message from ${message.name}`,
-    },
-    "contact message notification"
-  );
-
 const notifyReviewSubmitted = async (review) =>
   safeSend({
     to: getOwnerEmail(),
@@ -587,7 +566,6 @@ module.exports = {
   notifyNewAppointment,
   sendAppointmentConfirmationToClient,
   sendAppointmentStatusToClient,
-  notifyContactMessage,
   notifyReviewSubmitted,
   sendReviewSubmittedConfirmationToClient,
   sendReviewDecisionToClient,

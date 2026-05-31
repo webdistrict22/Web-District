@@ -18,10 +18,6 @@ export default defineConfig({
             return "react-vendor";
           }
 
-          if (id.includes("/framer-motion/")) {
-            return "animation-vendor";
-          }
-
           if (id.includes("/lucide-react/") || id.includes("/react-icons/")) {
             return "icons-vendor";
           }

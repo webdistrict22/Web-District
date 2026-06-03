@@ -6,8 +6,14 @@ const defaultHeadline = "Your brand, brought online with care.";
 const defaultSubline =
   "Elegant websites for brands ready to look more polished, trusted, and complete online.";
 
-const legacyHeadline = "Websites that make businesses look serious.";
-const legacySubtextStart = "We build clean, modern websites";
+const legacyHeadlines = [
+  "Websites that make businesses look serious.",
+  "Websites that make your business look serious.",
+];
+const legacySubtextStarts = [
+  "We build clean, modern websites",
+  "Clean websites for brands, stores, and businesses that need a stronger online presence.",
+];
 
 const normalizeCTA = (value, fallback) => {
   const normalized = String(value || "").trim().toLowerCase();
@@ -27,12 +33,15 @@ function HeroSection() {
   const { settings } = useSettings();
 
   const headline =
-    settings.heroHeadline && settings.heroHeadline !== legacyHeadline
+    settings.heroHeadline && !legacyHeadlines.includes(settings.heroHeadline)
       ? settings.heroHeadline
       : defaultHeadline;
 
   const subline =
-    settings.heroSubtext && !settings.heroSubtext.startsWith(legacySubtextStart)
+    settings.heroSubtext &&
+    !legacySubtextStarts.some((legacySubtext) =>
+      settings.heroSubtext.startsWith(legacySubtext)
+    )
       ? settings.heroSubtext
       : defaultSubline;
 

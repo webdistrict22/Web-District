@@ -10,9 +10,9 @@ const fallbackSettings = {
   whatsapp: AGENCY.whatsapp,
   instagram: AGENCY.instagram,
   email: AGENCY.email,
-  heroHeadline: "Websites that make your business look serious.",
+  heroHeadline: "Your brand, brought online with care.",
   heroSubtext:
-    "Clean websites for brands, stores, and businesses that need a stronger online presence.",
+    "Elegant websites for brands ready to look more polished, trusted, and complete online.",
   primaryCTA: "Start Your Project",
   secondaryCTA: "View Our Work",
   footerText: "Clean websites for brands, stores, and businesses.",

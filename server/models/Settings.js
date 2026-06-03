@@ -29,23 +29,23 @@ const settingsSchema = new mongoose.Schema(
 
     heroHeadline: {
       type: String,
-      default: "Websites that make businesses look serious.",
+      default: "Your brand, brought online with care.",
     },
 
     heroSubtext: {
       type: String,
       default:
-        "We build clean, modern websites for brands, businesses, and campaigns — from online stores to business websites and landing pages.",
+        "Elegant websites for brands ready to look more polished, trusted, and complete online.",
     },
 
     primaryCTA: {
       type: String,
-      default: "Book your website",
+      default: "Start Your Project",
     },
 
     secondaryCTA: {
       type: String,
-      default: "View our work",
+      default: "View Our Work",
     },
 
     footerText: {

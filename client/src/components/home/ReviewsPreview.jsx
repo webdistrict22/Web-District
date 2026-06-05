@@ -9,7 +9,7 @@ import useLanguage from "../../hooks/useLanguage";
 function ReviewsPreview() {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { t } = useLanguage();
+  const { t, translateValue } = useLanguage();
 
   const fetchReviews = async () => {
     try {
@@ -72,7 +72,9 @@ function ReviewsPreview() {
                 <div className="mt-6 border-t border-white/10 pt-4">
                   <p className="font-semibold text-[#F8F7F4]">{review.name}</p>
                   <p className="text-sm text-[#D9D4CC]">
-                    {review.role || t("home.reviews.client")}
+                    {review.role
+                      ? translateValue("reviewRoles", review.role)
+                      : t("home.reviews.client")}
                     {review.businessName ? ` - ${review.businessName}` : ""}
                   </p>
                 </div>

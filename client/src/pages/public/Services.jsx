@@ -15,7 +15,6 @@ import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import ServiceCard from "../../components/services/ServiceCard";
-import Loader from "../../components/common/Loader";
 import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink, truncateText } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
@@ -30,7 +29,6 @@ const websiteCareIcons = [
 
 function Services() {
   const [packages, setPackages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { isArabic, t } = useLanguage();
   const websiteCareWhatsappLink = getWhatsappLink(
     AGENCY.whatsapp,
@@ -39,15 +37,11 @@ function Services() {
 
   const fetchPackages = async () => {
     try {
-      setIsLoading(true);
-
       const { data } = await api.get("/packages/public");
 
       setPackages(data.packages || []);
     } catch (error) {
       setPackages([]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -56,9 +50,11 @@ function Services() {
   }, []);
 
   const services = useMemo(() => {
-    if (isArabic || !packages.length) return t("services.cards", []);
+    const fallbackServices = t("services.cards", []);
 
-    return packages
+    if (isArabic || !packages.length) return fallbackServices;
+
+    const apiServices = packages
       .map((item) => ({
         title: item.name,
         label: item.websiteType,
@@ -75,6 +71,11 @@ function Services() {
         isFeatured: item.isFeatured,
       }))
       .slice(0, 4);
+
+    return [
+      ...apiServices,
+      ...fallbackServices.slice(apiServices.length, 4),
+    ].slice(0, 4);
   }, [isArabic, packages, t]);
 
   const websiteCareItems = t("services.care.items", []).map((item, index) => ({
@@ -106,11 +107,6 @@ function Services() {
 
       <section className="wd-section-black pt-6 pb-16 md:pt-8">
         <Container>
-        {isLoading ? (
-          <section>
-            <Loader text={t("services.loading")} />
-          </section>
-        ) : (
           <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {services.map((service, index) => (
               <ServiceCard
@@ -121,7 +117,6 @@ function Services() {
               />
             ))}
           </section>
-        )}
         </Container>
       </section>
 

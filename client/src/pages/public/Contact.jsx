@@ -1,6 +1,7 @@
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import ContactCards from "../../components/contact/ContactCards";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -9,6 +10,11 @@ function Contact() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Contact"
+        description="Contact Web District through WhatsApp, Instagram, email, or phone."
+      />
+
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">

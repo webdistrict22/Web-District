@@ -3,6 +3,7 @@ import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
+import PageMeta from "../../components/common/PageMeta";
 import StartOptions from "../../components/start/StartOptions";
 import WebsiteRequestForm from "../../components/start/WebsiteRequestForm";
 import BookCallForm from "../../components/start/BookCallForm";
@@ -16,6 +17,11 @@ function Start() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Start Your Project"
+        description="Tell Web District about your website project and start with a clear direction."
+      />
+
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <SectionHeader

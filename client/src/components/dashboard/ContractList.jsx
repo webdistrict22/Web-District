@@ -27,7 +27,7 @@ function ContractList({
   const [activeNoteId, setActiveNoteId] = useState("");
   const [noteDrafts, setNoteDrafts] = useState({});
   const [loadingId, setLoadingId] = useState("");
-  const { getErrorMessage, t, translateValue } = useLanguage();
+  const { effectiveLanguage, getErrorMessage, t, translateValue } = useLanguage();
 
   if (!contracts.length) {
     return (
@@ -130,7 +130,7 @@ function ContractList({
                   </span>
 
                   <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-                    {formatDate(contract.createdAt)}
+                    {formatDate(contract.createdAt, effectiveLanguage)}
                   </span>
                 </div>
 

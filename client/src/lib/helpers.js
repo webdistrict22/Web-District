@@ -1,8 +1,10 @@
-export const formatDate = (date) => {
+const resolveDateLocale = (locale) => (locale === "ar" ? "ar-EG" : locale || "en");
+
+export const formatDate = (date, locale = "en") => {
   if (!date) return "—";
 
   try {
-    return new Intl.DateTimeFormat("en", {
+    return new Intl.DateTimeFormat(resolveDateLocale(locale), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -12,11 +14,11 @@ export const formatDate = (date) => {
   }
 };
 
-export const formatDateTime = (date) => {
+export const formatDateTime = (date, locale = "en") => {
   if (!date) return "—";
 
   try {
-    return new Intl.DateTimeFormat("en", {
+    return new Intl.DateTimeFormat(resolveDateLocale(locale), {
       year: "numeric",
       month: "short",
       day: "numeric",

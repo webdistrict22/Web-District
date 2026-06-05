@@ -6,7 +6,7 @@ import { formatDate } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
 
 function AppointmentList({ appointments = [] }) {
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
 
   if (!appointments.length) {
     return (
@@ -45,13 +45,21 @@ function AppointmentList({ appointments = [] }) {
             <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#D9D4CC]">
               <div className="flex items-center gap-2">
                 <CalendarDays size={16} className="text-[#C4A77D]" />
-                {formatDate(appointment.createdAt)}
+                {formatDate(appointment.createdAt, effectiveLanguage)}
               </div>
             </div>
           </div>
 
           <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2 lg:grid-cols-4">
-            <InfoItem icon={CalendarDays} label={t("common.labels.callDate")} value={appointment.slot?.date} />
+            <InfoItem
+              icon={CalendarDays}
+              label={t("common.labels.callDate")}
+              value={
+                appointment.slot?.date
+                  ? formatDate(appointment.slot.date, effectiveLanguage)
+                  : "-"
+              }
+            />
             <InfoItem
               icon={Clock}
               label={t("common.labels.time")}

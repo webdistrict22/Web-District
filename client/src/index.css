@@ -265,6 +265,10 @@ html.lang-ar .font-display {
   will-change: transform;
 }
 
+.wd-navbar-ticker-text-rtl {
+  font-size: 0.72rem;
+}
+
 @keyframes wdTickerRtl {
   from {
     left: 100%;

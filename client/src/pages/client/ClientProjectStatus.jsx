@@ -89,6 +89,10 @@ function ClientProjectStatus() {
 function ProjectStatusCard({ contract }) {
   const { t, translateValue } = useLanguage();
   const currentIndex = statusSteps.indexOf(contract.status);
+  const terminalMessageKey = {
+    Cancelled: "client.projectStatus.cancelledMessage",
+    Rejected: "client.projectStatus.rejectedMessage",
+  }[contract.status];
 
   return (
     <Card className="p-6 md:p-8">
@@ -112,47 +116,55 @@ function ProjectStatusCard({ contract }) {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-3 md:grid-cols-5">
-        {statusSteps.map((step, index) => {
-          const isDone = currentIndex >= index;
-          const isCurrent = currentIndex === index;
+      {terminalMessageKey ? (
+        <div className="mt-8 rounded-2xl border border-[#64131A]/35 bg-[#64131A]/18 p-5">
+          <p className="font-semibold text-[#F8F7F4]">
+            {t(terminalMessageKey)}
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 grid gap-3 md:grid-cols-5">
+          {statusSteps.map((step, index) => {
+            const isDone = currentIndex >= index;
+            const isCurrent = currentIndex === index;
 
-          return (
-            <div
-              key={step}
-              className={`rounded-2xl border p-4 ${
-                isDone
-                  ? "border-[#C4A77D]/30 bg-[#C4A77D]/10"
-                  : "border-white/10 bg-white/[0.025]"
-              }`}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                {isDone ? (
-                  <CheckCircle2 size={18} className="text-[#C4A77D]" />
-                ) : (
-                  <CircleDashed size={18} className="text-[#D9D4CC]" />
-                )}
+            return (
+              <div
+                key={step}
+                className={`rounded-2xl border p-4 ${
+                  isDone
+                    ? "border-[#C4A77D]/30 bg-[#C4A77D]/10"
+                    : "border-white/10 bg-white/[0.025]"
+                }`}
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  {isDone ? (
+                    <CheckCircle2 size={18} className="text-[#C4A77D]" />
+                  ) : (
+                    <CircleDashed size={18} className="text-[#D9D4CC]" />
+                  )}
 
-                <span
-                  className={`text-sm font-semibold ${
-                    isCurrent ? "text-[#F8F7F4]" : "text-[#D9D4CC]"
-                  }`}
-                >
-                  {translateValue("statuses", step)}
-                </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      isCurrent ? "text-[#F8F7F4]" : "text-[#D9D4CC]"
+                    }`}
+                  >
+                    {translateValue("statuses", step)}
+                  </span>
+                </div>
+
+                <p className="text-xs leading-5 text-[#D9D4CC]">
+                  {isCurrent
+                    ? t("common.stages.current")
+                    : isDone
+                      ? t("common.stages.completed")
+                      : t("common.stages.upcoming")}
+                </p>
               </div>
-
-              <p className="text-xs leading-5 text-[#D9D4CC]">
-                {isCurrent
-                  ? t("common.stages.current")
-                  : isDone
-                    ? t("common.stages.completed")
-                    : t("common.stages.upcoming")}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </Card>
   );
 }

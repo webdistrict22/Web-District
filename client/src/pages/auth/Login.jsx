@@ -6,6 +6,7 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -61,6 +62,11 @@ function Login() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Login"
+        description="Login to your Web District client account."
+      />
+
       <section className="wd-section-black pt-32 pb-10">
         <Container>
         <div className="mx-auto max-w-xl">

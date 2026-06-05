@@ -6,7 +6,7 @@ import { formatDate } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
 
 function RequestList({ requests = [] }) {
-  const { t, translateValue } = useLanguage();
+  const { effectiveLanguage, t, translateValue } = useLanguage();
 
   if (!requests.length) {
     return (
@@ -45,7 +45,7 @@ function RequestList({ requests = [] }) {
             <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#D9D4CC]">
               <div className="flex items-center gap-2">
                 <CalendarDays size={16} className="text-[#C4A77D]" />
-                {formatDate(request.createdAt)}
+                {formatDate(request.createdAt, effectiveLanguage)}
               </div>
             </div>
           </div>

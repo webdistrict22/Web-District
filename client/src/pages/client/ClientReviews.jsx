@@ -17,9 +17,17 @@ const initialForm = {
   message: "",
 };
 
+const normalizedReviewRoles = {
+  عميل: "Client",
+  مؤسس: "Founder",
+  مالك: "Owner",
+  مدير: "Manager",
+  "مؤسس / مالك / مدير": "Founder / Owner / Manager",
+};
+
 function ClientReviews() {
   const { user } = useAuth();
-  const { getErrorMessage, t } = useLanguage();
+  const { getErrorMessage, t, translateValue } = useLanguage();
 
   const [form, setForm] = useState(() => ({
     ...initialForm,
@@ -135,8 +143,13 @@ function ClientReviews() {
               <Input
                 label={t("client.reviews.role")}
                 placeholder={t("client.reviews.rolePlaceholder")}
-                value={form.role}
-                onChange={(e) => updateField("role", e.target.value)}
+                value={translateValue("reviewRoles", form.role)}
+                onChange={(e) =>
+                  updateField(
+                    "role",
+                    normalizedReviewRoles[e.target.value] || e.target.value
+                  )
+                }
               />
 
               <Select
@@ -146,7 +159,7 @@ function ClientReviews() {
               >
                 {[5, 4, 3, 2, 1].map((rating) => (
                   <option key={rating} value={rating}>
-                    {t("client.reviews.stars", undefined, { count: rating })}
+                    {t(`client.reviews.ratingOptions.${rating}`)}
                   </option>
                 ))}
               </Select>

@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import ProcessTimeline from "../../components/process/ProcessTimeline";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -14,6 +15,11 @@ function Process() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Process"
+        description="See how Web District plans, builds, and launches professional websites."
+      />
+
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
           <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">

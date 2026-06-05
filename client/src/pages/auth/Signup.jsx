@@ -6,6 +6,7 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -58,6 +59,11 @@ function Signup() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Create Account"
+        description="Create a Web District client account to manage requests, appointments, and proposals."
+      />
+
       <section className="wd-section-black pt-32 pb-10">
         <Container>
         <div className="mx-auto max-w-2xl">

@@ -118,7 +118,7 @@ export const workProjects = [
     isComingSoon: false,
   },
   {
-    name: "Atheer Otour",
+    name: "Atheer",
     slug: "atheer",
     type: "Online Store",
     businessType: "Perfume store",

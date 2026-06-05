@@ -1,5 +1,11 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 
 import PublicLayout from "../components/layout/PublicLayout";
 import DashboardLayout from "../components/layout/DashboardLayout";
@@ -7,6 +13,7 @@ import AdminLayout from "../components/layout/AdminLayout";
 import Loader from "../components/common/Loader";
 import ScrollToTop from "../components/common/ScrollToTop";
 import Home from "../pages/public/Home";
+import useLanguage from "../hooks/useLanguage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import PublicOnlyRoute from "./PublicOnlyRoute";
@@ -52,12 +59,26 @@ const AdminControl = lazy(() => import("../components/admin/SettingsManager"));
 
 const NotFound = lazy(() => import("../pages/NotFound"));
 
+function LanguageRouteSync() {
+  const location = useLocation();
+  const { setIsAdminRoute } = useLanguage();
+
+  useEffect(() => {
+    setIsAdminRoute(location.pathname.startsWith("/admin"));
+  }, [location.pathname, setIsAdminRoute]);
+
+  return null;
+}
+
 function AppRoutes() {
+  const { t } = useLanguage();
+
   return (
     <BrowserRouter>
+      <LanguageRouteSync />
       <ScrollToTop />
 
-      <Suspense fallback={<Loader page text="Loading" />}>
+      <Suspense fallback={<Loader page text={t("common.loading.page")} />}>
         <Routes>
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<Home />} />

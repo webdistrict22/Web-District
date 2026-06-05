@@ -8,6 +8,7 @@ import Card from "../common/Card";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
+import useLanguage from "../../hooks/useLanguage";
 
 const initialForm = {
   name: "",
@@ -25,6 +26,7 @@ const initialForm = {
 
 function WebsiteRequestForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
+  const { getErrorMessage, t, translateValue } = useLanguage();
   const navigate = useNavigate();
 
   const [form, setForm] = useState(() => ({
@@ -48,7 +50,7 @@ function WebsiteRequestForm({ className = "" }) {
     e.preventDefault();
 
     if (!form.name || !form.phone || !form.email || !form.projectDetails) {
-      toast.error("Please fill name, phone, email, and project details.");
+      toast.error(t("start.requestForm.validation"));
       return;
     }
 
@@ -59,8 +61,8 @@ function WebsiteRequestForm({ className = "" }) {
 
       toast.success(
         isAuthenticated
-          ? "Website request submitted. You can track it in your dashboard."
-          : "Website request submitted successfully."
+          ? t("start.requestForm.successLoggedIn")
+          : t("start.requestForm.success")
       );
 
       setForm({
@@ -74,7 +76,7 @@ function WebsiteRequestForm({ className = "" }) {
       navigate("/success?type=request");
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to submit website request."
+        getErrorMessage(error, "start.requestForm.error")
       );
     } finally {
       setIsLoading(false);
@@ -85,117 +87,131 @@ function WebsiteRequestForm({ className = "" }) {
     <Card className={`p-6 md:p-8 ${className}`}>
       <div className="mb-8">
         <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-          Website request
+          {t("start.requestForm.eyebrow")}
         </p>
         <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-          Tell us what you need.
+          {t("start.requestForm.title")}
         </h2>
         <p className="mt-3 max-w-2xl leading-7 text-[#D9D4CC]">
-          Share the business, goal, and website direction. We'll review it
-          and contact you with the next step.
+          {t("start.requestForm.description")}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
         <div className="grid gap-5 md:grid-cols-2">
           <Input
-            label="Name *"
-            placeholder="Your name"
+            label={t("start.requestForm.name")}
+            placeholder={t("start.requestForm.namePlaceholder")}
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
           />
 
           <Input
-            label="Business name"
-            placeholder="Business / brand name"
+            label={t("start.requestForm.businessName")}
+            placeholder={t("start.requestForm.businessNamePlaceholder")}
             value={form.businessName}
             onChange={(e) => updateField("businessName", e.target.value)}
           />
 
           <Input
-            label="Phone / WhatsApp *"
-            placeholder="011..."
+            label={t("start.requestForm.phone")}
+            placeholder={t("start.requestForm.phonePlaceholder")}
+            className="wd-ltr"
             value={form.phone}
             onChange={(e) => updateField("phone", e.target.value)}
           />
 
           <Input
-            label="Email *"
+            label={t("start.requestForm.email")}
             type="email"
-            placeholder="you@example.com"
+            placeholder={t("start.requestForm.emailPlaceholder")}
+            className="wd-ltr"
             value={form.email}
             onChange={(e) => updateField("email", e.target.value)}
           />
 
           <Select
-            label="Website type *"
+            label={t("start.requestForm.websiteType")}
             value={form.websiteType}
             onChange={(e) => updateField("websiteType", e.target.value)}
           >
-            <option>Online Store</option>
-            <option>Business Website</option>
-            <option>Landing Page</option>
-            <option>Custom Website</option>
+            {[
+              "Online Store",
+              "Business Website",
+              "Landing Page",
+              "Custom Website",
+            ].map((type) => (
+              <option key={type} value={type}>
+                {translateValue("websiteTypes", type)}
+              </option>
+            ))}
           </Select>
 
           <Select
-            label="Preferred contact method"
+            label={t("start.requestForm.preferredContact")}
             value={form.preferredContactMethod}
             onChange={(e) =>
               updateField("preferredContactMethod", e.target.value)
             }
           >
-            <option>WhatsApp</option>
-            <option>Phone Call</option>
-            <option>Email</option>
-            <option>Instagram</option>
+            {["WhatsApp", "Phone Call", "Email", "Instagram"].map((method) => (
+              <option key={method} value={method}>
+                {translateValue("contactMethods", method)}
+              </option>
+            ))}
           </Select>
 
           <Select
-            label="Do you already have a logo / identity?"
+            label={t("start.requestForm.identity")}
             value={form.hasBrandIdentity}
             onChange={(e) => updateField("hasBrandIdentity", e.target.value)}
           >
-            <option>Yes</option>
-            <option>No</option>
-            <option>Not sure</option>
+            {["Yes", "No", "Not sure"].map((value) => (
+              <option key={value} value={value}>
+                {translateValue("yesNo", value)}
+              </option>
+            ))}
           </Select>
 
           <Select
-            label="Do you have content/products/images?"
+            label={t("start.requestForm.content")}
             value={form.hasContentReady}
             onChange={(e) => updateField("hasContentReady", e.target.value)}
           >
-            <option>Yes</option>
-            <option>No</option>
-            <option>Partially</option>
+            {["Yes", "No", "Partially"].map((value) => (
+              <option key={value} value={value}>
+                {translateValue("yesNo", value)}
+              </option>
+            ))}
           </Select>
 
           <Input
-            label="Budget range"
-            placeholder="Optional"
+            label={t("start.requestForm.budget")}
+            placeholder={t("start.requestForm.optional")}
             value={form.budgetRange}
             onChange={(e) => updateField("budgetRange", e.target.value)}
           />
 
           <Input
-            label="Deadline"
-            placeholder="Optional"
+            label={t("start.requestForm.deadline")}
+            placeholder={t("start.requestForm.optional")}
             value={form.deadline}
             onChange={(e) => updateField("deadline", e.target.value)}
           />
         </div>
 
         <Textarea
-          label="Project details *"
-          placeholder="Tell us about your business, website goal, key pages, and important features."
+          label={t("start.requestForm.details")}
+          placeholder={t("start.requestForm.detailsPlaceholder")}
           value={form.projectDetails}
           onChange={(e) => updateField("projectDetails", e.target.value)}
         />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button type="submit" disabled={isLoading} className="text-[#F8F7F4]">
-            {isLoading ? "Submitting..." : "Submit website request"}
+            {isLoading
+              ? t("start.requestForm.submitting")
+              : t("start.requestForm.submit")}
           </Button>
         </div>
       </form>

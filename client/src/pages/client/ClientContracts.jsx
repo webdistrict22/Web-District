@@ -5,10 +5,12 @@ import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import ContractList from "../../components/dashboard/ContractList";
 import api from "../../lib/axios";
+import useLanguage from "../../hooks/useLanguage";
 
 function ClientContracts() {
   const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { getErrorMessage, t } = useLanguage();
 
   const fetchContracts = async () => {
     try {
@@ -19,7 +21,7 @@ function ClientContracts() {
       setContracts(data.contracts || []);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to load your contracts."
+        getErrorMessage(error, "client.contracts.loadError")
       );
     } finally {
       setIsLoading(false);
@@ -36,26 +38,24 @@ function ClientContracts() {
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Client portal
+              {t("common.labels.clientPortal")}
             </p>
 
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Contracts and proposals
+              {t("client.contracts.title")}
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              View proposals, project scope, payment details, timeline, and
-              contract status prepared by Web District. You can accept a
-              proposal or send a note from here.
+              {t("client.contracts.description")}
             </p>
           </div>
 
-          <Button to="/start">Start new request</Button>
+          <Button to="/start">{t("client.profile.startNew")}</Button>
         </div>
       </Card>
 
       {isLoading ? (
-        <Loader text="Loading your contracts..." />
+        <Loader text={t("client.contracts.loading")} />
       ) : (
         <ContractList
           contracts={contracts}

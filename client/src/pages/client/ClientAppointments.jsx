@@ -5,10 +5,12 @@ import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import AppointmentList from "../../components/dashboard/AppointmentList";
 import api from "../../lib/axios";
+import useLanguage from "../../hooks/useLanguage";
 
 function ClientAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { getErrorMessage, t } = useLanguage();
 
   const fetchAppointments = async () => {
     try {
@@ -19,7 +21,7 @@ function ClientAppointments() {
       setAppointments(data.appointments || []);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to load your appointments."
+        getErrorMessage(error, "client.appointments.loadError")
       );
     } finally {
       setIsLoading(false);
@@ -36,25 +38,24 @@ function ClientAppointments() {
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Client portal
+              {t("common.labels.clientPortal")}
             </p>
 
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Your call appointments
+              {t("client.appointments.title")}
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              Track your booked calls with Web District and follow their current
-              status.
+              {t("client.appointments.description")}
             </p>
           </div>
 
-          <Button to="/start">Book another call</Button>
+          <Button to="/start">{t("client.appointments.bookAnother")}</Button>
         </div>
       </Card>
 
       {isLoading ? (
-        <Loader text="Loading your call appointments..." />
+        <Loader text={t("client.appointments.loading")} />
       ) : (
         <AppointmentList appointments={appointments} />
       )}

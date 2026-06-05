@@ -7,6 +7,7 @@ import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
 import StatusBadge from "../../components/common/StatusBadge";
 import api from "../../lib/axios";
+import useLanguage from "../../hooks/useLanguage";
 
 const statusSteps = [
   "Draft",
@@ -19,6 +20,7 @@ const statusSteps = [
 function ClientProjectStatus() {
   const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { getErrorMessage, t } = useLanguage();
 
   const fetchContracts = async () => {
     try {
@@ -29,7 +31,7 @@ function ClientProjectStatus() {
       setContracts(data.contracts || []);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to load project status."
+        getErrorMessage(error, "client.projectStatus.loadError")
       );
     } finally {
       setIsLoading(false);
@@ -46,27 +48,26 @@ function ClientProjectStatus() {
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Client portal
+              {t("common.labels.clientPortal")}
             </p>
 
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Project status
+              {t("client.projectStatus.title")}
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              Track the progress of proposals and active projects from contract
-              status.
+              {t("client.projectStatus.description")}
             </p>
           </div>
 
           <Button to="/account/contracts" variant="secondary">
-            View contracts
+            {t("client.projectStatus.viewContracts")}
           </Button>
         </div>
       </Card>
 
       {isLoading ? (
-        <Loader text="Loading project status..." />
+        <Loader text={t("client.projectStatus.loading")} />
       ) : contracts.length ? (
         <div className="grid gap-5">
           {contracts.map((contract) => (
@@ -75,9 +76,9 @@ function ClientProjectStatus() {
         </div>
       ) : (
         <EmptyState
-          title="No active project status yet"
-          description="Once Web District prepares a proposal or contract for you, project status will appear here."
-          actionText="Start a request"
+          title={t("client.projectStatus.emptyTitle")}
+          description={t("client.projectStatus.emptyDescription")}
+          actionText={t("common.buttons.startRequest")}
           actionTo="/start"
         />
       )}
@@ -86,6 +87,7 @@ function ClientProjectStatus() {
 }
 
 function ProjectStatusCard({ contract }) {
+  const { t, translateValue } = useLanguage();
   const currentIndex = statusSteps.indexOf(contract.status);
 
   return (
@@ -96,7 +98,7 @@ function ProjectStatusCard({ contract }) {
             <StatusBadge status={contract.status} />
 
             <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-              {contract.websiteType}
+              {translateValue("websiteTypes", contract.websiteType)}
             </span>
           </div>
 
@@ -136,12 +138,16 @@ function ProjectStatusCard({ contract }) {
                     isCurrent ? "text-[#F8F7F4]" : "text-[#D9D4CC]"
                   }`}
                 >
-                  {step}
+                  {translateValue("statuses", step)}
                 </span>
               </div>
 
               <p className="text-xs leading-5 text-[#D9D4CC]">
-                {isCurrent ? "Current stage" : isDone ? "Completed stage" : "Upcoming stage"}
+                {isCurrent
+                  ? t("common.stages.current")
+                  : isDone
+                    ? t("common.stages.completed")
+                    : t("common.stages.upcoming")}
               </p>
             </div>
           );

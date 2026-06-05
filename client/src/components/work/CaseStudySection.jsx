@@ -2,11 +2,10 @@ import { CheckCircle2 } from "lucide-react";
 import Card from "../common/Card";
 import Badge from "../common/Badge";
 import ProjectCover from "./ProjectCover";
+import useLanguage from "../../hooks/useLanguage";
 
-const listFallback = ["Details will be added soon."];
-
-function BulletList({ items = listFallback }) {
-  const visibleItems = items.length ? items : listFallback;
+function BulletList({ items = [], fallbackDetail }) {
+  const visibleItems = items.length ? items : [fallbackDetail];
 
   return (
     <div className="grid gap-3">
@@ -24,13 +23,18 @@ function BulletList({ items = listFallback }) {
 }
 
 function ShowcaseGallery({ images = [], name }) {
+  const { t } = useLanguage();
+
   if (!images.length) return null;
 
   const [leadImage, ...supportingImages] = images.slice(0, 4);
 
   const getImageMeta = (item, index) => {
     const src = typeof item === "string" ? item : item.src;
-    const title = typeof item === "string" ? `Screen ${index + 1}` : item.title;
+    const title =
+      typeof item === "string"
+        ? `${t("work.caseStudy.screen")} ${index + 1}`
+        : item.title;
     const alt =
       typeof item === "string"
         ? `${name} showcase ${index + 1}`
@@ -46,10 +50,10 @@ function ShowcaseGallery({ images = [], name }) {
       <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            Showcase
+            {t("work.caseStudy.showcase")}
           </p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-            case-study views.
+            {t("work.caseStudy.showcaseTitle")}
           </h2>
         </div>
       </div>
@@ -104,19 +108,40 @@ function ShowcaseGallery({ images = [], name }) {
 }
 
 function CaseStudySection({ project }) {
+  const { t, translateValue } = useLanguage();
   const isDatabaseProject = Boolean(project._id);
 
   const name = isDatabaseProject ? project.title : project.name;
-  const type = isDatabaseProject ? project.websiteType : project.type;
-  const businessType = project.businessType || "";
-  const overview = isDatabaseProject
+  const slug = project.slug;
+  const rawType = isDatabaseProject ? project.websiteType : project.type;
+  const rawBusinessType = project.businessType || "";
+  const rawOverview = isDatabaseProject
     ? project.fullDescription || project.shortDescription
     : project.overview;
-  const publicFeatures = isDatabaseProject
+  const rawPublicFeatures = isDatabaseProject
     ? project.keyFeatures || []
     : project.publicFeatures || project.features || [];
-  const adminFeatures = project.adminFeatures || [];
-  const showcaseImages = project.showcaseImages || (isDatabaseProject ? project.images?.slice(1) || [] : []);
+  const rawAdminFeatures = project.adminFeatures || [];
+  const type = t(
+    `work.projects.${slug}.type`,
+    translateValue("websiteTypes", rawType)
+  );
+  const businessType = t(`work.projects.${slug}.businessType`, rawBusinessType);
+  const overview = t(`work.projects.${slug}.overview`, rawOverview);
+  const publicFeatures = t(
+    `work.projects.${slug}.publicFeatures`,
+    rawPublicFeatures
+  );
+  const adminFeatures = t(`work.projects.${slug}.adminFeatures`, rawAdminFeatures);
+  const showcaseTitles = t(`work.projects.${slug}.showcaseTitles`, []);
+  const showcaseImages = (
+    project.showcaseImages ||
+    (isDatabaseProject ? project.images?.slice(1) || [] : [])
+  ).map((item, index) =>
+    typeof item === "string"
+      ? { src: item, title: showcaseTitles[index] }
+      : { ...item, title: showcaseTitles[index] || item.title }
+  );
   const image = isDatabaseProject
     ? project.images?.[0]
     : project.coverImage || project.image;
@@ -166,16 +191,22 @@ function CaseStudySection({ project }) {
         <div className="grid gap-5 lg:grid-cols-2">
         <Card className="wd-card-on-black p-6 md:p-8">
           <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            Public Website
+            {t("work.caseStudy.publicFeatures")}
           </p>
-          <BulletList items={publicFeatures} />
+          <BulletList
+            items={publicFeatures}
+            fallbackDetail={t("work.caseStudy.fallbackDetail")}
+          />
         </Card>
 
         <Card className="wd-card-on-black p-6 md:p-8">
           <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            Admin / Dashboard
+            {t("work.caseStudy.adminFeatures")}
           </p>
-          <BulletList items={adminFeatures} />
+          <BulletList
+            items={adminFeatures}
+            fallbackDetail={t("work.caseStudy.fallbackDetail")}
+          />
         </Card>
         </div>
       </section>

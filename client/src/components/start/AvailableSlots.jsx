@@ -1,50 +1,51 @@
 import { CalendarDays } from "lucide-react";
 import { useMemo, useState } from "react";
 import Card from "../common/Card";
+import useLanguage from "../../hooks/useLanguage";
 
 const visibleDayCount = 5;
 
-const formatSlotDate = (date) => {
+const formatSlotDate = (date, locale) => {
   const parsedDate = new Date(`${date}T00:00:00`);
 
   if (Number.isNaN(parsedDate.getTime())) return date;
 
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
 }).format(parsedDate);
 };
 
-const formatDayLabel = (date) => {
+const formatDayLabel = (date, locale) => {
   const parsedDate = new Date(`${date}T00:00:00`);
 
   if (Number.isNaN(parsedDate.getTime())) return date;
 
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     weekday: "short",
   }).format(parsedDate);
 };
 
-const formatDayNumber = (date) => {
+const formatDayNumber = (date, locale) => {
   const parsedDate = new Date(`${date}T00:00:00`);
 
   if (Number.isNaN(parsedDate.getTime())) return "";
 
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
 }).format(parsedDate);
 };
 
-const formatSlotTime = (time) => {
+const formatSlotTime = (time, locale) => {
   const [hourValue, minuteValue = "00"] = String(time).split(":");
   const hour = Number(hourValue);
   const minute = Number(minuteValue);
 
   if (Number.isNaN(hour) || Number.isNaN(minute)) return time;
 
-  const period = hour >= 12 ? "PM" : "AM";
+  const period = hour >= 12 ? (locale === "ar-EG" ? "م" : "PM") : (locale === "ar-EG" ? "ص" : "AM");
   const displayHour = hour % 12 || 12;
   const displayMinute = minute ? `:${String(minute).padStart(2, "0")}` : "";
 
@@ -64,6 +65,8 @@ const groupSlotsByDate = (slots) =>
 
 function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
   const [selectedDate, setSelectedDate] = useState("");
+  const { effectiveLanguage, t } = useLanguage();
+  const dateLocale = effectiveLanguage === "ar" ? "ar-EG" : undefined;
 
   const slotsByDate = useMemo(() => groupSlotsByDate(slots), [slots]);
   const visibleDates = useMemo(
@@ -78,7 +81,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
   if (isLoading) {
     return (
       <Card className="p-6">
-        <p className="text-[#D9D4CC]">Loading available call slots...</p>
+        <p className="text-[#D9D4CC]">{t("start.slots.loading")}</p>
       </Card>
     );
   }
@@ -86,10 +89,11 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
   if (!slots.length) {
     return (
       <Card className="p-6">
-        <p className="font-semibold text-[#F8F7F4]">No call slots available yet.</p>
+        <p className="font-semibold text-[#F8F7F4]">
+          {t("start.slots.emptyTitle")}
+        </p>
         <p className="mt-2 leading-7 text-[#D9D4CC]">
-          You can still submit a website request or contact Web District
-          directly through WhatsApp.
+          {t("start.slots.emptyDescription")}
         </p>
       </Card>
     );
@@ -103,8 +107,10 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
         </div>
 
         <div>
-          <p className="font-semibold text-[#F3EEE4]">Choose a day</p>
-          <p className="text-sm text-[#D6CFC2]">Next 5 available days</p>
+          <p className="font-semibold text-[#F3EEE4]">
+            {t("start.slots.chooseDay")}
+          </p>
+          <p className="text-sm text-[#D6CFC2]">{t("start.slots.nextDays")}</p>
         </div>
       </div>
 
@@ -127,10 +133,10 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
               }`}
             >
               <span className="block text-xs font-bold uppercase tracking-[0.18em]">
-                {formatDayLabel(date)}
+                {formatDayLabel(date, dateLocale)}
               </span>
               <span className="mt-1 block text-sm font-semibold">
-                {formatDayNumber(date)}
+                {formatDayNumber(date, dateLocale)}
               </span>
             </button>
           );
@@ -146,7 +152,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
 
             <div>
               <p className="font-semibold text-[#F3EEE4]">
-                {formatSlotDate(activeDate)}
+                {formatSlotDate(activeDate, dateLocale)}
               </p>
               <p className="text-sm text-[#D6CFC2]">{activeDate}</p>
             </div>
@@ -167,7 +173,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
                       : "border-white/10 bg-white/[0.035] text-[#D6CFC2] hover:border-[#C4A77D]/45 hover:text-[#F3EEE4]"
                   }`}
                 >
-                  {formatSlotTime(slot.startTime)} - {formatSlotTime(slot.endTime)}
+                  {formatSlotTime(slot.startTime, dateLocale)} - {formatSlotTime(slot.endTime, dateLocale)}
                 </button>
               );
             })}

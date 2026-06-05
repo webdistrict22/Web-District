@@ -4,9 +4,11 @@ import Button from "../common/Button";
 import BrandLogo from "./BrandLogo";
 import { navLinks } from "../../data/siteData";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 function MobileMenu({ isOpen, onClose }) {
   const { isAuthenticated, isAdmin } = useAuth();
+  const { t } = useLanguage();
 
   if (!isOpen) return null;
 
@@ -16,7 +18,7 @@ function MobileMenu({ isOpen, onClose }) {
     <div className="fixed inset-0 z-[90] lg:hidden">
       <button
         type="button"
-        aria-label="Close mobile menu overlay"
+        aria-label={t("nav.closeOverlay")}
         onClick={onClose}
         className="absolute inset-0 bg-[#080808]/88 backdrop-blur-md"
       />
@@ -31,7 +33,7 @@ function MobileMenu({ isOpen, onClose }) {
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#D9D4CC] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-            aria-label="Close mobile menu"
+            aria-label={t("nav.closeMenu")}
           >
             <X size={18} />
           </button>
@@ -54,7 +56,7 @@ function MobileMenu({ isOpen, onClose }) {
               {({ isActive }) => (
                 <span className="flex items-center gap-3">
                   {isActive && <span className="h-1.5 w-1.5 rounded-full bg-[#C4A77D]" />}
-                  <span>{link.label}</span>
+                  <span>{t(`nav.links.${link.key}`, link.label)}</span>
                 </span>
               )}
             </NavLink>
@@ -65,16 +67,16 @@ function MobileMenu({ isOpen, onClose }) {
           {isAuthenticated ? (
             <Button to={accountPath} variant="secondary" icon={false} onClick={onClose}>
               <UserRound size={17} />
-              {isAdmin ? "Admin dashboard" : "Client account"}
+              {isAdmin ? t("nav.adminDashboard") : t("nav.clientAccount")}
             </Button>
           ) : (
             <Button to="/login" variant="secondary" onClick={onClose}>
-              Login
+              {t("nav.login")}
             </Button>
           )}
 
           <Button to="/start" onClick={onClose}>
-            Start Your Project
+            {t("nav.startProject")}
           </Button>
         </div>
       </div>

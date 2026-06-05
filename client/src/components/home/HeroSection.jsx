@@ -1,6 +1,7 @@
 import Button from "../common/Button";
 import Container from "../common/Container";
 import useSettings from "../../hooks/useSettings";
+import useLanguage from "../../hooks/useLanguage";
 
 const defaultHeadline = "Your brand, brought online with care.";
 const defaultSubline =
@@ -31,13 +32,14 @@ const normalizeCTA = (value, fallback) => {
 
 function HeroSection() {
   const { settings } = useSettings();
+  const { isArabic, t } = useLanguage();
 
-  const headline =
+  const englishHeadline =
     settings.heroHeadline && !legacyHeadlines.includes(settings.heroHeadline)
       ? settings.heroHeadline
       : defaultHeadline;
 
-  const subline =
+  const englishSubline =
     settings.heroSubtext &&
     !legacySubtextStarts.some((legacySubtext) =>
       settings.heroSubtext.startsWith(legacySubtext)
@@ -45,8 +47,14 @@ function HeroSection() {
       ? settings.heroSubtext
       : defaultSubline;
 
-  const primaryCTA = normalizeCTA(settings.primaryCTA, "Start Your Project");
-  const secondaryCTA = normalizeCTA(settings.secondaryCTA, "View Our Work");
+  const headline = isArabic ? t("home.hero.headline") : englishHeadline;
+  const subline = isArabic ? t("home.hero.subline") : englishSubline;
+  const primaryCTA = isArabic
+    ? t("home.hero.primaryCTA")
+    : normalizeCTA(settings.primaryCTA, t("home.hero.primaryCTA"));
+  const secondaryCTA = isArabic
+    ? t("home.hero.secondaryCTA")
+    : normalizeCTA(settings.secondaryCTA, t("home.hero.secondaryCTA"));
 
   return (
     <section className="wd-section-black wd-noise relative isolate overflow-hidden pt-32 pb-6 md:pt-36 md:pb-8">

@@ -1,34 +1,31 @@
 import { CalendarDays, CheckCircle2, FileText } from "lucide-react";
 import Card from "../common/Card";
+import useLanguage from "../../hooks/useLanguage";
+
+const optionIcons = {
+  request: FileText,
+  call: CalendarDays,
+};
 
 function StartOptions({ activeOption, setActiveOption, cardClassName = "", className = "" }) {
-  const options = [
-    {
-      id: "request",
-      icon: FileText,
-      title: "Send a project request",
-      description: "Best if you already know the website you need.",
-    },
-    {
-      id: "call",
-      icon: CalendarDays,
-      title: "Book a call",
-      description: "Best if you want to discuss the direction first.",
-    },
-  ];
+  const { t } = useLanguage();
+  const options = t("start.options.items", []).map((option) => ({
+    ...option,
+    icon: optionIcons[option.id] || FileText,
+  }));
 
   return (
     <Card className={`p-6 lg:sticky lg:top-28 ${cardClassName} ${className}`}>
       <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#C4A77D]">
-        Choose your way
+        {t("start.options.eyebrow")}
       </p>
 
       <h2 className="font-display mt-4 text-4xl font-bold leading-[0.95] tracking-[-0.06em] text-[#F8F7F4]">
-        Start with the path that fits.
+        {t("start.options.title")}
       </h2>
 
       <p className="mt-4 text-sm leading-7 text-[#D9D4CC]">
-        Send the request now, or book a call if the direction needs shaping first.
+        {t("start.options.description")}
       </p>
 
       <div className="mt-7 grid gap-3">
@@ -71,7 +68,7 @@ function StartOptions({ activeOption, setActiveOption, cardClassName = "", class
 
       <div className="mt-7 border-t border-white/10 pt-5">
         <p className="text-sm leading-7 text-[#D9D4CC]">
-          Logged-in clients can track requests and appointments from their dashboard.
+          {t("start.options.footer")}
         </p>
       </div>
     </Card>

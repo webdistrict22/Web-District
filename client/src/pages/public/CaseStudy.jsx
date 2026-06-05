@@ -7,9 +7,11 @@ import FinalCTA from "../../components/home/FinalCTA";
 import Loader from "../../components/common/Loader";
 import Button from "../../components/common/Button";
 import { getFallbackProjectBySlug } from "../../data/demoProjects";
+import useLanguage from "../../hooks/useLanguage";
 
 function CaseStudy() {
   const { slug } = useParams();
+  const { t } = useLanguage();
 
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +47,7 @@ function CaseStudy() {
     return (
       <main className="wd-section-black pb-20 pt-32">
         <Container>
-          <Loader text="Loading case study..." />
+          <Loader text={t("work.caseStudy.loading")} />
         </Container>
       </main>
     );
@@ -57,17 +59,17 @@ function CaseStudy() {
         <Container>
           <div className="wd-card-on-black rounded-[2rem] p-8 md:p-12">
             <p className="text-sm font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-              Case study
+              {t("work.caseStudy.eyebrow")}
             </p>
             <h1 className="font-display mt-4 text-5xl font-bold tracking-[-0.06em]">
-              Case study not found
+              {t("work.caseStudy.notFoundTitle")}
             </h1>
             <p className="mt-4 max-w-xl text-[#D9D4CC]">
-              This project may be coming soon, hidden, or the link may be incorrect.
+              {t("work.caseStudy.notFoundDescription")}
             </p>
 
             <div className="mt-8">
-              <Button to="/work">Back to work</Button>
+              <Button to="/work">{t("common.buttons.backToWork")}</Button>
             </div>
           </div>
         </Container>

@@ -7,6 +7,7 @@ import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 const initialForm = {
   name: "",
@@ -21,6 +22,7 @@ function Signup() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { signup } = useAuth();
+  const { getErrorMessage, t } = useLanguage();
   const navigate = useNavigate();
 
   const updateField = (field, value) => {
@@ -34,12 +36,12 @@ function Signup() {
     e.preventDefault();
 
     if (!form.name || !form.email || !form.password) {
-      toast.error("Please enter name, email, and password.");
+      toast.error(t("auth.signup.validation"));
       return;
     }
 
     if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+      toast.error(t("auth.signup.passwordLength"));
       return;
     }
 
@@ -48,7 +50,7 @@ function Signup() {
       await signup(form);
       navigate("/account", { replace: true });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create account.");
+      toast.error(getErrorMessage(error, "auth.signup.error"));
     } finally {
       setIsLoading(false);
     }
@@ -60,9 +62,9 @@ function Signup() {
         <Container>
         <div className="mx-auto max-w-2xl">
           <SectionHeader
-            eyebrow="Signup"
-            title="Create your client account."
-            description="Use your account later to track requests, appointments, contracts, and project updates."
+            eyebrow={t("auth.signup.eyebrow")}
+            title={t("auth.signup.title")}
+            description={t("auth.signup.description")}
             center
           />
         </div>
@@ -76,52 +78,54 @@ function Signup() {
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid gap-5 md:grid-cols-2">
                 <Input
-                  label="Name *"
-                  placeholder="Your name"
+                  label={t("start.requestForm.name")}
+                  placeholder={t("start.requestForm.namePlaceholder")}
                   value={form.name}
                   onChange={(e) => updateField("name", e.target.value)}
                 />
 
                 <Input
-                  label="Business name"
-                  placeholder="Business / brand name"
+                  label={t("start.requestForm.businessName")}
+                  placeholder={t("start.requestForm.businessNamePlaceholder")}
                   value={form.businessName}
                   onChange={(e) => updateField("businessName", e.target.value)}
                 />
 
                 <Input
-                  label="Email *"
+                  label={t("start.requestForm.email")}
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("start.requestForm.emailPlaceholder")}
+                  className="wd-ltr"
                   value={form.email}
                   onChange={(e) => updateField("email", e.target.value)}
                 />
 
                 <Input
-                  label="Phone / WhatsApp"
-                  placeholder="011..."
+                  label={t("common.labels.phone")}
+                  placeholder={t("start.requestForm.phonePlaceholder")}
+                  className="wd-ltr"
                   value={form.phone}
                   onChange={(e) => updateField("phone", e.target.value)}
                 />
               </div>
 
               <Input
-                label="Password *"
+                label={t("auth.signup.password")}
                 type="password"
-                placeholder="Minimum 6 characters"
+                placeholder={t("auth.signup.passwordPlaceholder")}
                 value={form.password}
                 onChange={(e) => updateField("password", e.target.value)}
               />
 
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create account"}
+                {isLoading ? t("auth.signup.submitting") : t("auth.signup.submit")}
               </Button>
             </form>
 
             <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-              Already have an account?{" "}
+              {t("auth.signup.haveAccount")}{" "}
               <Link to="/login" className="font-semibold text-[#F8F7F4]">
-                Login
+                {t("auth.signup.login")}
               </Link>
             </p>
           </Card>

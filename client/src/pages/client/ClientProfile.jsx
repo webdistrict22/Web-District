@@ -9,9 +9,12 @@ import {
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 function ClientProfile() {
   const { user } = useAuth();
+  const { t, translateValue } = useLanguage();
+  const quickCards = t("client.profile.quickCards", []);
 
   return (
     <div className="grid gap-5">
@@ -19,22 +22,20 @@ function ClientProfile() {
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Client portal
+              {t("common.labels.clientPortal")}
             </p>
 
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Profile information
+              {t("client.profile.title")}
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              This is the account information connected to your Web District
-              workspace. Requests, calls, reviews, and future contracts are
-              linked to this account.
+              {t("client.profile.description")}
             </p>
           </div>
 
           <Button to="/start" variant="secondary">
-            Start a new request
+            {t("client.profile.startNew")}
           </Button>
         </div>
       </Card>
@@ -46,20 +47,27 @@ function ClientProfile() {
           </div>
 
           <h3 className="font-display mt-6 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-            {user?.name || "Client"}
+            {user?.name || t("client.profile.clientFallback")}
           </h3>
 
           <p className="mt-2 text-[#D9D4CC]">
-            {user?.businessName || "No business name added"}
+            {user?.businessName || t("client.profile.noBusiness")}
           </p>
 
           <div className="mt-8 grid gap-3">
-            <InfoRow icon={Mail} label="Email" value={user?.email} />
-            <InfoRow icon={Phone} label="Phone" value={user?.phone || "Not added"} />
+            <InfoRow icon={Mail} label={t("common.labels.email")} value={user?.email} />
+            <InfoRow
+              icon={Phone}
+              label={t("common.labels.phone")}
+              value={user?.phone || t("common.labels.notAdded")}
+            />
             <InfoRow
               icon={UserRound}
-              label="Account type"
-              value={user?.role === "admin" ? "Admin" : "Client"}
+              label={t("common.labels.accountType")}
+              value={translateValue(
+                "accountTypes",
+                user?.role === "admin" ? "Admin" : "Client"
+              )}
             />
           </div>
         </Card>
@@ -67,40 +75,37 @@ function ClientProfile() {
         <div className="grid gap-5">
           <Card className="p-6">
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Account note
+              {t("client.profile.noteEyebrow")}
             </p>
 
             <h3 className="font-display mt-3 text-2xl font-bold tracking-[-0.04em]">
-              Keep your requests linked.
+              {t("client.profile.noteTitle")}
             </h3>
 
             <p className="mt-4 leading-7 text-[#D9D4CC]">
-              When you submit a website request or book a call while logged in,
-              it appears in your client dashboard automatically. If you submit
-              while logged out, it will still reach Web District, but it will not
-              appear inside this account.
+              {t("client.profile.noteDescription")}
             </p>
           </Card>
 
           <div className="grid gap-5 md:grid-cols-3">
             <QuickCard
               icon={FileText}
-              title="Requests"
-              description="View website requests linked to your account."
+              title={quickCards[0]?.title}
+              description={quickCards[0]?.description}
               to="/account/requests"
             />
 
             <QuickCard
               icon={CalendarDays}
-              title="Calls"
-              description="Track booked appointments and call status."
+              title={quickCards[1]?.title}
+              description={quickCards[1]?.description}
               to="/account/appointments"
             />
 
             <QuickCard
               icon={MessageSquare}
-              title="Reviews"
-              description="Submit a review after working with Web District."
+              title={quickCards[2]?.title}
+              description={quickCards[2]?.description}
               to="/account/reviews"
             />
           </div>
@@ -118,7 +123,7 @@ function InfoRow({ icon: Icon, label, value }) {
       <div className="min-w-0">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
         <p className="mt-1 break-words text-sm font-semibold text-[#D9D4CC]">
-          {value || "—"}
+          {value || "-"}
         </p>
       </div>
     </div>
@@ -126,6 +131,8 @@ function InfoRow({ icon: Icon, label, value }) {
 }
 
 function QuickCard({ icon: Icon, title, description, to }) {
+  const { t } = useLanguage();
+
   return (
     <Card className="p-5">
       <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
@@ -142,7 +149,7 @@ function QuickCard({ icon: Icon, title, description, to }) {
 
       <div className="mt-5">
         <Button to={to} variant="secondary">
-          Open
+          {t("common.buttons.open")}
         </Button>
       </div>
     </Card>

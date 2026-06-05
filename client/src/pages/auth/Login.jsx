@@ -7,6 +7,7 @@ import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 const initialForm = {
   email: "",
@@ -18,6 +19,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
+  const { getErrorMessage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,7 +34,7 @@ function Login() {
     e.preventDefault();
 
     if (!form.email || !form.password) {
-      toast.error("Please enter email and password.");
+      toast.error(t("auth.login.validation"));
       return;
     }
 
@@ -51,7 +53,7 @@ function Login() {
         replace: true,
       });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to login.");
+      toast.error(getErrorMessage(error, "auth.login.error"));
     } finally {
       setIsLoading(false);
     }
@@ -63,9 +65,9 @@ function Login() {
         <Container>
         <div className="mx-auto max-w-xl">
           <SectionHeader
-            eyebrow="Login"
-            title="Access your Web District account."
-            description="Login to track requests, appointments, contracts, and project updates."
+            eyebrow={t("auth.login.eyebrow")}
+            title={t("auth.login.title")}
+            description={t("auth.login.description")}
             center
           />
         </div>
@@ -78,17 +80,18 @@ function Login() {
           <Card className="wd-card-on-black p-6 md:p-8">
             <form onSubmit={handleSubmit} className="grid gap-5">
               <Input
-                label="Email"
+                label={t("auth.login.email")}
                 type="email"
                 placeholder="you@example.com"
+                className="wd-ltr"
                 value={form.email}
                 onChange={(e) => updateField("email", e.target.value)}
               />
 
               <Input
-                label="Password"
+                label={t("auth.login.password")}
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t("auth.login.passwordPlaceholder")}
                 value={form.password}
                 onChange={(e) => updateField("password", e.target.value)}
               />
@@ -98,19 +101,19 @@ function Login() {
                   to="/forgot-password"
                   className="text-sm font-semibold text-[#D9D4CC] transition hover:text-[#C4A77D]"
                 >
-                  Forgot password?
+                  {t("auth.login.forgotPassword")}
                 </Link>
               </div>
 
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
               </Button>
             </form>
 
             <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-              Don't have an account?{" "}
+              {t("auth.login.noAccount")}{" "}
               <Link to="/signup" className="font-semibold text-[#F8F7F4]">
-                Create one
+                {t("auth.login.createOne")}
               </Link>
             </p>
           </Card>

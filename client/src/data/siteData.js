@@ -1,10 +1,10 @@
 export const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "Services", path: "/services" },
-  { label: "Work", path: "/work" },
-  { label: "Process", path: "/process" },
-  { label: "Start", path: "/start" },
-  { label: "Contact", path: "/contact" },
+  { key: "home", label: "Home", path: "/" },
+  { key: "services", label: "Services", path: "/services" },
+  { key: "work", label: "Work", path: "/work" },
+  { key: "process", label: "Process", path: "/process" },
+  { key: "start", label: "Start", path: "/start" },
+  { key: "contact", label: "Contact", path: "/contact" },
 ];
 
 export const services = [

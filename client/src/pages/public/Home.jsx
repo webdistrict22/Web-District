@@ -3,13 +3,16 @@ import HeroSection from "../../components/home/HeroSection";
 import ServicesPreview from "../../components/home/ServicesPreview";
 import WorkPreview from "../../components/home/WorkPreview";
 import FinalCTA from "../../components/home/FinalCTA";
+import useLanguage from "../../hooks/useLanguage";
 
 function Home() {
+  const { t } = useLanguage();
+
   return (
     <>
       <PageMeta
-        title="Strategic Web Agency"
-        description="Web District builds clean, professional websites for brands, businesses, campaigns, and custom digital needs."
+        title={t("home.metaTitle")}
+        description={t("home.metaDescription")}
       />
 
       <HeroSection />

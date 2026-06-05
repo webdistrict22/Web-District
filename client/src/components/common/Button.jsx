@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import useLanguage from "../../hooks/useLanguage";
 
 function Button({
   children,
@@ -13,6 +14,9 @@ function Button({
   onClick,
   ...props
 }) {
+  const { isRtl } = useLanguage();
+  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+
   const baseClass =
     "inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition duration-300 forced-color-adjust-none disabled:cursor-not-allowed disabled:opacity-60";
 
@@ -30,7 +34,7 @@ function Button({
   const content = (
     <>
       {children}
-      {icon && <ArrowRight size={17} />}
+      {icon && <ArrowIcon size={17} />}
     </>
   );
 

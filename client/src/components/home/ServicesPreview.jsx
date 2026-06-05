@@ -2,26 +2,23 @@ import Container from "../common/Container";
 import SectionHeader from "../common/SectionHeader";
 import Card from "../common/Card";
 import Button from "../common/Button";
-
-const serviceTitles = [
-  "Online Stores",
-  "Business Websites",
-  "Landing Pages",
-  "Custom Websites",
-];
+import useLanguage from "../../hooks/useLanguage";
 
 function ServicesPreview() {
+  const { t } = useLanguage();
+  const serviceTitles = t("home.services.titles", []);
+
   return (
     <section className="wd-section-black pt-10 pb-16 md:pt-12 md:pb-20">
       <Container>
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <SectionHeader
-            eyebrow="What we build"
-            title="Four clear website directions."
-            description="Pick the direction that matches the goal. We keep the structure clean from there."
+            eyebrow={t("home.services.eyebrow")}
+            title={t("home.services.title")}
+            description={t("home.services.description")}
           />
           <Button to="/services" variant="secondary">
-            View services
+            {t("common.buttons.viewServices")}
           </Button>
         </div>
 

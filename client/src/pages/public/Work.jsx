@@ -6,10 +6,12 @@ import ReviewsPreview from "../../components/home/ReviewsPreview";
 import ProjectCard from "../../components/work/ProjectCard";
 import Loader from "../../components/common/Loader";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
+import useLanguage from "../../hooks/useLanguage";
 
 function Work() {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage();
 
   const fetchProjects = async () => {
     try {
@@ -39,9 +41,9 @@ function Work() {
       <section className="wd-section-black pt-36 pb-4 md:pt-40 md:pb-4">
         <Container>
           <SectionHeader
-            eyebrow="Some of our work"
-            title="Selected websites with a serious direction."
-            description="A look at selected builds across stores, business sites, and custom directions."
+            eyebrow={t("work.hero.eyebrow")}
+            title={t("work.hero.title")}
+            description={t("work.hero.description")}
           />
         </Container>
       </section>
@@ -50,7 +52,7 @@ function Work() {
         <Container>
           {isLoading ? (
             <section>
-              <Loader text="Loading selected work..." />
+              <Loader text={t("work.loading")} />
             </section>
           ) : (
             <section className="grid gap-6 md:grid-cols-2">

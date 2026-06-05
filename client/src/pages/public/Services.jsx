@@ -18,79 +18,23 @@ import ServiceCard from "../../components/services/ServiceCard";
 import Loader from "../../components/common/Loader";
 import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink, truncateText } from "../../lib/helpers";
-import { servicesPageData } from "../../data/servicesData";
+import useLanguage from "../../hooks/useLanguage";
 
-const websiteCareItems = [
-  {
-    title: "Small content edits",
-    description:
-      "Update short text, offers, contact details, sections, or repeated content.",
-    icon: Sparkles,
-  },
-  {
-    title: "Image or text updates",
-    description:
-      "Swap images, adjust copy, and keep important pages feeling current.",
-    icon: Layout,
-  },
-  {
-    title: "Website health checks",
-    description: "Review key pages, forms, links, and responsive behavior.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Small layout improvements",
-    description: "Refine compact areas without rebuilding the whole website.",
-    icon: CheckCircle2,
-  },
-  {
-    title: "Support and guidance",
-    description:
-      "Ask questions and get clear direction when your website needs attention.",
-    icon: HeartHandshake,
-  },
-];
-
-const websiteCarePlans = [
-  {
-    title: "Essential Care",
-    bestFor: "Best for small text/image updates.",
-    features: [
-      "Monthly small edits",
-      "Basic website checks",
-      "Image or copy swaps",
-      "Email or WhatsApp support",
-    ],
-  },
-  {
-    title: "Growth Care",
-    bestFor: "Best for active brands and stores.",
-    features: [
-      "Frequent content updates",
-      "Offer or product support",
-      "Small layout refinements",
-      "Monthly improvement notes",
-    ],
-  },
-  {
-    title: "Priority Care",
-    bestFor:
-      "Best for businesses that need faster support and ongoing improvements.",
-    features: [
-      "Faster support window",
-      "Ongoing refinement tasks",
-      "Regular health checks",
-      "Roadmap guidance",
-    ],
-  },
+const websiteCareIcons = [
+  Sparkles,
+  Layout,
+  ShieldCheck,
+  CheckCircle2,
+  HeartHandshake,
 ];
 
 function Services() {
   const [packages, setPackages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isArabic, t } = useLanguage();
   const websiteCareWhatsappLink = getWhatsappLink(
     AGENCY.whatsapp,
-    "Hi Web District, I want to ask about Website Care."
+    t("services.care.whatsappMessage")
   );
 
   const fetchPackages = async () => {
@@ -112,7 +56,7 @@ function Services() {
   }, []);
 
   const services = useMemo(() => {
-    if (!packages.length) return servicesPageData;
+    if (isArabic || !packages.length) return t("services.cards", []);
 
     return packages
       .map((item) => ({
@@ -131,22 +75,28 @@ function Services() {
         isFeatured: item.isFeatured,
       }))
       .slice(0, 4);
-  }, [packages]);
+  }, [isArabic, packages, t]);
+
+  const websiteCareItems = t("services.care.items", []).map((item, index) => ({
+    ...item,
+    icon: websiteCareIcons[index] || Sparkles,
+  }));
+  const websiteCarePlans = t("services.care.plans", []);
 
   return (
     <main className="bg-[#080808]">
       <PageMeta
-        title="Services"
-        description="Explore Web District website services including online stores, business websites, landing pages, and custom websites."
+        title={t("services.metaTitle")}
+        description={t("services.metaDescription")}
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <SectionHeader
-            eyebrow="Services"
-            title="Websites built around the business goal."
-            description="You choose the website direction. We shape the structure, visuals, and launch path."
+            eyebrow={t("services.hero.eyebrow")}
+            title={t("services.hero.title")}
+            description={t("services.hero.description")}
           />
 
 
@@ -158,7 +108,7 @@ function Services() {
         <Container>
         {isLoading ? (
           <section>
-            <Loader text="Loading website options..." />
+            <Loader text={t("services.loading")} />
           </section>
         ) : (
           <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -181,16 +131,15 @@ function Services() {
             <div className="grid gap-8 lg:grid-cols-[0.72fr_1fr] lg:items-end">
               <div>
                 <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                  Website Care
+                  {t("services.care.eyebrow")}
                 </p>
 
                 <h2 className="font-display text-4xl font-bold tracking-[-0.06em] text-[#F8F7F4] md:text-5xl">
-                  Keep your website polished after launch.
+                  {t("services.care.title")}
                 </h2>
 
                 <p className="mt-5 max-w-xl leading-8 text-[#D9D4CC]">
-                  Small updates, fixes, and improvements handled monthly so your
-                  website keeps feeling fresh, reliable, and easy to manage.
+                  {t("services.care.description")}
                 </p>
               </div>
 
@@ -201,18 +150,18 @@ function Services() {
                   rel="noreferrer"
                 >
                   <MessageCircle size={17} />
-                  Ask About Website Care
+                  {t("services.care.ask")}
                 </Button>
 
                 <Button to="/start" variant="secondary">
-                  Start Your Project
+                  {t("common.buttons.startProject")}
                 </Button>
               </div>
             </div>
 
             <div className="mt-10">
               <p className="mb-5 text-sm font-bold uppercase tracking-[0.24em] text-[#C4A77D]">
-                What's included
+                {t("services.care.included")}
               </p>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -243,10 +192,10 @@ function Services() {
               <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
                 <div>
                   <p className="text-sm font-bold uppercase tracking-[0.24em] text-[#C4A77D]">
-                    Monthly care plans
+                    {t("services.care.monthly")}
                   </p>
                   <h3 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-                    Support that matches your update rhythm.
+                    {t("services.care.monthlyTitle")}
                   </h3>
                 </div>
               </div>
@@ -262,7 +211,7 @@ function Services() {
                         {plan.title}
                       </h4>
                       <span className="rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#C4A77D]">
-                        Custom quote
+                        {t("services.care.customQuote")}
                       </span>
                     </div>
 
@@ -270,7 +219,7 @@ function Services() {
                       {plan.bestFor}
                     </p>
                     <p className="mt-3 text-sm font-semibold text-[#F8F7F4]">
-                      Monthly support based on your website needs.
+                      {t("services.care.monthlySupport")}
                     </p>
 
                     <ul className="mt-6 space-y-3 text-sm leading-6 text-[#D9D4CC]">
@@ -297,10 +246,9 @@ function Services() {
                 />
                 <p className="leading-7">
                   <span className="font-semibold text-[#F8F7F4]">
-                    Not included:
+                    {t("services.care.notIncludedLabel")}
                   </span>{" "}
-                  Major redesigns, large new features, full system rebuilds, or
-                  emergency 24/7 support are quoted separately unless agreed.
+                  {t("services.care.notIncluded")}
                 </p>
               </div>
 
@@ -311,7 +259,7 @@ function Services() {
                 variant="secondary"
               >
                 <MessageCircle size={17} />
-                Ask on WhatsApp
+                {t("services.care.askWhatsapp")}
               </Button>
             </div>
           </section>
@@ -324,22 +272,22 @@ function Services() {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
             <div>
               <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                Not sure what you need?
+                {t("services.bottomCta.eyebrow")}
               </p>
 
               <h2 className="font-display text-4xl font-bold tracking-[-0.06em] md:text-5xl">
-                Start with the goal.
+                {t("services.bottomCta.title")}
               </h2>
 
               <p className="mt-5 max-w-2xl leading-8 text-[#D9D4CC]">
-                Tell us what the website should do. We'll shape the right structure.
+                {t("services.bottomCta.description")}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              <Button to="/start">Start Your Project</Button>
+              <Button to="/start">{t("common.buttons.startProject")}</Button>
               <Button to="/process#process-questions" variant="secondary">
-                View Questions & Answers
+                {t("common.buttons.viewQuestions")}
               </Button>
             </div>
           </div>

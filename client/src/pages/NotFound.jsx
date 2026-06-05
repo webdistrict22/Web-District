@@ -1,13 +1,16 @@
 import PageMeta from "../components/common/PageMeta";
 import Container from "../components/common/Container";
 import Button from "../components/common/Button";
+import useLanguage from "../hooks/useLanguage";
 
 function NotFound() {
+  const { t } = useLanguage();
+
   return (
     <main className="wd-section-black flex min-h-screen items-center py-32">
       <PageMeta
-        title="Page Not Found"
-        description="The page you are looking for does not exist on Web District."
+        title={t("notFound.metaTitle")}
+        description={t("notFound.metaDescription")}
       />
 
       <Container>
@@ -17,18 +20,17 @@ function NotFound() {
           </p>
 
           <h1 className="font-display mt-5 text-5xl font-extrabold leading-[1] tracking-[-0.07em] text-[#F8F7F4] md:text-7xl">
-            This page went off-grid.
+            {t("notFound.title")}
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl leading-8 text-[#D9D4CC]">
-            The page you are looking for does not exist, was moved, or the link
-            is incorrect.
+            {t("notFound.description")}
           </p>
 
           <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button to="/">Back home</Button>
+            <Button to="/">{t("common.buttons.backHome")}</Button>
             <Button to="/start" variant="secondary">
-              Start Your Project
+              {t("common.buttons.startProject")}
             </Button>
           </div>
         </div>

@@ -1,9 +1,11 @@
 import { ExternalLink } from "lucide-react";
 import Container from "../common/Container";
 import Button from "../common/Button";
+import useLanguage from "../../hooks/useLanguage";
 
 function FinalCTA({ liveUrl = "" }) {
   const hasLiveUrl = Boolean(liveUrl);
+  const { t } = useLanguage();
 
   return (
     <section className="wd-section-black py-16 md:py-20">
@@ -14,13 +16,13 @@ function FinalCTA({ liveUrl = "" }) {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.75fr] lg:items-center">
             <div>
               <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                Start
+                {t("home.finalCta.eyebrow")}
               </p>
               <h2 className="font-display text-4xl font-bold tracking-[-0.06em] md:text-6xl">
-                Ready to build something serious?
+                {t("home.finalCta.title")}
               </h2>
               <p className="mt-5 max-w-2xl leading-7 text-[#D9D4CC]">
-                Tell us what you need. We'll help shape the right website direction.
+                {t("home.finalCta.description")}
               </p>
             </div>
 
@@ -34,23 +36,23 @@ function FinalCTA({ liveUrl = "" }) {
                     rel="noreferrer"
                   >
                     <ExternalLink size={17} />
-                    Try it yourself
+                    {t("home.finalCta.tryIt")}
                   </Button>
                   <Button to="/work" variant="secondary">
-                    View Work
+                    {t("common.buttons.viewWorkShort")}
                   </Button>
                   <Button to="/start" variant="secondary">
-                    Start Your Project
+                    {t("common.buttons.startProject")}
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button to="/start">Start Your Project</Button>
+                  <Button to="/start">{t("common.buttons.startProject")}</Button>
                   <Button to="/work" variant="secondary">
-                    View Work
+                    {t("common.buttons.viewWorkShort")}
                   </Button>
                   <Button to="/process#process-questions" variant="secondary">
-                    Answer Your Questions
+                    {t("common.buttons.answerQuestions")}
                   </Button>
                 </>
               )}

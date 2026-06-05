@@ -16,6 +16,7 @@ import EmptyState from "../common/EmptyState";
 import Textarea from "../common/Textarea";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
+import useLanguage from "../../hooks/useLanguage";
 
 function ContractList({
   contracts = [],
@@ -26,17 +27,18 @@ function ContractList({
   const [activeNoteId, setActiveNoteId] = useState("");
   const [noteDrafts, setNoteDrafts] = useState({});
   const [loadingId, setLoadingId] = useState("");
+  const { getErrorMessage, t, translateValue } = useLanguage();
 
   if (!contracts.length) {
     return (
       <EmptyState
-        title="No contracts yet"
+        title={t("client.contracts.emptyTitle")}
         description={
           emptyMode === "client"
-            ? "Contracts and proposals prepared by Web District will appear here."
-            : "Contracts you create from requests or appointments will appear here."
+            ? t("client.contracts.emptyClient")
+            : t("client.contracts.emptyAdmin")
         }
-        actionText={emptyMode === "client" ? "Start a request" : undefined}
+        actionText={emptyMode === "client" ? t("common.buttons.startRequest") : undefined}
         actionTo={emptyMode === "client" ? "/start" : undefined}
       />
     );
@@ -54,10 +56,9 @@ function ContractList({
 
   const handleAccept = async (contract) => {
     const confirmed = await confirmAction({
-      title: "Accept proposal?",
-      message:
-        "This will mark the Web District proposal as accepted and notify the team.",
-      confirmText: "Accept",
+      title: t("client.contracts.acceptTitle"),
+      message: t("client.contracts.acceptMessage"),
+      confirmText: t("client.contracts.acceptConfirm"),
     });
 
     if (!confirmed) return;
@@ -71,10 +72,10 @@ function ContractList({
 
       updateContractInState(data.contract);
 
-      toast.success("Contract accepted successfully.");
+      toast.success(t("client.contracts.acceptedSuccess"));
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to accept contract."
+        getErrorMessage(error, "client.contracts.acceptError")
       );
     } finally {
       setLoadingId("");
@@ -91,10 +92,10 @@ function ContractList({
 
       updateContractInState(data.contract);
 
-      toast.success("Your note was saved successfully.");
+      toast.success(t("client.contracts.noteSaved"));
       setActiveNoteId("");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to save note.");
+      toast.error(getErrorMessage(error, "client.contracts.noteError"));
     } finally {
       setLoadingId("");
     }
@@ -125,7 +126,7 @@ function ContractList({
                   <StatusBadge status={contract.status} />
 
                   <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-                    {contract.websiteType}
+                    {translateValue("websiteTypes", contract.websiteType)}
                   </span>
 
                   <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
@@ -150,51 +151,51 @@ function ContractList({
             <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 md:grid-cols-4">
               <InfoItem
                 icon={CreditCard}
-                label="Total price"
+                label={t("common.labels.totalPrice")}
                 value={
                   contract.totalPrice
                     ? `${contract.totalPrice.toLocaleString()} EGP`
-                    : "Not set"
+                    : t("common.labels.notSet")
                 }
               />
 
               <InfoItem
                 icon={CreditCard}
-                label={`Deposit (${contract.depositPercent || 70}%)`}
+                label={`${t("common.labels.deposit")} (${contract.depositPercent || 70}%)`}
                 value={
                   contract.depositAmount
                     ? `${contract.depositAmount.toLocaleString()} EGP`
-                    : "Not set"
+                    : t("common.labels.notSet")
                 }
               />
 
               <InfoItem
                 icon={CreditCard}
-                label="Remaining"
+                label={t("common.labels.remaining")}
                 value={
                   contract.remainingAmount
                     ? `${contract.remainingAmount.toLocaleString()} EGP`
-                    : "Not set"
+                    : t("common.labels.notSet")
                 }
               />
 
               <InfoItem
                 icon={CalendarDays}
-                label="Deadline"
-                value={contract.deadline || "Not set"}
+                label={t("common.labels.deadline")}
+                value={contract.deadline || t("common.labels.notSet")}
               />
             </div>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <ListBlock
                 icon={FileText}
-                title="Pages included"
+                title={t("common.labels.pagesIncluded")}
                 items={contract.pagesIncluded}
               />
 
               <ListBlock
                 icon={Globe2}
-                title="Features included"
+                title={t("common.labels.featuresIncluded")}
                 items={contract.featuresIncluded}
               />
             </div>
@@ -202,7 +203,7 @@ function ContractList({
             {contract.paymentNotes && (
               <div className="mt-5 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
                 <p className="text-sm font-semibold text-[#F8F7F4]">
-                  Payment notes
+                  {t("common.labels.paymentNotes")}
                 </p>
                 <p className="mt-2 leading-7 text-[#F8F7F4]/85">
                   {contract.paymentNotes}
@@ -213,7 +214,7 @@ function ContractList({
             {contract.clientNotes && (
               <div className="mt-5 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
                 <p className="text-sm font-semibold text-[#D9D4CC]">
-                  Client note
+                  {t("common.labels.clientNote")}
                 </p>
                 <p className="mt-2 leading-7 text-[#D9D4CC]/85">
                   {contract.clientNotes}
@@ -233,8 +234,8 @@ function ContractList({
                     >
                       <CheckCircle2 size={17} />
                       {loadingId === contract._id
-                        ? "Accepting..."
-                        : "Accept proposal"}
+                        ? t("client.contracts.accepting")
+                        : t("client.contracts.acceptProposal")}
                     </Button>
                   )}
 
@@ -246,7 +247,7 @@ function ContractList({
                       icon={false}
                     >
                       <MessageSquare size={17} />
-                      Send / edit note
+                      {t("client.contracts.sendNote")}
                     </Button>
                   )}
                 </div>
@@ -254,8 +255,8 @@ function ContractList({
                 {activeNoteId === contract._id && (
                   <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-5">
                     <Textarea
-                      label="Your note to Web District"
-                      placeholder="Write any question, comment, or clarification about this proposal..."
+                      label={t("client.contracts.noteLabel")}
+                      placeholder={t("client.contracts.notePlaceholder")}
                       value={noteDrafts[contract._id] || ""}
                       onChange={(e) =>
                         setNoteDrafts((prev) => ({
@@ -272,7 +273,9 @@ function ContractList({
                         onClick={() => handleSaveNote(contract)}
                         disabled={loadingId === contract._id}
                       >
-                        {loadingId === contract._id ? "Saving..." : "Save note"}
+                        {loadingId === contract._id
+                          ? t("client.contracts.saving")
+                          : t("client.contracts.saveNote")}
                       </Button>
 
                       <Button
@@ -280,7 +283,7 @@ function ContractList({
                         variant="secondary"
                         onClick={() => setActiveNoteId("")}
                       >
-                        Cancel
+                        {t("common.buttons.cancel")}
                       </Button>
                     </div>
                   </div>
@@ -301,7 +304,7 @@ function InfoItem({ icon: Icon, label, value }) {
       <div>
         <p className="text-xs text-[#D9D4CC]">{label}</p>
         <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
-          {value || "—"}
+          {value || "-"}
         </p>
       </div>
     </div>
@@ -309,6 +312,8 @@ function InfoItem({ icon: Icon, label, value }) {
 }
 
 function ListBlock({ icon: Icon, title, items = [] }) {
+  const { t } = useLanguage();
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <div className="mb-3 flex items-center gap-2">
@@ -325,7 +330,9 @@ function ListBlock({ icon: Icon, title, items = [] }) {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-[#D9D4CC]">Not added yet.</p>
+        <p className="text-sm text-[#D9D4CC]">
+          {t("common.labels.notAddedYet")}
+        </p>
       )}
     </div>
   );

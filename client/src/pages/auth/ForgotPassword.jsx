@@ -7,31 +7,33 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import useLanguage from "../../hooks/useLanguage";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { getErrorMessage, t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      toast.error("Please enter your email.");
+      toast.error(t("auth.forgot.validation"));
       return;
     }
 
     try {
       setIsLoading(true);
 
-      const { data } = await api.post("/auth/forgot-password", { email });
+      await api.post("/auth/forgot-password", { email });
 
-      setMessage(data.message);
+      setMessage(t("auth.forgot.success"));
       setEmail("");
-      toast.success("Reset instructions sent.");
+      toast.success(t("auth.forgot.success"));
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to send reset instructions."
+        getErrorMessage(error, "auth.forgot.error")
       );
     } finally {
       setIsLoading(false);
@@ -44,9 +46,9 @@ function ForgotPassword() {
         <Container>
           <div className="mx-auto max-w-xl">
             <SectionHeader
-              eyebrow="Password reset"
-              title="Reset your password."
-              description="Enter your account email and we will send a secure reset link if the account exists."
+              eyebrow={t("auth.forgot.eyebrow")}
+              title={t("auth.forgot.title")}
+              description={t("auth.forgot.description")}
               center
             />
           </div>
@@ -65,22 +67,23 @@ function ForgotPassword() {
 
               <form onSubmit={handleSubmit} className="grid gap-5">
                 <Input
-                  label="Email"
+                  label={t("auth.login.email")}
                   type="email"
                   placeholder="you@example.com"
+                  className="wd-ltr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset link"}
+                  {isLoading ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
                 </Button>
               </form>
 
               <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-                Remember your password?{" "}
+                {t("auth.forgot.remember")}{" "}
                 <Link to="/login" className="font-semibold text-[#F8F7F4]">
-                  Login
+                  {t("auth.signup.login")}
                 </Link>
               </p>
             </Card>

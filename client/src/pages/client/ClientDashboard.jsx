@@ -7,92 +7,99 @@ import {
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 function ClientDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
+  const actions = t("client.dashboard.actions", []);
+  const steps = t("client.dashboard.steps", []);
 
   return (
     <div className="grid gap-5">
       <Card className="overflow-hidden">
         <div className="bg-[radial-gradient(circle_at_80%_20%,rgba(196,167,125,0.16),transparent_32%),linear-gradient(135deg,#080808,#0B0B0B)] p-6 md:p-8">
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            Overview
+            {t("client.dashboard.eyebrow")}
           </p>
 
           <h2 className="font-display mt-3 text-4xl font-bold tracking-[-0.06em] md:text-5xl">
-            Your Web District workspace.
+            {t("client.dashboard.title")}
           </h2>
 
           <p className="mt-5 max-w-2xl leading-8 text-[#D9D4CC]">
-            Track your website requests, call appointments, reviews, and future
-            contracts from one clean client portal.
+            {t("client.dashboard.description")}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button to="/start">Submit a new request</Button>
+            <Button to="/start">{t("client.dashboard.submitNew")}</Button>
             <Button to="/account/requests" variant="secondary">
-              View requests
+              {t("client.dashboard.viewRequests")}
             </Button>
           </div>
         </div>
       </Card>
 
       <div className="grid gap-5 md:grid-cols-3">
-        <InfoCard label="Name" value={user?.name} />
-        <InfoCard label="Business" value={user?.businessName || "Not added"} />
-        <InfoCard label="Email" value={user?.email} />
+        <InfoCard label={t("common.labels.name")} value={user?.name} />
+        <InfoCard
+          label={t("common.labels.business")}
+          value={user?.businessName || t("client.dashboard.businessFallback")}
+        />
+        <InfoCard label={t("common.labels.email")} value={user?.email} />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-4">
         <ActionCard
           icon={FileText}
-          title="Website requests"
-          description="See the requests you submitted while logged in."
+          title={actions[0]?.title}
+          description={actions[0]?.description}
           to="/account/requests"
         />
 
         <ActionCard
           icon={CalendarDays}
-          title="Call appointments"
-          description="Track booked calls and appointment status."
+          title={actions[1]?.title}
+          description={actions[1]?.description}
           to="/account/appointments"
         />
 
         <ActionCard
           icon={MessageSquare}
-          title="Reviews"
-          description="Submit a review for Web District after working together."
+          title={actions[2]?.title}
+          description={actions[2]?.description}
           to="/account/reviews"
         />
 
         <ActionCard
           icon={UserRound}
-          title="Profile"
-          description="View your account and business information."
+          title={actions[3]?.title}
+          description={actions[3]?.description}
           to="/account/profile"
         />
       </div>
 
       <Card className="p-6 md:p-8">
         <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-          What happens next?
+          {t("client.dashboard.nextEyebrow")}
         </p>
 
         <h3 className="font-display mt-3 text-2xl font-bold tracking-[-0.04em]">
-          Start with a request or a call.
+          {t("client.dashboard.nextTitle")}
         </h3>
 
         <p className="mt-4 max-w-3xl leading-8 text-[#D9D4CC]">
-          If you already know what website you need, submit a website request.
-          If you are still unsure, book a call and Web District will help shape
-          the right direction before moving to a proposal or contract.
+          {t("client.dashboard.nextDescription")}
         </p>
 
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          <StepItem number="01" title="Submit a request" />
-          <StepItem number="02" title="Web District reviews it" />
-          <StepItem number="03" title="We clarify scope and next step" />
-          <StepItem number="04" title="Proposal or contract is prepared" />
+          {steps.map((step, index) => (
+            <StepItem
+              key={step}
+              number={String(index + 1).padStart(2, "0")}
+              title={step}
+            />
+          ))}
         </div>
       </Card>
     </div>
@@ -104,13 +111,15 @@ function InfoCard({ label, value }) {
     <Card className="p-6">
       <p className="text-sm text-[#D9D4CC]">{label}</p>
       <p className="mt-2 break-words font-semibold text-[#F8F7F4]">
-        {value || "—"}
+        {value || "-"}
       </p>
     </Card>
   );
 }
 
 function ActionCard({ icon: Icon, title, description, to }) {
+  const { t } = useLanguage();
+
   return (
     <Card className="p-6 transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/35">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
@@ -127,7 +136,7 @@ function ActionCard({ icon: Icon, title, description, to }) {
 
       <div className="mt-5">
         <Button to={to} variant="secondary">
-          Open
+          {t("common.buttons.open")}
         </Button>
       </div>
     </Card>

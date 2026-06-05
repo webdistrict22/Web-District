@@ -2,8 +2,11 @@ import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import ContactCards from "../../components/contact/ContactCards";
+import useLanguage from "../../hooks/useLanguage";
 
 function Contact() {
+  const { t } = useLanguage();
+
   return (
     <main className="bg-[#080808]">
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
@@ -11,16 +14,16 @@ function Contact() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <SectionHeader
-              eyebrow="Contact"
-              title="Tell us what you need."
-              description="Message us directly, or use the Start page if you already know the website direction."
+              eyebrow={t("contact.hero.eyebrow")}
+              title={t("contact.hero.title")}
+              description={t("contact.hero.description")}
             />
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button to="/start">Start Your Project</Button>
+              <Button to="/start">{t("common.buttons.startProject")}</Button>
 
               <Button to="/process#process-questions" variant="secondary">
-                Answer Your Questions
+                {t("common.buttons.answerQuestions")}
               </Button>
             </div>
           </div>

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import useLanguage from "../../hooks/useLanguage";
 
 const logoSrc = "/images/logo/web-district-logo.webp";
 
 function BrandLogo({ size = "md", showText = true }) {
   const [isFailed, setIsFailed] = useState(false);
+  const { t } = useLanguage();
 
   const imageSize = size === "lg" ? "h-16 w-28" : "h-12 w-24";
 
@@ -36,7 +38,9 @@ function BrandLogo({ size = "md", showText = true }) {
           <span className="block font-display text-lg font-bold tracking-[-0.04em] text-[#F8F7F4]">
             Web District
           </span>
-          <span className="block text-xs text-[#D9D4CC]">Strategic Web Agency</span>
+          <span className="block text-xs text-[#D9D4CC]">
+            {t("brand.tagline")}
+          </span>
         </span>
       )}
     </span>

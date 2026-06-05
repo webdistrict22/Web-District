@@ -9,6 +9,7 @@ import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 const initialForm = {
   password: "",
@@ -22,6 +23,7 @@ function ResetPassword() {
   const { token } = useParams();
   const navigate = useNavigate();
   const { setUser } = useAuth();
+  const { getErrorMessage, t } = useLanguage();
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -34,17 +36,17 @@ function ResetPassword() {
     e.preventDefault();
 
     if (!form.password || !form.confirmPassword) {
-      toast.error("Please enter and confirm your new password.");
+      toast.error(t("auth.reset.validation"));
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error(t("auth.reset.noMatch"));
       return;
     }
 
     if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+      toast.error(t("auth.reset.passwordLength"));
       return;
     }
 
@@ -57,15 +59,14 @@ function ResetPassword() {
       localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
       setUser(data.user);
 
-      toast.success("Password reset successfully.");
+      toast.success(t("auth.reset.success"));
 
       navigate(data.user.role === "admin" ? "/admin" : "/account", {
         replace: true,
       });
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Failed to reset password. The link may be invalid or expired."
+        getErrorMessage(error, "auth.reset.error")
       );
     } finally {
       setIsLoading(false);
@@ -78,9 +79,9 @@ function ResetPassword() {
         <Container>
           <div className="mx-auto max-w-xl">
             <SectionHeader
-              eyebrow="New password"
-              title="Create a new password."
-              description="Choose a secure password to regain access to your Web District account."
+              eyebrow={t("auth.reset.eyebrow")}
+              title={t("auth.reset.title")}
+              description={t("auth.reset.description")}
               center
             />
           </div>
@@ -93,17 +94,17 @@ function ResetPassword() {
             <Card className="wd-card-on-black p-6 md:p-8">
               <form onSubmit={handleSubmit} className="grid gap-5">
                 <Input
-                  label="New password"
+                  label={t("auth.reset.newPassword")}
                   type="password"
-                  placeholder="Minimum 6 characters"
+                  placeholder={t("auth.signup.passwordPlaceholder")}
                   value={form.password}
                   onChange={(e) => updateField("password", e.target.value)}
                 />
 
                 <Input
-                  label="Confirm password"
+                  label={t("auth.reset.confirmPassword")}
                   type="password"
-                  placeholder="Repeat your new password"
+                  placeholder={t("auth.reset.confirmPlaceholder")}
                   value={form.confirmPassword}
                   onChange={(e) =>
                     updateField("confirmPassword", e.target.value)
@@ -111,14 +112,14 @@ function ResetPassword() {
                 />
 
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Resetting..." : "Reset password"}
+                  {isLoading ? t("auth.reset.submitting") : t("auth.reset.submit")}
                 </Button>
               </form>
 
               <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-                Go back to{" "}
+                {t("auth.reset.goBack")}{" "}
                 <Link to="/login" className="font-semibold text-[#F8F7F4]">
-                  Login
+                  {t("auth.signup.login")}
                 </Link>
               </p>
             </Card>

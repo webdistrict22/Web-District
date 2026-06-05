@@ -4,38 +4,13 @@ import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import ProcessTimeline from "../../components/process/ProcessTimeline";
-import { fullProcessSteps } from "../../data/processData";
-
-const processQuestions = [
-  {
-    question: "What happens after I send a request?",
-    answer:
-      "We review the goal, website type, and details you send. Then we suggest the best direction and next step.",
-  },
-  {
-    question: "Do I need everything ready before starting?",
-    answer:
-      "No. If you have the main idea, we can help shape the pages, structure, and content direction from there.",
-  },
-  {
-    question: "Can I book a call first?",
-    answer:
-      "Yes. If you want to talk through the project before submitting details, you can start with a call.",
-  },
-  {
-    question: "How do revisions work?",
-    answer:
-      "We share the work in clear stages, collect your notes, and adjust the website before launch.",
-  },
-  {
-    question: "What happens after launch?",
-    answer:
-      "We make sure the website is live, working properly, and ready for people to visit.",
-  },
-];
+import useLanguage from "../../hooks/useLanguage";
 
 function Process() {
   const [openQuestion, setOpenQuestion] = useState("");
+  const { t } = useLanguage();
+  const fullProcessSteps = t("process.steps", []);
+  const processQuestions = t("process.questions", []);
 
   return (
     <main className="bg-[#080808]">
@@ -43,9 +18,9 @@ function Process() {
         <Container>
           <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <SectionHeader
-              eyebrow="Process"
-              title="A clear path from request to launch."
-              description="Simple steps, clear process, and a website direction everyone understands."
+              eyebrow={t("process.hero.eyebrow")}
+              title={t("process.hero.title")}
+              description={t("process.hero.description")}
             />
           </section>
         </Container>
@@ -64,9 +39,9 @@ function Process() {
         <Container>
           <div className="mb-8">
             <SectionHeader
-              eyebrow="Questions"
-              title="Before we start."
-              description="Quick answers about how the project moves."
+              eyebrow={t("process.questionsHeader.eyebrow")}
+              title={t("process.questionsHeader.title")}
+              description={t("process.questionsHeader.description")}
             />
           </div>
 
@@ -119,22 +94,22 @@ function Process() {
             <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
               <div>
                 <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                  Start with clarity
+                  {t("process.cta.eyebrow")}
                 </p>
 
                 <h2 className="font-display text-4xl font-bold tracking-[-0.06em] md:text-5xl">
-                  Tell us the goal.
+                  {t("process.cta.title")}
                 </h2>
 
                 <p className="mt-5 max-w-2xl leading-8 text-[#D9D4CC]">
-                  We'll help shape the right website direction from there.
+                  {t("process.cta.description")}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <Button to="/start">Start Your Project</Button>
+                <Button to="/start">{t("common.buttons.startProject")}</Button>
                 <Button to="/work" variant="secondary">
-                  View Our Work
+                  {t("common.buttons.viewWork")}
                 </Button>
               </div>
             </div>

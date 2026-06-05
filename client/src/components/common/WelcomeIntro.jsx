@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import useLanguage from "../../hooks/useLanguage";
 
 const welcomeStorageKey = "webDistrictWelcomeSeen";
 const logoSrc = "/images/logo/web-district-logo.webp";
@@ -44,6 +45,7 @@ function WelcomeIntro() {
   const [isLeaving, setIsLeaving] = useState(false);
   const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
+  const { t } = useLanguage();
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -76,7 +78,7 @@ function WelcomeIntro() {
   return (
     <div
       className={`wd-welcome-intro ${isLeaving ? "is-leaving" : ""}`}
-      aria-label="Welcome to Web District"
+      aria-label={t("welcome.aria")}
       role="status"
     >
       <style>
@@ -290,9 +292,9 @@ function WelcomeIntro() {
           )}
         </div>
 
-        <h1 className="wd-welcome-title">Welcome to Web District</h1>
+        <h1 className="wd-welcome-title">{t("welcome.title")}</h1>
         <p className="wd-welcome-subline">
-          Let's build something your brand can grow with.
+          {t("welcome.subline")}
         </p>
 
         <div className="wd-welcome-progress" aria-hidden="true">

@@ -8,6 +8,7 @@ import Card from "../common/Card";
 import Input from "../common/Input";
 import Textarea from "../common/Textarea";
 import AvailableSlots from "./AvailableSlots";
+import useLanguage from "../../hooks/useLanguage";
 
 const initialForm = {
   name: "",
@@ -20,6 +21,7 @@ const initialForm = {
 
 function BookCallForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
+  const { getErrorMessage, t } = useLanguage();
   const navigate = useNavigate();
 
   const [slots, setSlots] = useState([]);
@@ -49,7 +51,7 @@ function BookCallForm({ className = "" }) {
       const { data } = await api.get("/slots/available");
       setSlots(data.slots || []);
     } catch (error) {
-      toast.error("Failed to load available call slots.");
+      toast.error(t("start.callForm.loadError"));
     } finally {
       setIsSlotsLoading(false);
     }
@@ -63,12 +65,12 @@ function BookCallForm({ className = "" }) {
     e.preventDefault();
 
     if (!selectedSlot) {
-      toast.error("Please choose a call slot.");
+      toast.error(t("start.callForm.validationSlot"));
       return;
     }
 
     if (!form.name || !form.phone || !form.email || !form.topic) {
-      toast.error("Please fill name, phone, email, and discussion topic.");
+      toast.error(t("start.callForm.validationDetails"));
       return;
     }
 
@@ -82,8 +84,8 @@ function BookCallForm({ className = "" }) {
 
       toast.success(
         isAuthenticated
-          ? "Call appointment booked. You can track it in your dashboard."
-          : "Call appointment booked successfully."
+          ? t("start.callForm.successLoggedIn")
+          : t("start.callForm.success")
       );
 
       setForm({
@@ -99,7 +101,7 @@ function BookCallForm({ className = "" }) {
       navigate("/success?type=call");
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to book appointment."
+        getErrorMessage(error, "start.callForm.error")
       );
     } finally {
       setIsSubmitting(false);
@@ -110,21 +112,20 @@ function BookCallForm({ className = "" }) {
     <Card className={`p-6 md:p-8 ${className}`}>
       <div className="mb-8">
         <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-          Book a call
+          {t("start.callForm.eyebrow")}
         </p>
         <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-          Choose a time to talk.
+          {t("start.callForm.title")}
         </h2>
         <p className="mt-3 max-w-2xl leading-7 text-[#D9D4CC]">
-          Pick an available call slot and tell us what you want to discuss.
+          {t("start.callForm.description")}
         </p>
       </div>
 
       {isAuthenticated && (
         <div className="mb-6 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
           <p className="text-sm leading-7 text-[#F8F7F4]">
-            You are booking as {user?.name}. This appointment will appear in your
-            client dashboard.
+            {t("start.callForm.bookingAs", undefined, { name: user?.name })}
           </p>
         </div>
       )}
@@ -134,7 +135,9 @@ function BookCallForm({ className = "" }) {
         className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"
       >
         <div>
-          <p className="mb-4 font-semibold text-[#F8F7F4]">Available slots</p>
+          <p className="mb-4 font-semibold text-[#F8F7F4]">
+            {t("start.callForm.availableSlots")}
+          </p>
           <AvailableSlots
             slots={slots}
             selectedSlot={selectedSlot}
@@ -146,57 +149,61 @@ function BookCallForm({ className = "" }) {
         <div className="grid gap-5">
           <div className="grid gap-5 md:grid-cols-2">
             <Input
-              label="Name *"
-              placeholder="Your name"
+              label={t("start.requestForm.name")}
+              placeholder={t("start.requestForm.namePlaceholder")}
               value={form.name}
               onChange={(e) => updateField("name", e.target.value)}
             />
 
             <Input
-              label="Business name"
-              placeholder="Business / brand name"
+              label={t("start.requestForm.businessName")}
+              placeholder={t("start.requestForm.businessNamePlaceholder")}
               value={form.businessName}
               onChange={(e) => updateField("businessName", e.target.value)}
             />
 
             <Input
-              label="Phone / WhatsApp *"
-              placeholder="011..."
+              label={t("start.requestForm.phone")}
+              placeholder={t("start.requestForm.phonePlaceholder")}
+              className="wd-ltr"
               value={form.phone}
               onChange={(e) => updateField("phone", e.target.value)}
             />
 
             <Input
-              label="Email *"
+              label={t("start.requestForm.email")}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("start.requestForm.emailPlaceholder")}
+              className="wd-ltr"
               value={form.email}
               onChange={(e) => updateField("email", e.target.value)}
             />
           </div>
 
           <Input
-            label="What do you want to discuss? *"
-            placeholder="Example: I want an online store for my brand"
+            label={t("start.callForm.topic")}
+            placeholder={t("start.callForm.topicPlaceholder")}
             value={form.topic}
             onChange={(e) => updateField("topic", e.target.value)}
           />
 
           <Textarea
-            label="Optional notes"
-            placeholder="Any extra details before the call?"
+            label={t("start.callForm.notes")}
+            placeholder={t("start.callForm.notesPlaceholder")}
             value={form.notes}
             onChange={(e) => updateField("notes", e.target.value)}
           />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Booking..." : "Book call appointment"}
+              {isSubmitting
+                ? t("start.callForm.submitting")
+                : t("start.callForm.submit")}
             </Button>
 
             {isAuthenticated && (
               <Button to="/account/appointments" variant="secondary">
-                My appointments
+                {t("start.callForm.myAppointments")}
               </Button>
             )}
           </div>

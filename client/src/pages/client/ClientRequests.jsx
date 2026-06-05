@@ -5,10 +5,12 @@ import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import RequestList from "../../components/dashboard/RequestList";
 import api from "../../lib/axios";
+import useLanguage from "../../hooks/useLanguage";
 
 function ClientRequests() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { getErrorMessage, t } = useLanguage();
 
   const fetchRequests = async () => {
     try {
@@ -19,7 +21,7 @@ function ClientRequests() {
       setRequests(data.requests || []);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to load your requests."
+        getErrorMessage(error, "client.requests.loadError")
       );
     } finally {
       setIsLoading(false);
@@ -36,25 +38,24 @@ function ClientRequests() {
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Client portal
+              {t("common.labels.clientPortal")}
             </p>
 
             <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Your website requests
+              {t("client.requests.title")}
             </h2>
 
             <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              Track the requests you submitted to Web District and follow their
-              current status.
+              {t("client.requests.description")}
             </p>
           </div>
 
-          <Button to="/start">New request</Button>
+          <Button to="/start">{t("common.buttons.newRequest")}</Button>
         </div>
       </Card>
 
       {isLoading ? (
-        <Loader text="Loading your website requests..." />
+        <Loader text={t("client.requests.loading")} />
       ) : (
         <RequestList requests={requests} />
       )}

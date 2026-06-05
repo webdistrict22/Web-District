@@ -10,38 +10,48 @@ import {
 } from "lucide-react";
 import Container from "../common/Container";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 const clientLinks = [
-  { label: "Overview", path: "/account", icon: Home },
-  { label: "Requests", path: "/account/requests", icon: FileText },
-  { label: "Appointments", path: "/account/appointments", icon: CalendarDays },
-  { label: "Contracts", path: "/account/contracts", icon: FileText },
-  { label: "Project Status", path: "/account/project-status", icon: TrendingUp },
-  { label: "Reviews", path: "/account/reviews", icon: MessageSquare },
-  { label: "Profile", path: "/account/profile", icon: UserRound },
+  { key: "overview", label: "Overview", path: "/account", icon: Home },
+  { key: "requests", label: "Requests", path: "/account/requests", icon: FileText },
+  { key: "appointments", label: "Appointments", path: "/account/appointments", icon: CalendarDays },
+  { key: "contracts", label: "Contracts", path: "/account/contracts", icon: FileText },
+  { key: "projectStatus", label: "Project Status", path: "/account/project-status", icon: TrendingUp },
+  { key: "reviews", label: "Reviews", path: "/account/reviews", icon: MessageSquare },
+  { key: "profile", label: "Profile", path: "/account/profile", icon: UserRound },
 ];
 
 function DashboardLayout() {
   const { user, logout } = useAuth();
+  const { t, toggleLanguage } = useLanguage();
 
   return (
     <main className="min-h-screen bg-[#080808] pb-20 pt-28">
       <Container>
         <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">
           <div>
-            <p className="text-sm text-[#D9D4CC]">Client portal</p>
+            <p className="text-sm text-[#D9D4CC]">{t("client.layout.portal")}</p>
             <h1 className="font-display mt-1 text-3xl font-bold tracking-[-0.05em]">
-              Welcome, {user?.name}
+              {t("client.layout.welcome", undefined, { name: user?.name })}
             </h1>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
+            >
+              {t("nav.languageToggle")}
+            </button>
+
             <Link
               to="/"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/50 hover:text-[#C4A77D]"
             >
               <Home size={17} />
-              Go home
+              {t("client.layout.goHome")}
             </Link>
 
             <button
@@ -50,7 +60,7 @@ function DashboardLayout() {
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
             >
               <LogOut size={17} />
-              Logout
+              {t("client.layout.logout")}
             </button>
           </div>
         </div>
@@ -73,9 +83,9 @@ function DashboardLayout() {
                           : "border border-transparent text-[#D9D4CC] hover:bg-white/[0.04] hover:text-[#C4A77D]"
                       }`
                     }
-                  >
+                    >
                     <Icon size={17} />
-                    {link.label}
+                    {t(`client.layout.links.${link.key}`, link.label)}
                   </NavLink>
                 );
               })}

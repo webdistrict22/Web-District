@@ -10,6 +10,7 @@ import Card from "../common/Card";
 import Badge from "../common/Badge";
 import Button from "../common/Button";
 import ProjectCover from "../work/ProjectCover";
+import useLanguage from "../../hooks/useLanguage";
 
 const scheduleAfterPaint = (callback) => {
   if (typeof window === "undefined") return undefined;
@@ -27,6 +28,7 @@ const scheduleAfterPaint = (callback) => {
 
 function WorkPreview() {
   const [projects, setProjects] = useState([]);
+  const { t, translateValue } = useLanguage();
 
   const fetchProjects = async (signal) => {
     try {
@@ -69,12 +71,12 @@ function WorkPreview() {
       <Container>
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <SectionHeader
-            eyebrow="Some of our work"
-            title="Selected builds, shown simply."
-            description="Real examples with public websites, dashboards, and launch-ready flows."
+            eyebrow={t("home.work.eyebrow")}
+            title={t("home.work.title")}
+            description={t("home.work.description")}
           />
           <Button to="/work" variant="secondary">
-            View Our Work
+            {t("common.buttons.viewWork")}
           </Button>
         </div>
 
@@ -82,10 +84,18 @@ function WorkPreview() {
           {displayProjects.map((project) => {
             const isDatabaseProject = Boolean(project._id);
             const name = isDatabaseProject ? project.title : project.name;
-            const type = isDatabaseProject ? project.websiteType : project.type;
-            const description = isDatabaseProject
+            const rawType = isDatabaseProject ? project.websiteType : project.type;
+            const rawDescription = isDatabaseProject
               ? project.shortDescription
               : project.description;
+            const type = t(
+              `work.projects.${project.slug}.type`,
+              translateValue("websiteTypes", rawType)
+            );
+            const description = t(
+              `work.projects.${project.slug}.description`,
+              rawDescription
+            );
             const image = isDatabaseProject
               ? project.images?.[0]
               : project.coverImage || project.image;
@@ -117,7 +127,9 @@ function WorkPreview() {
                     {truncateText(description, 130)}
                   </p>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#C4A77D]">
-                    {isComingSoon ? "Case study coming soon" : "Open case study"}
+                    {isComingSoon
+                      ? t("home.work.comingSoon")
+                      : t("home.work.openCaseStudy")}
                     <ArrowUpRight size={16} />
                   </span>
                 </div>
@@ -131,7 +143,7 @@ function WorkPreview() {
                 key={project._id || project.slug}
                 to={`/work/${slug}`}
                 className="block h-full rounded-[1.6rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C4A77D]"
-                aria-label={`Open ${name} case study`}
+                aria-label={t("home.work.ariaOpen", undefined, { name })}
               >
                 {card}
               </Link>

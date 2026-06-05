@@ -7,19 +7,21 @@ import StartOptions from "../../components/start/StartOptions";
 import WebsiteRequestForm from "../../components/start/WebsiteRequestForm";
 import BookCallForm from "../../components/start/BookCallForm";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 function Start() {
   const [activeOption, setActiveOption] = useState("request");
   const { isAuthenticated, user } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <main className="bg-[#080808]">
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <SectionHeader
-          eyebrow="Start"
-          title="Start Your Project."
-          description="Send the details now, or book a call if you want to shape the direction first."
+          eyebrow={t("start.hero.eyebrow")}
+          title={t("start.hero.title")}
+          description={t("start.hero.description")}
         />
         </Container>
       </section>
@@ -31,15 +33,15 @@ function Start() {
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <p className="font-semibold text-[#F8F7F4]">
-                  You're starting as {user?.name}
+                  {t("start.loggedIn.title", undefined, { name: user?.name })}
                 </p>
                 <p className="mt-1 text-sm text-[#D9D4CC]">
-                  Your requests and appointments will appear in your dashboard.
+                  {t("start.loggedIn.description")}
                 </p>
               </div>
 
               <Button to="/account/requests" variant="secondary">
-                View my requests
+                {t("start.loggedIn.button")}
               </Button>
             </div>
           </Card>

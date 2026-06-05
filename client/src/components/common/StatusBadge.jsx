@@ -1,3 +1,5 @@
+import useLanguage from "../../hooks/useLanguage";
+
 const statusStyles = {
   New: "border-[#C4A77D]/32 bg-[#C4A77D]/14 text-[#F8F7F4]",
   Read: "border-white/10 bg-white/[0.04] text-[#D9D4CC]",
@@ -22,6 +24,7 @@ const statusStyles = {
 };
 
 function StatusBadge({ status = "New" }) {
+  const { translateValue } = useLanguage();
   const style =
     statusStyles[status] || "border-white/10 bg-white/[0.04] text-[#D9D4CC]";
 
@@ -29,7 +32,7 @@ function StatusBadge({ status = "New" }) {
     <span
       className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${style}`}
     >
-      {status}
+      {translateValue("statuses", status)}
     </span>
   );
 }

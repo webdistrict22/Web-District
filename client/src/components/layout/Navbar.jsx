@@ -7,9 +7,11 @@ import MobileMenu from "./MobileMenu";
 import NavbarTicker from "./NavbarTicker";
 import { navLinks } from "../../data/siteData";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
 function Navbar() {
   const { isAuthenticated, isAdmin } = useAuth();
+  const { t, toggleLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -48,7 +50,7 @@ function Navbar() {
               {({ isActive }) => (
                 <>
                   {isActive && <span className="h-1.5 w-1.5 rounded-full bg-[#C4A77D]" />}
-                  <span>{link.label}</span>
+                  <span>{t(`nav.links.${link.key}`, link.label)}</span>
                 </>
               )}
             </NavLink>
@@ -56,11 +58,20 @@ function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            className="inline-flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
+            aria-label={t("nav.languageToggle")}
+          >
+            {t("nav.languageToggle")}
+          </button>
+
           {isAuthenticated && (
             <Link
               to={isAdmin ? "/admin" : "/account"}
               className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-              title={isAdmin ? "Admin dashboard" : "Account"}
+              title={isAdmin ? t("nav.adminDashboard") : t("nav.account")}
             >
               <UserRound size={18} />
             </Link>
@@ -71,24 +82,35 @@ function Navbar() {
               to="/login"
               className="rounded-2xl px-4 py-3 text-sm font-semibold text-[#D9D4CC] transition hover:text-[#C4A77D]"
             >
-              Login
+              {t("nav.login")}
             </Link>
           )}
 
           <Button to="/start" icon={false}>
-            Start Your Project
+            {t("nav.startProject")}
           </Button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen(true)}
-          aria-label="Open mobile menu"
-          aria-expanded={isMenuOpen}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D] lg:hidden"
-        >
-          <Menu size={20} />
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            aria-label={t("nav.languageToggle")}
+            className="inline-flex h-11 min-w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-xs font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
+          >
+            {t("nav.languageToggle")}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen(true)}
+            aria-label={t("nav.openMenu")}
+            aria-expanded={isMenuOpen}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
       </nav>
 
       <NavbarTicker />

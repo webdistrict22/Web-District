@@ -6,54 +6,41 @@ import Card from "../../components/common/Card";
 import Container from "../../components/common/Container";
 import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 
-const successContent = {
+const successConfig = {
   call: {
-    eyebrow: "Call booked",
-    title: "Your call appointment is booked.",
-    description:
-      "We received your call details. We will review the direction and contact you if anything needs confirmation.",
     icon: CalendarDays,
-    steps: [
-      "We review your call topic.",
-      "We prepare the right questions before the call.",
-      "We use the call to shape the website direction.",
-    ],
     accountPath: "/account/appointments",
-    accountLabel: "View appointment",
   },
   request: {
-    eyebrow: "Request sent",
-    title: "Your website request has been sent.",
-    description:
-      "We received your project details. We will review the business goal, website type, and direction before replying.",
     icon: ClipboardList,
-    steps: [
-      "We review your website request.",
-      "We shape the best direction for the project.",
-      "We contact you with the next step.",
-    ],
     accountPath: "/account/requests",
-    accountLabel: "View request",
   },
 };
 
 function Success() {
   const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   const content = useMemo(() => {
     const type = searchParams.get("type");
-    return successContent[type] || successContent.request;
-  }, [searchParams]);
+    const safeType = successConfig[type] ? type : "request";
+
+    return {
+      ...successConfig[safeType],
+      ...t(`success.${safeType}`, {}),
+    };
+  }, [searchParams, t]);
 
   const Icon = content.icon;
 
   return (
     <main className="bg-[#080808]">
       <PageMeta
-        title="Success"
-        description="Your Web District request was submitted successfully."
+        title={t("success.metaTitle")}
+        description={t("success.metaDescription")}
       />
 
       <section className="relative overflow-hidden border-b border-[#F8F7F4]/10 pt-32 pb-16 md:pt-40 md:pb-20">
@@ -86,7 +73,7 @@ function Success() {
                   <span className="wd-accent-line" />
                   <Icon size={18} className="text-[#C4A77D]" />
                   <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#C4A77D]">
-                    What happens next
+                    {t("success.next")}
                   </p>
                 </div>
 
@@ -111,13 +98,13 @@ function Success() {
                     </Button>
                   ) : (
                     <Button to="/start" className="text-[#F8F7F4]">
-                      Start another
+                      {t("success.startAnother")}
                     </Button>
                   )}
 
                   <Button to="/" variant="secondary" icon={false}>
                     <Home size={17} />
-                    Back home
+                    {t("common.buttons.backHome")}
                   </Button>
                 </div>
               </div>

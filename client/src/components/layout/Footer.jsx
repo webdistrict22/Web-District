@@ -4,17 +4,11 @@ import { FaInstagram } from "react-icons/fa";
 import BrandLogo from "./BrandLogo";
 import { getWhatsappLink } from "../../lib/helpers";
 import useSettings from "../../hooks/useSettings";
-
-const footerText =
-  "We don't just build websites. We craft digital work that feels like art.";
-
-const legalLinks = [
-  { label: "Terms & Conditions", path: "/terms" },
-  { label: "Privacy Policy", path: "/privacy" },
-];
+import useLanguage from "../../hooks/useLanguage";
 
 function Footer() {
   const { settings } = useSettings();
+  const { t } = useLanguage();
 
   const phone = settings.phone || "01130696935";
   const whatsapp = settings.whatsapp || "01130696935";
@@ -28,15 +22,20 @@ function Footer() {
           <div>
             <BrandLogo size="lg" />
             <p className="mt-4 max-w-md leading-7 text-[#D9D4CC]">
-              {footerText}
+              {t("footer.text")}
             </p>
           </div>
 
           <div>
-            <p className="mb-4 font-semibold text-[#F8F7F4]">Help</p>
+            <p className="mb-4 font-semibold text-[#F8F7F4]">
+              {t("footer.help")}
+            </p>
 
             <div className="space-y-3 text-sm text-[#D9D4CC]">
-              {legalLinks.map((link) => (
+              {[
+                { label: t("footer.terms"), path: "/terms" },
+                { label: t("footer.privacy"), path: "/privacy" },
+              ].map((link) => (
                 <Link
                   key={link.path}
                   className="block transition hover:text-[#C4A77D]"
@@ -49,7 +48,9 @@ function Footer() {
           </div>
 
           <div>
-            <p className="mb-4 font-semibold text-[#F8F7F4]">Contact</p>
+            <p className="mb-4 font-semibold text-[#F8F7F4]">
+              {t("footer.contact")}
+            </p>
 
             <div className="space-y-3 text-sm text-[#D9D4CC]">
               <a
@@ -59,7 +60,7 @@ function Footer() {
                 rel="noreferrer"
               >
                 <FaInstagram size={16} />
-                @{instagram}
+                <span className="wd-ltr">@{instagram}</span>
               </a>
 
               <a
@@ -69,17 +70,17 @@ function Footer() {
                 rel="noreferrer"
               >
                 <MessageCircle size={16} />
-                WhatsApp
+                {t("footer.whatsapp")}
               </a>
 
               <a className="flex items-center gap-2 transition hover:text-[#C4A77D]" href={`tel:${phone}`}>
                 <Phone size={16} />
-                {phone}
+                <span className="wd-ltr">{phone}</span>
               </a>
 
               <a className="flex items-center gap-2 transition hover:text-[#C4A77D]" href={`mailto:${email}`}>
                 <Mail size={16} />
-                {email}
+                <span className="wd-ltr">{email}</span>
               </a>
             </div>
           </div>

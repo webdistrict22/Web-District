@@ -17,10 +17,26 @@ export default function registerServiceWorker() {
 
   didQueueRegistration = true;
 
-  const register = () => {
-    navigator.serviceWorker.register("/sw.js").catch((error) => {
-      console.warn("Service worker registration failed.", error);
+  const register = async () => {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    let isReloading = false;
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController || isReloading) return;
+
+      isReloading = true;
+      window.location.reload();
     });
+
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js", {
+        updateViaCache: "none",
+      });
+
+      await registration.update();
+    } catch (error) {
+      console.warn("Service worker registration failed.", error);
+    }
   };
 
   if (document.readyState === "complete") {

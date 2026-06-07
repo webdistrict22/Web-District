@@ -3,6 +3,7 @@ import useLanguage from "../../hooks/useLanguage";
 
 const welcomeStorageKey = "webDistrictWelcomeSeen";
 const logoSrc = "/images/logo/web-district-logo.webp";
+const logoReadinessTimeout = 200;
 
 let runtimeWelcomeSeen = false;
 
@@ -43,8 +44,7 @@ function markWelcomeSeen() {
 function WelcomeIntro() {
   const [isVisible, setIsVisible] = useState(shouldShowWelcome);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [logoLoaded, setLogoLoaded] = useState(false);
-  const [logoFailed, setLogoFailed] = useState(false);
+  const [brandMode, setBrandMode] = useState("pending");
   const { t } = useLanguage();
 
   const prefersReducedMotion = useMemo(() => {
@@ -53,7 +53,65 @@ function WelcomeIntro() {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return undefined;
+    if (!isVisible || brandMode !== "pending") return undefined;
+
+    let isActive = true;
+    let isDecided = false;
+    let isHandlingLoad = false;
+    const image = new Image();
+
+    const decideBrandMode = (mode) => {
+      if (!isActive || isDecided) return;
+
+      isDecided = true;
+      window.clearTimeout(readinessTimer);
+      image.onload = null;
+      image.onerror = null;
+      setBrandMode(mode);
+    };
+
+    const handleLogoReady = async () => {
+      if (!isActive || isDecided || isHandlingLoad) return;
+
+      isHandlingLoad = true;
+
+      try {
+        if (typeof image.decode === "function") {
+          await image.decode();
+        }
+
+        decideBrandMode("logo");
+      } catch {
+        decideBrandMode("text");
+      }
+    };
+
+    const readinessTimer = window.setTimeout(() => {
+      decideBrandMode("text");
+    }, logoReadinessTimeout);
+
+    image.onload = handleLogoReady;
+    image.onerror = () => decideBrandMode("text");
+    image.src = logoSrc;
+
+    if (image.complete) {
+      if (image.naturalWidth > 0) {
+        void handleLogoReady();
+      } else {
+        decideBrandMode("text");
+      }
+    }
+
+    return () => {
+      isActive = false;
+      window.clearTimeout(readinessTimer);
+      image.onload = null;
+      image.onerror = null;
+    };
+  }, [brandMode, isVisible]);
+
+  useEffect(() => {
+    if (!isVisible || brandMode === "pending") return undefined;
 
     const leaveDelay = prefersReducedMotion ? 300 : 1120;
     const unmountDelay = prefersReducedMotion ? 420 : 1380;
@@ -71,7 +129,7 @@ function WelcomeIntro() {
       window.clearTimeout(leaveTimer);
       window.clearTimeout(unmountTimer);
     };
-  }, [isVisible, prefersReducedMotion]);
+  }, [brandMode, isVisible, prefersReducedMotion]);
 
   if (!isVisible) return null;
 
@@ -158,8 +216,6 @@ function WelcomeIntro() {
             height: 100%;
             width: 100%;
             object-fit: cover;
-            opacity: 1;
-            transition: opacity 160ms ease;
           }
 
           .wd-welcome-fallback {
@@ -170,10 +226,6 @@ function WelcomeIntro() {
             font-weight: 800;
             letter-spacing: -0.04em;
             color: #F3EEE4;
-          }
-
-          .wd-welcome-logo.is-loading {
-            opacity: 0;
           }
 
           .wd-welcome-title {
@@ -267,40 +319,35 @@ function WelcomeIntro() {
         `}
       </style>
 
-      <div className="wd-welcome-panel">
-        <div className="wd-welcome-logo-wrap">
-          {(!logoLoaded || logoFailed) && (
-            <span className="wd-welcome-fallback">Web District</span>
-          )}
+      {brandMode !== "pending" && (
+        <div className="wd-welcome-panel">
+          <div className="wd-welcome-logo-wrap">
+            {brandMode === "logo" ? (
+              <img
+                src={logoSrc}
+                alt="Web District"
+                width="164"
+                height="92"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                className="wd-welcome-logo"
+              />
+            ) : (
+              <span className="wd-welcome-fallback">Web District</span>
+            )}
+          </div>
 
-          {!logoFailed && (
-            <img
-              src={logoSrc}
-              alt="Web District"
-              width="164"
-              height="92"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              className={`wd-welcome-logo ${logoLoaded ? "" : "is-loading"}`}
-              onLoad={() => setLogoLoaded(true)}
-              onError={() => {
-                setLogoFailed(true);
-                setLogoLoaded(false);
-              }}
-            />
-          )}
+          <h1 className="wd-welcome-title">{t("welcome.title")}</h1>
+          <p className="wd-welcome-subline">
+            {t("welcome.subline")}
+          </p>
+
+          <div className="wd-welcome-progress" aria-hidden="true">
+            <span />
+          </div>
         </div>
-
-        <h1 className="wd-welcome-title">{t("welcome.title")}</h1>
-        <p className="wd-welcome-subline">
-          {t("welcome.subline")}
-        </p>
-
-        <div className="wd-welcome-progress" aria-hidden="true">
-          <span />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

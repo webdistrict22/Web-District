@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node seed/seed.js"
+    "seed": "node seed/seed.js",
+    "qa:public": "node scripts/qa/publicSmoke.js",
+    "qa:protected": "node scripts/qa/protectedSmoke.js",
+    "qa:admin": "node scripts/qa/adminSmoke.js",
+    "qa:write": "node scripts/qa/writeSmoke.js",
+    "qa": "node scripts/qa/runAll.js"
   },
   "keywords": [],
   "author": "Web District",

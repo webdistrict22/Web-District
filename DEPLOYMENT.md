@@ -28,10 +28,12 @@ Add this production environment variable:
 
 ```env
 VITE_API_URL=https://web-district.onrender.com/api
+VITE_META_PIXEL_ID=
 ```
 
-The value must include `/api`. Redeploy after changing any `VITE_*` value
-because Vite embeds it during the build.
+`VITE_API_URL` must include `/api`. `VITE_META_PIXEL_ID` is the Meta
+Dataset/Pixel ID for public ad-event tracking. Redeploy after changing any
+`VITE_*` value because Vite embeds it during the build.
 
 ### Domains
 
@@ -69,6 +71,8 @@ Confirm `/sw.js` returns a no-cache policy and hashed `/assets/*` files return
 `public, max-age=31536000, immutable`.
 
 Also confirm Vercel Analytics and Speed Insights are receiving production data.
+For Meta Pixel, confirm `typeof window.fbq` is `"function"` in DevTools and
+that the Network panel shows successful `facebook.com/tr` requests.
 
 ## Backend: Render
 

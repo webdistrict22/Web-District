@@ -8,25 +8,34 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (!id.includes("node_modules")) return undefined;
+          const normalizedId = id.replaceAll("\\", "/");
+
+          if (normalizedId.endsWith("/src/i18n/translations.js")) {
+            return "translations";
+          }
+
+          if (!normalizedId.includes("/node_modules/")) return undefined;
 
           if (
-            id.includes("/react/") ||
-            id.includes("/react-dom/") ||
-            id.includes("/react-router-dom/")
+            normalizedId.includes("/react/") ||
+            normalizedId.includes("/react-dom/") ||
+            normalizedId.includes("/react-router-dom/")
           ) {
             return "react-vendor";
           }
 
-          if (id.includes("/lucide-react/") || id.includes("/react-icons/")) {
+          if (
+            normalizedId.includes("/lucide-react/") ||
+            normalizedId.includes("/react-icons/")
+          ) {
             return "icons-vendor";
           }
 
-          if (id.includes("/axios/")) {
+          if (normalizedId.includes("/axios/")) {
             return "http-vendor";
           }
 
-          if (id.includes("/react-hot-toast/")) {
+          if (normalizedId.includes("/react-hot-toast/")) {
             return "ui-vendor";
           }
 

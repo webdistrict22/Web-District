@@ -4,6 +4,10 @@ const Appointment = require("../models/Appointment");
 const asyncHandler = require("../middleware/asyncHandler");
 const { cleanText } = require("../utils/validation");
 const {
+  getAppointmentStatusAfterContract,
+  getRequestContractSentUpdate,
+} = require("../utils/workflowTransitions");
+const {
   notifyContractAccepted,
   notifyContractClientNote,
   sendContractAcceptedToClient,
@@ -20,29 +24,17 @@ const shouldNotifyClientAboutContract = (contract) => {
   return Boolean(contract.clientEmail && contract.status !== "Draft");
 };
 
-const requestContractSentStatuses = new Set([
-  "Sent",
-  "Accepted",
-  "In Progress",
-  "Completed",
-]);
-
 const syncRequestContractSentStatus = async (contract) => {
-  if (
-    !contract.request ||
-    !requestContractSentStatuses.has(contract.status)
-  ) {
-    return;
-  }
+  const transition = getRequestContractSentUpdate(
+    contract.request,
+    contract.status
+  );
+
+  if (!transition) return;
 
   await WebsiteRequest.findOneAndUpdate(
-    {
-      _id: contract.request,
-      status: { $nin: ["Contract Sent", "Completed"] },
-    },
-    {
-      status: "Contract Sent",
-    }
+    transition.filter,
+    transition.update
   );
 };
 
@@ -248,8 +240,12 @@ const createContractFromAppointment = asyncHandler(async (req, res) => {
     clientNotes,
   });
 
-  if (appointment.status === "Pending") {
-    appointment.status = "Accepted";
+  const nextAppointmentStatus = getAppointmentStatusAfterContract(
+    appointment.status
+  );
+
+  if (nextAppointmentStatus !== appointment.status) {
+    appointment.status = nextAppointmentStatus;
     await appointment.save();
   }
 

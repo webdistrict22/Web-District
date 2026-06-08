@@ -13,20 +13,21 @@ import useLanguage from "../../hooks/useLanguage";
 function CaseStudy() {
   const { slug } = useParams();
   const { t } = useLanguage();
+  const fallbackProject = getFallbackProjectBySlug(slug);
 
-  const [project, setProject] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [project, setProject] = useState(fallbackProject || null);
+  const [isLoading, setIsLoading] = useState(!fallbackProject);
 
   const fetchProject = useCallback(async () => {
-    setIsLoading(true);
+    const routeFallbackProject = getFallbackProjectBySlug(slug);
 
-    const fallbackProject = getFallbackProjectBySlug(slug);
-
-    if (fallbackProject) {
-      setProject(fallbackProject);
+    if (routeFallbackProject) {
+      setProject(routeFallbackProject);
       setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const { data } = await api.get(`/projects/public/${slug}`);

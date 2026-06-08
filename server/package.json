@@ -10,6 +10,7 @@
     "seed": "node seed/seed.js",
     "qa:public": "node scripts/qa/publicSmoke.js",
     "qa:protected": "node scripts/qa/protectedSmoke.js",
+    "qa:workflow": "node scripts/qa/workflowSmoke.js",
     "qa:admin": "node scripts/qa/adminSmoke.js",
     "qa:write": "node scripts/qa/writeSmoke.js",
     "qa": "node scripts/qa/runAll.js"

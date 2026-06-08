@@ -111,13 +111,13 @@ function MetaPixelTracker() {
         content_category: viewConfig.contentCategory,
       };
 
-      if (viewConfig.projectSlug) {
+      if (caseStudyConfig?.projectSlug) {
         viewParams.project_slug = viewConfig.projectSlug;
       }
 
       trackViewContent(viewConfig.contentName, viewParams);
 
-      if (viewConfig.projectSlug) {
+      if (caseStudyConfig?.projectSlug) {
         trackCustomEvent("ProjectCaseStudyView", {
           ...viewParams,
           content_name: viewConfig.contentName,

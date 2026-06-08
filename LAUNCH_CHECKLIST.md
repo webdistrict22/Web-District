@@ -15,6 +15,7 @@
 - [ ] Keep `QA_RUN_WRITE_TESTS=false` for normal deployment verification.
 - [ ] Review Vercel and Render environment variables.
 - [ ] Confirm `VITE_API_URL` includes `/api`.
+- [ ] Confirm `VITE_META_PIXEL_ID` contains the intended Meta Dataset/Pixel ID.
 - [ ] Confirm production CORS origins contain only approved domains.
 - [ ] Confirm MongoDB Atlas backup and access settings.
 
@@ -103,6 +104,7 @@ npm.cmd run qa
 
 - [ ] Vercel Analytics is active.
 - [ ] Vercel Speed Insights is active.
+- [ ] `window.fbq` is a function and Meta `facebook.com/tr` requests appear.
 - [ ] Render logs have no repeating server errors.
 - [ ] MongoDB Atlas shows expected connections and indexes.
 - [ ] Cloudinary accepts a valid admin image upload.

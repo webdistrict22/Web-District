@@ -1,5 +1,6 @@
 const publicSmoke = require("./publicSmoke");
 const protectedSmoke = require("./protectedSmoke");
+const workflowSmoke = require("./workflowSmoke");
 const adminSmoke = require("./adminSmoke");
 const writeSmoke = require("./writeSmoke");
 const { isTrue, printHeader } = require("./helpers");
@@ -7,6 +8,7 @@ const { isTrue, printHeader } = require("./helpers");
 const suites = [
   ["Public", publicSmoke.run],
   ["Protected", protectedSmoke.run],
+  ["Workflow", workflowSmoke.run],
   ["Admin", adminSmoke.run],
 ];
 

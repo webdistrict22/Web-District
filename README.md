@@ -133,9 +133,13 @@ in `client/.env`.
 
 ```env
 VITE_API_URL=https://web-district.onrender.com/api
+VITE_META_PIXEL_ID=
 ```
 
 `VITE_API_URL` must include `/api`.
+`VITE_META_PIXEL_ID` is the Meta Dataset/Pixel ID used for public conversion
+tracking. Vite embeds both variables at build time, so redeploy after changing
+either value. Do not commit the real Pixel ID to documentation.
 
 ### Backend
 

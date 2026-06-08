@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Suspense } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   CalendarDays,
   FileText,
@@ -9,6 +10,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Container from "../common/Container";
+import Loader from "../common/Loader";
 import PageMeta from "../common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
@@ -26,6 +28,7 @@ const clientLinks = [
 function DashboardLayout() {
   const { user, logout } = useAuth();
   const { t, toggleLanguage } = useLanguage();
+  const location = useLocation();
 
   return (
     <main
@@ -101,7 +104,12 @@ function DashboardLayout() {
           </aside>
 
           <section>
-            <Outlet />
+            <Suspense
+              key={location.pathname}
+              fallback={<Loader text={t("common.loading.page")} />}
+            >
+              <Outlet />
+            </Suspense>
           </section>
         </div>
       </Container>

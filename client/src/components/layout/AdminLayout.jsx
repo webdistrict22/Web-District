@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Suspense } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   CalendarDays,
   FileText,
@@ -8,6 +9,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import Container from "../common/Container";
+import Loader from "../common/Loader";
 import PageMeta from "../common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 
@@ -22,6 +24,7 @@ const adminLinks = [
 
 function AdminLayout() {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   return (
     <main
@@ -93,7 +96,12 @@ function AdminLayout() {
           </aside>
 
           <section>
-            <Outlet />
+            <Suspense
+              key={location.pathname}
+              fallback={<Loader text="Loading admin view..." />}
+            >
+              <Outlet />
+            </Suspense>
           </section>
         </div>
       </Container>

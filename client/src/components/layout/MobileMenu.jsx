@@ -98,7 +98,7 @@ function MobileMenu({ isOpen, onClose, triggerRef }) {
   const accountPath = isAdmin ? "/admin" : "/account";
 
   return (
-    <div className="fixed inset-0 z-[90] lg:hidden">
+    <div className="fixed inset-0 z-[90] xl:hidden">
       <div
         aria-hidden="true"
         onClick={onClose}

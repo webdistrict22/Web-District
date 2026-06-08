@@ -20,8 +20,20 @@ const shouldNotifyClientAboutContract = (contract) => {
   return Boolean(contract.clientEmail && contract.status !== "Draft");
 };
 
+const requestContractSentStatuses = new Set([
+  "Sent",
+  "Accepted",
+  "In Progress",
+  "Completed",
+]);
+
 const syncRequestContractSentStatus = async (contract) => {
-  if (!contract.request || contract.status === "Draft") return;
+  if (
+    !contract.request ||
+    !requestContractSentStatuses.has(contract.status)
+  ) {
+    return;
+  }
 
   await WebsiteRequest.findOneAndUpdate(
     {
@@ -236,8 +248,10 @@ const createContractFromAppointment = asyncHandler(async (req, res) => {
     clientNotes,
   });
 
-  appointment.status = "Accepted";
-  await appointment.save();
+  if (appointment.status === "Pending") {
+    appointment.status = "Accepted";
+    await appointment.save();
+  }
 
   if (shouldNotifyClientAboutContract(contract)) {
     sendContractToClient(contract)

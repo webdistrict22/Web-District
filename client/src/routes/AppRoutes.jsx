@@ -83,125 +83,136 @@ function AppRoutes() {
       <ScrollToTop />
       <MetaPixelTracker />
 
-      <Suspense fallback={<Loader page text={t("common.loading.page")} />}>
-        <Routes>
-          <Route path="/" element={<PublicLayout />}>
-            <Route index element={<Home />} />
-            <Route path="services" element={<Services />} />
-            <Route path="work" element={<Work />} />
-            <Route path="work/:slug" element={<CaseStudy />} />
-            <Route path="process" element={<Process />} />
-            <Route path="start" element={<Start />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="success" element={<Success />} />
-            <Route path="terms" element={<Terms />} />
-            <Route path="privacy" element={<Privacy />} />
-            <Route
-              path="login"
-              element={
-                <PublicOnlyRoute>
-                  <Login />
-                </PublicOnlyRoute>
-              }
-            />
-            <Route
-              path="signup"
-              element={
-                <PublicOnlyRoute>
-                  <Signup />
-                </PublicOnlyRoute>
-              }
-            />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="reset-password/:token" element={<ResetPassword />} />
-          </Route>
-
+      <Routes>
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="services" element={<Services />} />
+          <Route path="work" element={<Work />} />
+          <Route path="work/:slug" element={<CaseStudy />} />
+          <Route path="process" element={<Process />} />
+          <Route path="start" element={<Start />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="success" element={<Success />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="privacy" element={<Privacy />} />
           <Route
-            path="/account"
+            path="login"
             element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
             }
-          >
-            <Route index element={<ClientDashboard />} />
-            <Route path="requests" element={<ClientRequests />} />
-            <Route path="appointments" element={<ClientAppointments />} />
-            <Route path="contracts" element={<ClientContracts />} />
-            <Route path="project-status" element={<ClientProjectStatus />} />
-            <Route path="reviews" element={<ClientReviews />} />
-            <Route path="profile" element={<ClientProfile />} />
-          </Route>
-
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminLayout />
-              </AdminRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="requests" element={<AdminRequests />} />
-            <Route path="appointments" element={<AdminAppointments />} />
-            <Route path="contracts" element={<AdminContracts />} />
-            <Route path="clients" element={<AdminClients />} />
-            <Route
-              path="clients/reviews"
-              element={<AdminClients initialTab="reviews" />}
-            />
-            <Route path="control" element={<AdminControl />} />
-            <Route
-              path="control/slots"
-              element={<AdminControl initialTab="slots" />}
-            />
-            <Route
-              path="control/projects"
-              element={<AdminControl initialTab="projects" />}
-            />
-            <Route
-              path="control/faq"
-              element={<AdminControl initialTab="faq" />}
-            />
-            <Route
-              path="control/packages"
-              element={<AdminControl initialTab="packages" />}
-            />
-            <Route
-              path="slots"
-              element={<Navigate to="/admin/control/slots" replace />}
-            />
-            <Route
-              path="projects"
-              element={<Navigate to="/admin/control/projects" replace />}
-            />
-            <Route
-              path="faq"
-              element={<Navigate to="/admin/control/faq" replace />}
-            />
-            <Route
-              path="packages"
-              element={<Navigate to="/admin/control/packages" replace />}
-            />
-            <Route
-              path="settings"
-              element={<Navigate to="/admin/control" replace />}
-            />
-            <Route
-              path="reviews"
-              element={<Navigate to="/admin/clients/reviews" replace />}
-            />
-          </Route>
-
-          <Route path="/dashboard" element={<Navigate to="/account" replace />} />
-          <Route
-            path="/admin/dashboard"
-            element={<Navigate to="/admin" replace />}
           />
+          <Route
+            path="signup"
+            element={
+              <PublicOnlyRoute>
+                <Signup />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password/:token" element={<ResetPassword />} />
+        </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Suspense
+                fallback={<Loader page text={t("common.loading.page")} />}
+              >
+                <DashboardLayout />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ClientDashboard />} />
+          <Route path="requests" element={<ClientRequests />} />
+          <Route path="appointments" element={<ClientAppointments />} />
+          <Route path="contracts" element={<ClientContracts />} />
+          <Route path="project-status" element={<ClientProjectStatus />} />
+          <Route path="reviews" element={<ClientReviews />} />
+          <Route path="profile" element={<ClientProfile />} />
+        </Route>
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Suspense fallback={<Loader page text="Loading admin..." />}>
+                <AdminLayout />
+              </Suspense>
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="requests" element={<AdminRequests />} />
+          <Route path="appointments" element={<AdminAppointments />} />
+          <Route path="contracts" element={<AdminContracts />} />
+          <Route path="clients" element={<AdminClients />} />
+          <Route
+            path="clients/reviews"
+            element={<AdminClients initialTab="reviews" />}
+          />
+          <Route path="control" element={<AdminControl />} />
+          <Route
+            path="control/slots"
+            element={<AdminControl initialTab="slots" />}
+          />
+          <Route
+            path="control/projects"
+            element={<AdminControl initialTab="projects" />}
+          />
+          <Route
+            path="control/faq"
+            element={<AdminControl initialTab="faq" />}
+          />
+          <Route
+            path="control/packages"
+            element={<AdminControl initialTab="packages" />}
+          />
+          <Route
+            path="slots"
+            element={<Navigate to="/admin/control/slots" replace />}
+          />
+          <Route
+            path="projects"
+            element={<Navigate to="/admin/control/projects" replace />}
+          />
+          <Route
+            path="faq"
+            element={<Navigate to="/admin/control/faq" replace />}
+          />
+          <Route
+            path="packages"
+            element={<Navigate to="/admin/control/packages" replace />}
+          />
+          <Route
+            path="settings"
+            element={<Navigate to="/admin/control" replace />}
+          />
+          <Route
+            path="reviews"
+            element={<Navigate to="/admin/clients/reviews" replace />}
+          />
+        </Route>
+
+        <Route path="/dashboard" element={<Navigate to="/account" replace />} />
+        <Route
+          path="/admin/dashboard"
+          element={<Navigate to="/admin" replace />}
+        />
+
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={<Loader page text={t("common.loading.page")} />}>
+              <NotFound />
+            </Suspense>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

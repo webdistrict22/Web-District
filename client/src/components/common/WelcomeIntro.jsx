@@ -3,7 +3,7 @@ import useLanguage from "../../hooks/useLanguage";
 
 const welcomeStorageKey = "webDistrictWelcomeSeen";
 const logoSrc = "/images/logo/web-district-logo.webp";
-const logoReadinessTimeout = 200;
+const logoReadinessTimeout = 450;
 
 let runtimeWelcomeSeen = false;
 

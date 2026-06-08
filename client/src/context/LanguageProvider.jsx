@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import LanguageContext from "./languageContext";
+import LanguageContext from "./languageContext.js";
 import { translations } from "../i18n/translations";
 
 const LANGUAGE_STORAGE_KEY = "webDistrictLanguage";

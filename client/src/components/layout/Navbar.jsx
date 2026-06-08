@@ -57,13 +57,13 @@ function Navbar() {
       >
         <Link
           to="/"
-          className="flex items-center gap-3"
+          className="flex shrink-0 items-center gap-3"
           aria-label="Web District"
         >
           <BrandLogo />
         </Link>
 
-        <div className="hidden items-center gap-7 lg:flex">
+        <div className="hidden min-w-0 items-center gap-7 xl:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
@@ -72,7 +72,7 @@ function Navbar() {
                 trackNavigation(link.path, `Desktop Navigation ${link.key}`)
               }
               className={({ isActive }) =>
-                `inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
+                `inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition ${
                   isActive
                     ? "border-[#C4A77D]/35 bg-[#C4A77D]/14 text-[#F8F7F4] shadow-[0_0_24px_rgba(196,167,125,0.10)]"
                     : "border-transparent text-[#D9D4CC] hover:border-[#C4A77D]/25 hover:bg-white/[0.03] hover:text-[#C4A77D]"
@@ -89,7 +89,7 @@ function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden shrink-0 items-center gap-3 xl:flex">
           <button
             type="button"
             onClick={toggleLanguage}
@@ -124,6 +124,7 @@ function Navbar() {
           <Button
             to="/start"
             icon={false}
+            className="shrink-0 whitespace-nowrap"
             onClick={() =>
               trackNavigation("/start", "Desktop Navigation CTA")
             }
@@ -132,7 +133,7 @@ function Navbar() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <button
             type="button"
             onClick={toggleLanguage}

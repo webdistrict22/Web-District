@@ -4,7 +4,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import SettingsContext from "./settingsContext";
+import SettingsContext from "./settingsContext.js";
 import api, { PUBLIC_CONTENT_TIMEOUT } from "../lib/axios";
 import { AGENCY } from "../lib/constants";
 

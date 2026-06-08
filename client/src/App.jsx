@@ -1,9 +1,9 @@
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import AuthProvider from "./context/AuthContext";
-import LanguageProvider from "./context/LanguageContext";
-import SettingsProvider from "./context/SettingsContext";
+import AuthProvider from "./context/AuthProvider.jsx";
+import LanguageProvider from "./context/LanguageProvider.jsx";
+import SettingsProvider from "./context/SettingsProvider.jsx";
 import WelcomeIntro from "./components/common/WelcomeIntro";
 import AppRoutes from "./routes/AppRoutes";
 import useLanguage from "./hooks/useLanguage";

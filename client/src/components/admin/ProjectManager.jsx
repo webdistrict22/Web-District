@@ -481,7 +481,7 @@ function ProjectManager() {
                         className="h-20 w-full rounded-xl border border-white/10 object-cover sm:w-24"
                       />
 
-                      <p className="break-all text-xs leading-5 text-[#D9D4CC]">
+                      <p className="wd-ltr wd-value-wrap min-w-0 text-xs leading-5 text-[#D9D4CC]">
                         {url}
                       </p>
 

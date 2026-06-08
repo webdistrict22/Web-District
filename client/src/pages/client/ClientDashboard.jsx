@@ -112,12 +112,12 @@ function ClientDashboard() {
 
 function InfoCard({ label, value, ltr = false }) {
   return (
-    <Card className="p-6">
+    <Card className="min-w-0 p-6">
       <p className="text-sm text-[#D9D4CC]">{label}</p>
       <p
         dir={ltr ? "ltr" : undefined}
-        className={`mt-2 break-words font-semibold text-[#F8F7F4] ${
-          ltr ? "text-left" : ""
+        className={`wd-value-wrap mt-2 font-semibold text-[#F8F7F4] ${
+          ltr ? "wd-ltr" : ""
         }`}
       >
         {value || "-"}

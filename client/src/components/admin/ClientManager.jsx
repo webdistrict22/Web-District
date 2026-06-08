@@ -261,11 +261,11 @@ function ClientCard({
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+          <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {client.name}
           </h3>
 
-          <p className="mt-1 text-sm text-[#D9D4CC]">
+          <p className="wd-value-wrap mt-1 text-sm text-[#D9D4CC]">
             {client.businessName || "No business name added"}
           </p>
         </div>
@@ -278,8 +278,13 @@ function ClientCard({
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <InfoItem icon={Mail} label="Email" value={client.email} />
-        <InfoItem icon={Phone} label="Phone" value={client.phone || "Not added"} />
+        <InfoItem icon={Mail} label="Email" value={client.email} ltr />
+        <InfoItem
+          icon={Phone}
+          label="Phone"
+          value={client.phone || "Not added"}
+          ltr
+        />
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -351,17 +356,22 @@ function ClientDetailsPanel({ data, isLoading }) {
           </span>
         </div>
 
-        <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+        <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
           {client.name}
         </h3>
 
-        <p className="mt-2 text-[#D9D4CC]">
+        <p className="wd-value-wrap mt-2 text-[#D9D4CC]">
           {client.businessName || "No business name added"}
         </p>
 
         <div className="mt-5 grid gap-3">
-          <InfoItem icon={Mail} label="Email" value={client.email} />
-          <InfoItem icon={Phone} label="Phone" value={client.phone || "Not added"} />
+          <InfoItem icon={Mail} label="Email" value={client.email} ltr />
+          <InfoItem
+            icon={Phone}
+            label="Phone"
+            value={client.phone || "Not added"}
+            ltr
+          />
           <InfoItem icon={CalendarDays} label="Joined" value={formatDate(client.createdAt)} />
         </div>
       </Card>
@@ -453,19 +463,26 @@ function ActivityItem({ title, subtitle, date, status }) {
         <span className="text-xs text-[#D9D4CC]">{formatDate(date)}</span>
       </div>
 
-      <p className="font-semibold text-[#F8F7F4]">{title}</p>
-      <p className="mt-1 line-clamp-2 text-sm text-[#D9D4CC]">{subtitle}</p>
+      <p className="wd-value-wrap font-semibold text-[#F8F7F4]">{title}</p>
+      <p className="wd-value-wrap mt-1 line-clamp-2 text-sm text-[#D9D4CC]">
+        {subtitle}
+      </p>
     </div>
   );
 }
 
-function InfoItem({ icon: Icon, label, value }) {
+function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div className="min-w-0">
+      <div className="min-w-0 max-w-full">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
+        <p
+          dir={ltr ? "ltr" : undefined}
+          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+            ltr ? "wd-ltr" : ""
+          }`}
+        >
           {value || "—"}
         </p>
       </div>

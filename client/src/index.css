@@ -140,6 +140,13 @@ html.lang-ar .font-display {
   text-align: left;
 }
 
+.wd-value-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 [dir="rtl"] body {
   text-align: right;
 }
@@ -185,6 +192,8 @@ html.lang-ar .font-display {
 }
 
 .wd-card {
+  min-width: 0;
+  max-width: 100%;
   background:
     linear-gradient(180deg, rgba(248, 247, 244, 0.045), rgba(248, 247, 244, 0.018)),
     #0B0B0B;

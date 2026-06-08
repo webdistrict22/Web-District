@@ -96,7 +96,7 @@ function ProjectStatusCard({ contract }) {
   return (
     <Card className="p-6 md:p-8">
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-        <div>
+        <div className="min-w-0">
           <div className="mb-4 flex flex-wrap gap-3">
             <StatusBadge status={contract.status} />
 
@@ -105,11 +105,11 @@ function ProjectStatusCard({ contract }) {
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+          <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {contract.title}
           </h3>
 
-          <p className="mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
+          <p className="wd-value-wrap mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
             {contract.scopeSummary}
           </p>
         </div>

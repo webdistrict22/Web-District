@@ -70,7 +70,10 @@ function AdminLayout() {
                 Web District Control Center
               </h1>
 
-              <p className="mt-2 break-words text-sm text-[#D9D4CC]">
+              <p
+                dir="ltr"
+                className="wd-ltr wd-value-wrap mt-2 text-sm text-[#D9D4CC]"
+              >
                 {user?.email}
               </p>
 

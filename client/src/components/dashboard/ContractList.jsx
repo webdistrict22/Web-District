@@ -122,7 +122,7 @@ function ContractList({
         return (
           <Card key={contract._id} className="p-6">
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-              <div>
+              <div className="min-w-0">
                 <div className="mb-4 flex flex-wrap gap-3">
                   <StatusBadge status={contract.status} />
 
@@ -135,15 +135,15 @@ function ContractList({
                   </span>
                 </div>
 
-                <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+                <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
                   {contract.title}
                 </h3>
 
-                <p className="mt-2 text-sm text-[#D9D4CC]">
+                <p className="wd-value-wrap mt-2 text-sm text-[#D9D4CC]">
                   {contract.businessName || contract.clientName}
                 </p>
 
-                <p className="mt-5 max-w-4xl leading-8 text-[#D9D4CC]">
+                <p className="wd-value-wrap mt-5 max-w-4xl leading-8 text-[#D9D4CC]">
                   {contract.scopeSummary}
                 </p>
               </div>
@@ -206,7 +206,7 @@ function ContractList({
                 <p className="text-sm font-semibold text-[#F8F7F4]">
                   {t("common.labels.paymentNotes")}
                 </p>
-                <p className="mt-2 leading-7 text-[#F8F7F4]/85">
+                <p className="wd-value-wrap mt-2 leading-7 text-[#F8F7F4]/85">
                   {contract.paymentNotes}
                 </p>
               </div>
@@ -217,7 +217,7 @@ function ContractList({
                 <p className="text-sm font-semibold text-[#D9D4CC]">
                   {t("common.labels.clientNote")}
                 </p>
-                <p className="mt-2 leading-7 text-[#D9D4CC]/85">
+                <p className="wd-value-wrap mt-2 leading-7 text-[#D9D4CC]/85">
                   {contract.clientNotes}
                 </p>
               </div>
@@ -300,11 +300,11 @@ function ContractList({
 
 function InfoItem({ icon: Icon, label, value }) {
   return (
-    <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div>
+      <div className="min-w-0 max-w-full">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
+        <p className="wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC]">
           {value || "-"}
         </p>
       </div>
@@ -316,16 +316,18 @@ function ListBlock({ icon: Icon, title, items = [] }) {
   const { t } = useLanguage();
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="min-w-0 max-w-full rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <div className="mb-3 flex items-center gap-2">
         <Icon size={17} className="text-[#C4A77D]" />
-        <p className="text-sm font-semibold text-[#F8F7F4]">{title}</p>
+        <p className="wd-value-wrap text-sm font-semibold text-[#F8F7F4]">
+          {title}
+        </p>
       </div>
 
       {items.length ? (
         <div className="grid gap-2">
           {items.map((item) => (
-            <p key={item} className="text-sm text-[#D9D4CC]">
+            <p key={item} className="wd-value-wrap text-sm text-[#D9D4CC]">
               • {item}
             </p>
           ))}

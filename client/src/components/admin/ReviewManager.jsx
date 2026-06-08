@@ -412,7 +412,9 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
         {"☆".repeat(5 - (review.rating || 5))}
       </div>
 
-      <p className="leading-8 text-[#D9D4CC]">“{review.message}”</p>
+      <p className="wd-value-wrap leading-8 text-[#D9D4CC]">
+        “{review.message}”
+      </p>
 
       <div className="mt-6 border-t border-white/10 pt-5">
         <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
@@ -429,8 +431,11 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
             <p className="text-sm font-semibold text-[#D9D4CC]">
               Linked client account
             </p>
-            <p className="mt-1 text-sm text-[#D9D4CC]">
-              {review.client.name} — {review.client.email}
+            <p className="wd-value-wrap mt-1 text-sm text-[#D9D4CC]">
+              {review.client.name} —{" "}
+              <span className="wd-ltr inline" dir="ltr">
+                {review.client.email}
+              </span>
             </p>
           </div>
         )}

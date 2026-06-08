@@ -85,6 +85,7 @@ function ContactCards({ cardClassName = "" }) {
           <a
             key={option.title}
             href={option.href}
+            className="min-w-0 max-w-full"
             target={option.type === "Instagram" || option.type === "WhatsApp" ? "_blank" : undefined}
             rel={option.type === "Instagram" || option.type === "WhatsApp" ? "noreferrer" : undefined}
             onClick={() =>
@@ -103,8 +104,10 @@ function ContactCards({ cardClassName = "" }) {
                 {option.title}
               </h3>
 
-              <p className="mt-2 font-medium text-[#F8F7F4]">
-                <span className="wd-ltr">{option.value}</span>
+              <p className="mt-2 min-w-0 max-w-full font-medium text-[#F8F7F4]">
+                <span className="wd-ltr wd-value-wrap inline-block">
+                  {option.value}
+                </span>
               </p>
 
               <p className="mt-3 leading-7 text-[#D9D4CC]">

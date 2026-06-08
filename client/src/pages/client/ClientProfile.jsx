@@ -46,11 +46,11 @@ function ClientProfile() {
             <UserRound size={28} />
           </div>
 
-          <h3 className="font-display mt-6 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
+          <h3 className="font-display wd-value-wrap mt-6 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
             {user?.name || t("client.profile.clientFallback")}
           </h3>
 
-          <p className="mt-2 text-[#D9D4CC]">
+          <p className="wd-value-wrap mt-2 text-[#D9D4CC]">
             {user?.businessName || t("client.profile.noBusiness")}
           </p>
 
@@ -123,15 +123,15 @@ function ClientProfile() {
 
 function InfoRow({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
 
       <div className="min-w-0">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
         <p
           dir={ltr ? "ltr" : undefined}
-          className={`mt-1 break-words text-sm font-semibold text-[#D9D4CC] ${
-            ltr ? "text-left" : ""
+          className={`wd-value-wrap mt-1 text-sm font-semibold text-[#D9D4CC] ${
+            ltr ? "wd-ltr" : ""
           }`}
         >
           {value || "-"}

@@ -24,7 +24,7 @@ function AppointmentList({ appointments = [] }) {
       {appointments.map((appointment) => (
         <Card key={appointment._id} className="p-6">
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-            <div>
+            <div className="min-w-0">
               <div className="mb-4 flex flex-wrap items-center gap-3">
                 <StatusBadge status={appointment.status} />
 
@@ -33,11 +33,11 @@ function AppointmentList({ appointments = [] }) {
                 </span>
               </div>
 
-              <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+              <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
                 {appointment.businessName || appointment.name}
               </h3>
 
-              <p className="mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
+              <p className="wd-value-wrap mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
                 {appointment.topic}
               </p>
             </div>
@@ -88,11 +88,11 @@ function AppointmentList({ appointments = [] }) {
             <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
               <div className="flex items-start gap-3">
                 <MessageSquare size={17} className="mt-1 shrink-0 text-[#C4A77D]" />
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-[#F8F7F4]">
                     {t("common.labels.yourNotes")}
                   </p>
-                  <p className="mt-2 leading-7 text-[#D9D4CC]">
+                  <p className="wd-value-wrap mt-2 leading-7 text-[#D9D4CC]">
                     {appointment.notes}
                   </p>
                 </div>
@@ -105,7 +105,7 @@ function AppointmentList({ appointments = [] }) {
               <p className="text-sm font-semibold text-[#F8F7F4]">
                 {t("common.labels.adminNote")}
               </p>
-              <p className="mt-2 leading-7 text-[#F8F7F4]/85">
+              <p className="wd-value-wrap mt-2 leading-7 text-[#F8F7F4]/85">
                 {appointment.adminNotes}
               </p>
             </div>
@@ -118,14 +118,14 @@ function AppointmentList({ appointments = [] }) {
 
 function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div>
+      <div className="min-w-0 max-w-full">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
         <p
           dir={ltr ? "ltr" : undefined}
-          className={`mt-1 break-words text-sm font-medium text-[#D9D4CC] ${
-            ltr ? "text-left" : ""
+          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+            ltr ? "wd-ltr" : ""
           }`}
         >
           {value || "-"}

@@ -283,7 +283,7 @@ function AdminAppointmentCard({
   return (
     <Card className="overflow-hidden">
       <div className="grid gap-0 xl:grid-cols-[1fr_420px]">
-        <div className="p-6">
+        <div className="min-w-0 p-6">
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <StatusBadge status={appointment.status} />
 
@@ -292,15 +292,17 @@ function AdminAppointmentCard({
             </span>
           </div>
 
-          <h3 className="font-display text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
+          <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
             {appointment.businessName || appointment.name}
           </h3>
 
-          <p className="mt-2 text-sm text-[#D9D4CC]">
+          <p className="wd-value-wrap mt-2 text-sm text-[#D9D4CC]">
             Submitted by {appointment.name}
           </p>
 
-          <p className="mt-5 leading-8 text-[#D9D4CC]">{appointment.topic}</p>
+          <p className="wd-value-wrap mt-5 leading-8 text-[#D9D4CC]">
+            {appointment.topic}
+          </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <InfoItem
@@ -317,8 +319,8 @@ function AdminAppointmentCard({
                   : "—"
               }
             />
-            <InfoItem icon={Phone} label="Phone" value={appointment.phone} />
-            <InfoItem icon={Mail} label="Email" value={appointment.email} />
+            <InfoItem icon={Phone} label="Phone" value={appointment.phone} ltr />
+            <InfoItem icon={Mail} label="Email" value={appointment.email} ltr />
           </div>
 
           {appointment.client && (
@@ -326,8 +328,11 @@ function AdminAppointmentCard({
               <p className="text-sm font-semibold text-[#D9D4CC]">
                 Linked client account
               </p>
-              <p className="mt-1 text-sm text-[#D9D4CC]">
-                {appointment.client.name} — {appointment.client.email}
+              <p className="wd-value-wrap mt-1 text-sm text-[#D9D4CC]">
+                {appointment.client.name} —{" "}
+                <span className="wd-ltr inline" dir="ltr">
+                  {appointment.client.email}
+                </span>
               </p>
             </div>
           )}
@@ -413,13 +418,18 @@ function StatCard({ label, value }) {
   );
 }
 
-function InfoItem({ icon: Icon, label, value }) {
+function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div className="min-w-0">
+      <div className="min-w-0 max-w-full">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
+        <p
+          dir={ltr ? "ltr" : undefined}
+          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+            ltr ? "wd-ltr" : ""
+          }`}
+        >
           {value || "—"}
         </p>
       </div>

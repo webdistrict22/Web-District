@@ -2,6 +2,7 @@ import Button from "../common/Button";
 import Container from "../common/Container";
 import useSettings from "../../hooks/useSettings";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
 
 const defaultHeadline = "Your brand, brought online with care.";
 const defaultSubline =
@@ -32,7 +33,7 @@ const normalizeCTA = (value, fallback) => {
 
 function HeroSection() {
   const { settings } = useSettings();
-  const { isArabic, t } = useLanguage();
+  const { effectiveLanguage, isArabic, t } = useLanguage();
 
   const englishHeadline =
     settings.heroHeadline && !legacyHeadlines.includes(settings.heroHeadline)
@@ -92,8 +93,27 @@ function HeroSection() {
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button to="/start">{primaryCTA}</Button>
-              <Button to="/work" variant="secondary">
+              <Button
+                to="/start"
+                onClick={() =>
+                  trackCustomEvent("StartProjectClick", {
+                    button_name: "Hero Start Project",
+                    language: effectiveLanguage,
+                  })
+                }
+              >
+                {primaryCTA}
+              </Button>
+              <Button
+                to="/work"
+                variant="secondary"
+                onClick={() =>
+                  trackCustomEvent("SeeWorkClick", {
+                    button_name: "Hero View Work",
+                    language: effectiveLanguage,
+                  })
+                }
+              >
                 {secondaryCTA}
               </Button>
             </div>

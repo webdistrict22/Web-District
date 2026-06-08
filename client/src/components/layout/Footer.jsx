@@ -5,15 +5,39 @@ import BrandLogo from "./BrandLogo";
 import { getWhatsappLink } from "../../lib/helpers";
 import useSettings from "../../hooks/useSettings";
 import useLanguage from "../../hooks/useLanguage";
+import {
+  trackContact,
+  trackCustomEvent,
+} from "../../lib/metaPixel";
+
+const contactEvents = {
+  whatsapp: "WhatsAppClick",
+  phone: "PhoneClick",
+  email: "EmailClick",
+  instagram: "InstagramClick",
+};
 
 function Footer() {
   const { settings } = useSettings();
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
 
   const phone = settings.phone || "01130696935";
   const whatsapp = settings.whatsapp || "01130696935";
   const email = settings.email || "web.district22@gmail.com";
   const instagram = settings.instagram || "web__district";
+  const trackFooterContact = (method, buttonName) => {
+    const params = {
+      button_name: buttonName,
+      contact_method: method,
+      language: effectiveLanguage,
+    };
+
+    if (method !== "instagram") {
+      trackContact(method, params);
+    }
+
+    trackCustomEvent(contactEvents[method], params);
+  };
 
   return (
     <footer className="border-t border-white/10 bg-[#080808] py-12">
@@ -58,6 +82,9 @@ function Footer() {
                 href={`https://instagram.com/${instagram}`}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() =>
+                  trackFooterContact("instagram", "Footer Instagram")
+                }
               >
                 <FaInstagram size={16} />
                 <span className="wd-ltr">@{instagram}</span>
@@ -68,17 +95,28 @@ function Footer() {
                 href={getWhatsappLink(whatsapp)}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() =>
+                  trackFooterContact("whatsapp", "Footer WhatsApp")
+                }
               >
                 <MessageCircle size={16} />
                 {t("footer.whatsapp")}
               </a>
 
-              <a className="flex items-center gap-2 transition hover:text-[#C4A77D]" href={`tel:${phone}`}>
+              <a
+                className="flex items-center gap-2 transition hover:text-[#C4A77D]"
+                href={`tel:${phone}`}
+                onClick={() => trackFooterContact("phone", "Footer Phone")}
+              >
                 <Phone size={16} />
                 <span className="wd-ltr">{phone}</span>
               </a>
 
-              <a className="flex items-center gap-2 transition hover:text-[#C4A77D]" href={`mailto:${email}`}>
+              <a
+                className="flex items-center gap-2 transition hover:text-[#C4A77D]"
+                href={`mailto:${email}`}
+                onClick={() => trackFooterContact("email", "Footer Email")}
+              >
                 <Mail size={16} />
                 <span className="wd-ltr">{email}</span>
               </a>

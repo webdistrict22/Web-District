@@ -8,14 +8,32 @@ import NavbarTicker from "./NavbarTicker";
 import { navLinks } from "../../data/siteData";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
+
+const navigationEvents = {
+  "/services": "ServicesClick",
+  "/work": "SeeWorkClick",
+  "/start": "StartProjectClick",
+  "/contact": "ContactClick",
+};
 
 function Navbar() {
   const { isAuthenticated, isAdmin } = useAuth();
-  const { t, toggleLanguage } = useLanguage();
+  const { effectiveLanguage, t, toggleLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
   const location = useLocation();
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+  const trackNavigation = (path, buttonName) => {
+    const eventName = navigationEvents[path];
+
+    if (!eventName) return;
+
+    trackCustomEvent(eventName, {
+      button_name: buttonName,
+      language: effectiveLanguage,
+    });
+  };
 
   useEffect(() => {
     const timerId = window.setTimeout(closeMenu, 0);
@@ -50,6 +68,9 @@ function Navbar() {
             <NavLink
               key={link.path}
               to={link.path}
+              onClick={() =>
+                trackNavigation(link.path, `Desktop Navigation ${link.key}`)
+              }
               className={({ isActive }) =>
                 `inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
                   isActive
@@ -100,7 +121,13 @@ function Navbar() {
             </Link>
           )}
 
-          <Button to="/start" icon={false}>
+          <Button
+            to="/start"
+            icon={false}
+            onClick={() =>
+              trackNavigation("/start", "Desktop Navigation CTA")
+            }
+          >
             {t("nav.startProject")}
           </Button>
         </div>

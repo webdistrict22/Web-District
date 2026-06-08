@@ -11,6 +11,7 @@ import Badge from "../common/Badge";
 import Button from "../common/Button";
 import ProjectCover from "../work/ProjectCover";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
 
 const scheduleAfterPaint = (callback) => {
   if (typeof window === "undefined") return undefined;
@@ -28,7 +29,7 @@ const scheduleAfterPaint = (callback) => {
 
 function WorkPreview() {
   const [projects, setProjects] = useState([]);
-  const { t, translateValue } = useLanguage();
+  const { effectiveLanguage, t, translateValue } = useLanguage();
 
   const fetchProjects = async (signal) => {
     try {
@@ -76,7 +77,16 @@ function WorkPreview() {
             title={t("home.work.title")}
             description={t("home.work.description")}
           />
-          <Button to="/work" variant="secondary">
+          <Button
+            to="/work"
+            variant="secondary"
+            onClick={() =>
+              trackCustomEvent("SeeWorkClick", {
+                button_name: "Work Preview",
+                language: effectiveLanguage,
+              })
+            }
+          >
             {t("common.buttons.viewWork")}
           </Button>
         </div>

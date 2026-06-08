@@ -9,6 +9,10 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import useLanguage from "../../hooks/useLanguage";
+import {
+  trackCustomEvent,
+  trackLead,
+} from "../../lib/metaPixel";
 
 const initialForm = {
   name: "",
@@ -26,7 +30,12 @@ const initialForm = {
 
 function WebsiteRequestForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
-  const { getErrorMessage, t, translateValue } = useLanguage();
+  const {
+    effectiveLanguage,
+    getErrorMessage,
+    t,
+    translateValue,
+  } = useLanguage();
   const navigate = useNavigate();
 
   const [form, setForm] = useState(() => ({
@@ -78,6 +87,15 @@ function WebsiteRequestForm({ className = "" }) {
       setFormError("");
 
       await api.post("/requests", form);
+
+      const leadParams = {
+        lead_type: "project_request",
+        content_name: "Start Project Form",
+        language: effectiveLanguage,
+      };
+
+      trackLead(leadParams);
+      trackCustomEvent("StartProjectSubmitted", leadParams);
 
       toast.success(
         isAuthenticated

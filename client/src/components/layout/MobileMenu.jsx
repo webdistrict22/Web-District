@@ -6,6 +6,14 @@ import BrandLogo from "./BrandLogo";
 import { navLinks } from "../../data/siteData";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
+
+const navigationEvents = {
+  "/services": "ServicesClick",
+  "/work": "SeeWorkClick",
+  "/start": "StartProjectClick",
+  "/contact": "ContactClick",
+};
 
 const focusableSelector = [
   'a[href]',
@@ -18,9 +26,21 @@ const focusableSelector = [
 
 function MobileMenu({ isOpen, onClose, triggerRef }) {
   const { isAuthenticated, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
   const panelRef = useRef(null);
   const closeButtonRef = useRef(null);
+  const handleTrackedNavigation = (path, buttonName) => {
+    const eventName = navigationEvents[path];
+
+    if (eventName) {
+      trackCustomEvent(eventName, {
+        button_name: buttonName,
+        language: effectiveLanguage,
+      });
+    }
+
+    onClose();
+  };
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -124,7 +144,12 @@ function MobileMenu({ isOpen, onClose, triggerRef }) {
             <NavLink
               key={link.path}
               to={link.path}
-              onClick={onClose}
+              onClick={() =>
+                handleTrackedNavigation(
+                  link.path,
+                  `Mobile Navigation ${link.key}`
+                )
+              }
               className={({ isActive }) =>
                 `rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                   isActive
@@ -155,7 +180,12 @@ function MobileMenu({ isOpen, onClose, triggerRef }) {
             </Button>
           )}
 
-          <Button to="/start" onClick={onClose}>
+          <Button
+            to="/start"
+            onClick={() =>
+              handleTrackedNavigation("/start", "Mobile Navigation CTA")
+            }
+          >
             {t("nav.startProject")}
           </Button>
         </div>

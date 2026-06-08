@@ -18,6 +18,10 @@ import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink, truncateText } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import {
+  trackContact,
+  trackCustomEvent,
+} from "../../lib/metaPixel";
 
 const websiteCareIcons = [
   Sparkles,
@@ -29,11 +33,26 @@ const websiteCareIcons = [
 
 function Services() {
   const [packages, setPackages] = useState([]);
-  const { isArabic, t } = useLanguage();
+  const { effectiveLanguage, isArabic, t } = useLanguage();
   const websiteCareWhatsappLink = getWhatsappLink(
     AGENCY.whatsapp,
     t("services.care.whatsappMessage")
   );
+  const trackWebsiteCareWhatsapp = (buttonName) => {
+    const params = {
+      button_name: buttonName,
+      contact_method: "whatsapp",
+      language: effectiveLanguage,
+    };
+
+    trackContact("whatsapp", params);
+    trackCustomEvent("WhatsAppClick", params);
+  };
+  const trackStartProject = (buttonName) =>
+    trackCustomEvent("StartProjectClick", {
+      button_name: buttonName,
+      language: effectiveLanguage,
+    });
 
   const fetchPackages = async () => {
     try {
@@ -144,12 +163,21 @@ function Services() {
                   href={websiteCareWhatsappLink}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() =>
+                    trackWebsiteCareWhatsapp("Website Care Primary WhatsApp")
+                  }
                 >
                   <MessageCircle size={17} />
                   {t("services.care.ask")}
                 </Button>
 
-                <Button to="/start" variant="secondary">
+                <Button
+                  to="/start"
+                  variant="secondary"
+                  onClick={() =>
+                    trackStartProject("Website Care Start Project")
+                  }
+                >
                   {t("common.buttons.startProject")}
                 </Button>
               </div>
@@ -253,6 +281,9 @@ function Services() {
                 target="_blank"
                 rel="noreferrer"
                 variant="secondary"
+                onClick={() =>
+                  trackWebsiteCareWhatsapp("Website Care Secondary WhatsApp")
+                }
               >
                 <MessageCircle size={17} />
                 {t("services.care.askWhatsapp")}
@@ -281,7 +312,14 @@ function Services() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              <Button to="/start">{t("common.buttons.startProject")}</Button>
+              <Button
+                to="/start"
+                onClick={() =>
+                  trackStartProject("Services Bottom Start Project")
+                }
+              >
+                {t("common.buttons.startProject")}
+              </Button>
               <Button to="/process#process-questions" variant="secondary">
                 {t("common.buttons.viewQuestions")}
               </Button>

@@ -2,10 +2,21 @@ import { ExternalLink } from "lucide-react";
 import Container from "../common/Container";
 import Button from "../common/Button";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
 
 function FinalCTA({ liveUrl = "" }) {
   const hasLiveUrl = Boolean(liveUrl);
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
+  const trackStartProject = () =>
+    trackCustomEvent("StartProjectClick", {
+      button_name: "Final CTA Start Project",
+      language: effectiveLanguage,
+    });
+  const trackSeeWork = () =>
+    trackCustomEvent("SeeWorkClick", {
+      button_name: "Final CTA View Work",
+      language: effectiveLanguage,
+    });
 
   return (
     <section className="wd-section-black py-16 md:py-20">
@@ -38,17 +49,31 @@ function FinalCTA({ liveUrl = "" }) {
                     <ExternalLink size={17} />
                     {t("home.finalCta.tryIt")}
                   </Button>
-                  <Button to="/work" variant="secondary">
+                  <Button
+                    to="/work"
+                    variant="secondary"
+                    onClick={trackSeeWork}
+                  >
                     {t("common.buttons.viewWorkShort")}
                   </Button>
-                  <Button to="/start" variant="secondary">
+                  <Button
+                    to="/start"
+                    variant="secondary"
+                    onClick={trackStartProject}
+                  >
                     {t("common.buttons.startProject")}
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button to="/start">{t("common.buttons.startProject")}</Button>
-                  <Button to="/work" variant="secondary">
+                  <Button to="/start" onClick={trackStartProject}>
+                    {t("common.buttons.startProject")}
+                  </Button>
+                  <Button
+                    to="/work"
+                    variant="secondary"
+                    onClick={trackSeeWork}
+                  >
                     {t("common.buttons.viewWorkShort")}
                   </Button>
                   <Button to="/process#process-questions" variant="secondary">

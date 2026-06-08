@@ -10,6 +10,10 @@ import Textarea from "../common/Textarea";
 import AvailableSlots from "./AvailableSlots";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import {
+  trackCustomEvent,
+  trackLead,
+} from "../../lib/metaPixel";
 
 const initialForm = {
   name: "",
@@ -22,7 +26,7 @@ const initialForm = {
 
 function BookCallForm({ className = "" }) {
   const { isAuthenticated, user } = useAuth();
-  const { getErrorMessage, t } = useLanguage();
+  const { effectiveLanguage, getErrorMessage, t } = useLanguage();
   const navigate = useNavigate();
 
   const [slots, setSlots] = useState([]);
@@ -98,6 +102,15 @@ function BookCallForm({ className = "" }) {
         slot: selectedSlot,
         ...form,
       });
+
+      const leadParams = {
+        lead_type: "appointment_booking",
+        content_name: "Call Booking",
+        language: effectiveLanguage,
+      };
+
+      trackLead(leadParams);
+      trackCustomEvent("AppointmentBookingSubmitted", leadParams);
 
       toast.success(
         isAuthenticated

@@ -10,6 +10,7 @@ import {
 import PublicLayout from "../components/layout/PublicLayout";
 import Loader from "../components/common/Loader";
 import ScrollToTop from "../components/common/ScrollToTop";
+import MetaPixelTracker from "../components/analytics/MetaPixelTracker";
 import Home from "../pages/public/Home";
 import useLanguage from "../hooks/useLanguage";
 
@@ -80,6 +81,7 @@ function AppRoutes() {
     <BrowserRouter>
       <LanguageRouteSync />
       <ScrollToTop />
+      <MetaPixelTracker />
 
       <Suspense fallback={<Loader page text={t("common.loading.page")} />}>
         <Routes>

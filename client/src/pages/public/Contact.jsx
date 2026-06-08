@@ -4,9 +4,10 @@ import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import ContactCards from "../../components/contact/ContactCards";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
 
 function Contact() {
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
 
   return (
     <main className="bg-[#080808]">
@@ -27,7 +28,17 @@ function Contact() {
             />
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button to="/start">{t("common.buttons.startProject")}</Button>
+              <Button
+                to="/start"
+                onClick={() =>
+                  trackCustomEvent("StartProjectClick", {
+                    button_name: "Contact Page Start Project",
+                    language: effectiveLanguage,
+                  })
+                }
+              >
+                {t("common.buttons.startProject")}
+              </Button>
 
               <Button to="/process#process-questions" variant="secondary">
                 {t("common.buttons.answerQuestions")}

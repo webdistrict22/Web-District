@@ -3,9 +3,10 @@ import SectionHeader from "../common/SectionHeader";
 import Card from "../common/Card";
 import Button from "../common/Button";
 import useLanguage from "../../hooks/useLanguage";
+import { trackCustomEvent } from "../../lib/metaPixel";
 
 function ServicesPreview() {
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
   const serviceTitles = t("home.services.titles", []);
 
   return (
@@ -17,7 +18,16 @@ function ServicesPreview() {
             title={t("home.services.title")}
             description={t("home.services.description")}
           />
-          <Button to="/services" variant="secondary">
+          <Button
+            to="/services"
+            variant="secondary"
+            onClick={() =>
+              trackCustomEvent("ServicesClick", {
+                button_name: "Services Preview",
+                language: effectiveLanguage,
+              })
+            }
+          >
             {t("common.buttons.viewServices")}
           </Button>
         </div>

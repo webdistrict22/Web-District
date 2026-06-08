@@ -63,7 +63,14 @@ const groupSlotsByDate = (slots) =>
     return groups;
   }, {});
 
-function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
+function AvailableSlots({
+  slots,
+  selectedSlot,
+  setSelectedSlot,
+  isLoading,
+  labelId,
+  errorId,
+}) {
   const [selectedDate, setSelectedDate] = useState("");
   const { effectiveLanguage, t } = useLanguage();
   const dateLocale = effectiveLanguage === "ar" ? "ar-EG" : undefined;
@@ -80,7 +87,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
 
   if (isLoading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6" role="status" aria-live="polite">
         <p className="text-[#D9D4CC]">{t("start.slots.loading")}</p>
       </Card>
     );
@@ -88,7 +95,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
 
   if (!slots.length) {
     return (
-      <Card className="p-6">
+      <Card className="p-6" role="status">
         <p className="font-semibold text-[#F8F7F4]">
           {t("start.slots.emptyTitle")}
         </p>
@@ -100,7 +107,13 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
   }
 
   return (
-    <Card className="p-4">
+    <Card
+      className="p-4"
+      role="group"
+      aria-labelledby={labelId}
+      aria-describedby={errorId}
+      aria-invalid={errorId ? true : undefined}
+    >
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F3EEE4]">
           <CalendarDays size={18} />
@@ -126,6 +139,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
                 setSelectedDate(date);
                 setSelectedSlot("");
               }}
+              aria-pressed={isActive}
               className={`rounded-2xl border px-3 py-3 text-left transition forced-color-adjust-none ${
                 isActive
                   ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#F3EEE4]"
@@ -167,6 +181,7 @@ function AvailableSlots({ slots, selectedSlot, setSelectedSlot, isLoading }) {
                   key={slot._id}
                   type="button"
                   onClick={() => setSelectedSlot(slot._id)}
+                  aria-pressed={isSelected}
                   className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition forced-color-adjust-none ${
                     isSelected
                       ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#F3EEE4]"

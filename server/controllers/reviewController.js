@@ -1,6 +1,12 @@
+const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const Contract = require("../models/Contract");
 const asyncHandler = require("../middleware/asyncHandler");
+const {
+  createValidationError,
+  cleanText,
+  cleanRating,
+} = require("../utils/validation");
 const {
   notifyReviewSubmitted,
   sendReviewDecisionToClient,
@@ -8,12 +14,23 @@ const {
 } = require("../utils/notificationService");
 
 const createManualReview = asyncHandler(async (req, res) => {
-  const { name, businessName, role, rating, message, status, isVisible } = req.body;
-
-  if (!name || !message) {
-    res.status(400);
-    throw new Error("Name and review message are required");
-  }
+  const body = req.body || {};
+  const name = cleanText(body.name, "Name", {
+    required: true,
+    max: 80,
+  });
+  const businessName = cleanText(body.businessName, "Business name", {
+    max: 120,
+  });
+  const role = cleanText(body.role ?? "Client", "Role", {
+    max: 80,
+  });
+  const rating = cleanRating(body.rating);
+  const message = cleanText(body.message, "Review message", {
+    required: true,
+    max: 1200,
+  });
+  const { status, isVisible } = body;
 
   const review = await Review.create({
     name,
@@ -34,20 +51,66 @@ const createManualReview = asyncHandler(async (req, res) => {
 });
 
 const submitReview = asyncHandler(async (req, res) => {
-  const { businessName, role, rating, message } = req.body;
+  const body = req.body || {};
+  const businessName = cleanText(body.businessName, "Business name", {
+    max: 120,
+  });
+  const role = cleanText(body.role ?? "Client", "Role", {
+    max: 80,
+  });
+  const rating = cleanRating(body.rating);
+  const message = cleanText(body.message, "Review message", {
+    required: true,
+    max: 1200,
+  });
+  const contractId = cleanText(body.contractId, "Contract ID", {
+    max: 64,
+  });
+  const eligibleStatuses = ["Accepted", "In Progress", "Completed"];
 
-  if (!message) {
-    res.status(400);
-    throw new Error("Review message is required");
+  if (contractId && !mongoose.isValidObjectId(contractId)) {
+    throw createValidationError("Contract ID is invalid");
   }
 
-  const contract = await Contract.findOne({ client: req.user._id }).select(
-    "_id"
-  );
+  let contract;
+
+  if (contractId) {
+    const existingReview = await Review.findOne({
+      client: req.user._id,
+      contract: contractId,
+    }).select("_id");
+
+    if (existingReview) {
+      throw createValidationError(
+        "A review has already been submitted for this contract"
+      );
+    }
+
+    contract = await Contract.findOne({
+      _id: contractId,
+      client: req.user._id,
+      status: { $in: eligibleStatuses },
+    }).select("_id");
+  } else {
+    const reviewedContractIds = await Review.distinct("contract", {
+      client: req.user._id,
+      contract: { $ne: null },
+    });
+
+    contract = await Contract.findOne({
+      client: req.user._id,
+      status: { $in: eligibleStatuses },
+      _id: { $nin: reviewedContractIds },
+    })
+      .sort({ updatedAt: -1 })
+      .select("_id");
+  }
 
   if (!contract) {
     res.status(403);
-    throw new Error("You need at least one contract before submitting a review");
+    throw new Error(
+      "You need an eligible contract without an existing review before submitting a review"
+    );
   }
 
   const review = await Review.create({
@@ -106,6 +169,7 @@ const getAllReviews = asyncHandler(async (req, res) => {
 });
 
 const updateReview = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const review = await Review.findById(req.params.id);
 
   if (!review) {
@@ -118,15 +182,15 @@ const updateReview = asyncHandler(async (req, res) => {
   const fields = ["name", "businessName", "role", "rating", "message", "status", "isVisible"];
 
   fields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      review[field] = req.body[field];
+    if (body[field] !== undefined) {
+      review[field] = body[field];
     }
   });
 
   const updatedReview = await review.save();
 
   if (
-    req.body.status !== undefined &&
+    body.status !== undefined &&
     updatedReview.status !== previousStatus &&
     updatedReview.client
   ) {

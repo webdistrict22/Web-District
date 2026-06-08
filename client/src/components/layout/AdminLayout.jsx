@@ -8,6 +8,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import Container from "../common/Container";
+import PageMeta from "../common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 
 const adminLinks = [
@@ -23,7 +24,13 @@ function AdminLayout() {
   const { user, logout } = useAuth();
 
   return (
-    <main className="min-h-screen bg-[#080808] pb-20 pt-10 md:pt-14">
+    <main
+      id="main-content"
+      tabIndex="-1"
+      className="min-h-screen scroll-mt-8 bg-[#080808] pb-20 pt-10 md:pt-14"
+    >
+      <PageMeta title="Admin" robots="noindex,nofollow" />
+
       <Container>
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="h-fit max-h-[calc(100vh-80px)] overflow-y-auto rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-3 lg:sticky lg:top-8">

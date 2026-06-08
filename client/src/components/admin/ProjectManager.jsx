@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, ImagePlus, Plus, Star, Trash2, X } from "lucide-react";
 import api from "../../lib/axios";
@@ -11,6 +11,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import Badge from "../common/Badge";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   title: "",
@@ -82,9 +83,7 @@ function ProjectManager() {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  useInitialLoad(fetchProjects);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -478,7 +477,7 @@ function ProjectManager() {
                     >
                       <img
                         src={url}
-                        alt=""
+                        alt={`${form.title || "Project"} preview ${index + 1}`}
                         className="h-20 w-full rounded-xl border border-white/10 object-cover sm:w-24"
                       />
 

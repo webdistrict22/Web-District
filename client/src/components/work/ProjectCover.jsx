@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function ProjectCover({
   image,
@@ -8,11 +8,8 @@ function ProjectCover({
   imageLoading = "lazy",
   fetchPriority = "auto",
 }) {
-  const [canShowImage, setCanShowImage] = useState(Boolean(image));
-
-  useEffect(() => {
-    setCanShowImage(Boolean(image));
-  }, [image]);
+  const [failedImage, setFailedImage] = useState("");
+  const canShowImage = Boolean(image) && failedImage !== image;
 
   return (
     <div
@@ -39,7 +36,7 @@ function ProjectCover({
           loading={imageLoading}
           decoding="async"
           fetchPriority={fetchPriority}
-          onError={() => setCanShowImage(false)}
+          onError={() => setFailedImage(image)}
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />
       )}

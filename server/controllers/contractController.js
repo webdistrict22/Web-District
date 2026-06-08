@@ -2,6 +2,7 @@ const Contract = require("../models/Contract");
 const WebsiteRequest = require("../models/WebsiteRequest");
 const Appointment = require("../models/Appointment");
 const asyncHandler = require("../middleware/asyncHandler");
+const { cleanText } = require("../utils/validation");
 const {
   notifyContractAccepted,
   notifyContractClientNote,
@@ -17,6 +18,20 @@ const textArray = (value) => {
 
 const shouldNotifyClientAboutContract = (contract) => {
   return Boolean(contract.clientEmail && contract.status !== "Draft");
+};
+
+const syncRequestContractSentStatus = async (contract) => {
+  if (!contract.request || contract.status === "Draft") return;
+
+  await WebsiteRequest.findOneAndUpdate(
+    {
+      _id: contract.request,
+      status: { $nin: ["Contract Sent", "Completed"] },
+    },
+    {
+      status: "Contract Sent",
+    }
+  );
 };
 
 const createContract = asyncHandler(async (req, res) => {
@@ -75,6 +90,8 @@ const createContract = asyncHandler(async (req, res) => {
     adminNotes,
     clientNotes,
   });
+
+  await syncRequestContractSentStatus(contract);
 
   if (shouldNotifyClientAboutContract(contract)) {
     sendContractToClient(contract)
@@ -144,8 +161,7 @@ const createContractFromRequest = asyncHandler(async (req, res) => {
     clientNotes,
   });
 
-  request.status = "Contract Sent";
-  await request.save();
+  await syncRequestContractSentStatus(contract);
 
   if (shouldNotifyClientAboutContract(contract)) {
     sendContractToClient(contract)
@@ -272,9 +288,10 @@ const getAllContracts = asyncHandler(async (req, res) => {
 });
 
 const getMyContracts = asyncHandler(async (req, res) => {
-  const contracts = await Contract.find({ client: req.user._id }).sort({
-    createdAt: -1,
-  });
+  const contracts = await Contract.find({
+    client: req.user._id,
+    status: { $ne: "Draft" },
+  }).sort({ createdAt: -1 });
 
   res.json({
     success: true,
@@ -304,6 +321,11 @@ const getContractById = asyncHandler(async (req, res) => {
     throw new Error("You are not allowed to view this contract");
   }
 
+  if (!isAdmin && contract.status === "Draft") {
+    res.status(404);
+    throw new Error("Contract not found");
+  }
+
   res.json({
     success: true,
     contract,
@@ -311,6 +333,7 @@ const getContractById = asyncHandler(async (req, res) => {
 });
 
 const updateContract = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const contract = await Contract.findById(req.params.id);
 
   if (!contract) {
@@ -343,23 +366,25 @@ const updateContract = asyncHandler(async (req, res) => {
   ];
 
   fields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      contract[field] = req.body[field];
+    if (body[field] !== undefined) {
+      contract[field] = body[field];
     }
   });
 
-  if (req.body.pagesIncluded !== undefined) {
-    contract.pagesIncluded = textArray(req.body.pagesIncluded);
+  if (body.pagesIncluded !== undefined) {
+    contract.pagesIncluded = textArray(body.pagesIncluded);
   }
 
-  if (req.body.featuresIncluded !== undefined) {
-    contract.featuresIncluded = textArray(req.body.featuresIncluded);
+  if (body.featuresIncluded !== undefined) {
+    contract.featuresIncluded = textArray(body.featuresIncluded);
   }
 
   const updatedContract = await contract.save();
 
+  await syncRequestContractSentStatus(updatedContract);
+
   if (
-    req.body.status !== undefined &&
+    body.status !== undefined &&
     updatedContract.status !== previousStatus &&
     shouldNotifyClientAboutContract(updatedContract)
   ) {
@@ -383,6 +408,7 @@ const updateContract = asyncHandler(async (req, res) => {
 });
 
 const acceptContract = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const contract = await Contract.findById(req.params.id);
 
   if (!contract) {
@@ -395,20 +421,45 @@ const acceptContract = asyncHandler(async (req, res) => {
     throw new Error("You are not allowed to accept this contract");
   }
 
-  if (contract.status === "Cancelled" || contract.status === "Completed") {
+  if (contract.status !== "Sent") {
     res.status(400);
-    throw new Error("This contract cannot be accepted in its current status");
+    throw new Error("Only sent contracts can be accepted");
   }
 
-  const { clientNotes } = req.body;
+  const clientNotes =
+    body.clientNotes === undefined
+      ? undefined
+      : cleanText(body.clientNotes, "Client note", {
+          max: 1500,
+        });
 
-  contract.status = "Accepted";
+  const updates = {
+    status: "Accepted",
+  };
 
   if (clientNotes !== undefined) {
-    contract.clientNotes = clientNotes;
+    updates.clientNotes = clientNotes;
   }
 
-  const updatedContract = await contract.save();
+  const updatedContract = await Contract.findOneAndUpdate(
+    {
+      _id: contract._id,
+      client: req.user._id,
+      status: "Sent",
+    },
+    {
+      $set: updates,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedContract) {
+    res.status(400);
+    throw new Error("Only sent contracts can be accepted");
+  }
 
   notifyContractAccepted(updatedContract)
     .then((result) =>
@@ -440,6 +491,7 @@ const acceptContract = asyncHandler(async (req, res) => {
 });
 
 const updateClientContractNote = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const contract = await Contract.findById(req.params.id);
 
   if (!contract) {
@@ -452,9 +504,16 @@ const updateClientContractNote = asyncHandler(async (req, res) => {
     throw new Error("You are not allowed to update this contract");
   }
 
-  const { clientNotes } = req.body;
+  if (contract.status === "Draft") {
+    res.status(404);
+    throw new Error("Contract not found");
+  }
 
-  contract.clientNotes = clientNotes || "";
+  const clientNotes = cleanText(body.clientNotes, "Client note", {
+    max: 1500,
+  });
+
+  contract.clientNotes = clientNotes;
 
   const updatedContract = await contract.save();
 

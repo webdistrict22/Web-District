@@ -38,6 +38,7 @@ function StartOptions({ activeOption, setActiveOption, cardClassName = "", class
               key={option.id}
               type="button"
               onClick={() => setActiveOption(option.id)}
+              aria-pressed={isActive}
               className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition duration-300 hover:-translate-y-0.5 ${
                 isActive
                   ? "border-[#C4A77D]/55 bg-[#C4A77D]/14 text-[#F8F7F4]"

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import api from "../../lib/axios";
+import { useMemo, useState } from "react";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import ReviewsPreview from "../../components/home/ReviewsPreview";
@@ -7,6 +7,7 @@ import ProjectCard from "../../components/work/ProjectCard";
 import PageMeta from "../../components/common/PageMeta";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 function Work() {
   const [projects, setProjects] = useState([]);
@@ -14,17 +15,17 @@ function Work() {
 
   const fetchProjects = async () => {
     try {
-      const { data } = await api.get("/projects/public");
+      const { data } = await api.get("/projects/public", {
+        timeout: PUBLIC_CONTENT_TIMEOUT,
+      });
 
       setProjects(data.projects || []);
-    } catch (error) {
+    } catch {
       setProjects([]);
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  useInitialLoad(fetchProjects);
 
   const displayProjects = useMemo(
     () => mergeProjectsWithFallback(projects),
@@ -35,7 +36,8 @@ function Work() {
     <main className="bg-[#080808]">
       <PageMeta
         title="Work"
-        description="Explore selected Web District website projects, case studies, and digital work."
+        description="Explore selected Web District projects, website case studies, and digital work."
+        canonical="/work"
       />
 
       <section className="wd-section-black pt-36 pb-4 md:pt-40 md:pb-4">

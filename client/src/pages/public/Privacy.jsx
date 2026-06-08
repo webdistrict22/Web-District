@@ -13,6 +13,7 @@ function Privacy() {
       <PageMeta
         title={t("legal.privacy.metaTitle")}
         description={t("legal.privacy.metaDescription")}
+        canonical="/privacy"
       />
 
       <section className="wd-section-black pt-32 pb-8 md:pb-10">

@@ -46,12 +46,17 @@ function ClientControlManager({ initialTab = "accounts" }) {
       </Card>
 
       <Card className="p-3">
-        <div className="grid gap-2 md:grid-cols-2">
+        <div
+          className="grid gap-2 md:grid-cols-2"
+          role="group"
+          aria-label="Client sections"
+        >
           {clientTabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
+              aria-pressed={activeTab === tab.id}
               className={`rounded-2xl border p-4 text-left transition ${
                 activeTab === tab.id
                   ? "border-[#C4A77D]/45 bg-[#C4A77D]/12 text-[#F8F7F4]"
@@ -67,7 +72,9 @@ function ClientControlManager({ initialTab = "accounts" }) {
         </div>
       </Card>
 
-      <ActiveComponent />
+      <div>
+        <ActiveComponent />
+      </div>
     </div>
   );
 }

@@ -7,24 +7,32 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import useLanguage from "../../hooks/useLanguage";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [formError, setFormError] = useState("");
   const { getErrorMessage, t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      toast.error(t("auth.forgot.validation"));
+      const validationMessage = t("auth.forgot.validation");
+      setEmailError(validationMessage);
+      setFormError(validationMessage);
+      toast.error(validationMessage);
       return;
     }
 
     try {
       setIsLoading(true);
+      setEmailError("");
+      setFormError("");
 
       await api.post("/auth/forgot-password", { email });
 
@@ -32,9 +40,9 @@ function ForgotPassword() {
       setEmail("");
       toast.success(t("auth.forgot.success"));
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "auth.forgot.error")
-      );
+      const errorMessage = getErrorMessage(error, "auth.forgot.error");
+      setFormError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -42,6 +50,12 @@ function ForgotPassword() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Forgot Password"
+        description="Request a secure password reset link for your Web District account."
+        robots="noindex,nofollow"
+      />
+
       <section className="wd-section-black pt-32 pb-10">
         <Container>
           <div className="mx-auto max-w-xl">
@@ -65,19 +79,44 @@ function ForgotPassword() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="grid gap-5">
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                aria-busy={isLoading}
+                className="grid gap-5"
+              >
+                {formError && (
+                  <p
+                    role="alert"
+                    className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+                  >
+                    {formError}
+                  </p>
+                )}
+
                 <Input
                   label={t("auth.login.email")}
                   type="email"
+                  name="email"
+                  autoComplete="email"
+                  required
+                  error={emailError}
                   placeholder="you@example.com"
                   className="wd-ltr"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError("");
+                    setFormError("");
+                  }}
                 />
 
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
                 </Button>
+                <span className="sr-only" aria-live="polite">
+                  {isLoading ? t("auth.forgot.submitting") : ""}
+                </span>
               </form>
 
               <p className="mt-6 text-center text-sm text-[#D9D4CC]">

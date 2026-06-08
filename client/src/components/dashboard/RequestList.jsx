@@ -51,8 +51,18 @@ function RequestList({ requests = [] }) {
           </div>
 
           <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2 lg:grid-cols-4">
-            <InfoItem icon={Phone} label={t("common.labels.phone")} value={request.phone} />
-            <InfoItem icon={Mail} label={t("common.labels.email")} value={request.email} />
+            <InfoItem
+              icon={Phone}
+              label={t("common.labels.phone")}
+              value={request.phone}
+              ltr
+            />
+            <InfoItem
+              icon={Mail}
+              label={t("common.labels.email")}
+              value={request.email}
+              ltr
+            />
             <InfoItem
               icon={Globe2}
               label={t("common.labels.brandIdentity")}
@@ -103,13 +113,18 @@ function RequestList({ requests = [] }) {
   );
 }
 
-function InfoItem({ icon: Icon, label, value }) {
+function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
       <div>
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
+        <p
+          dir={ltr ? "ltr" : undefined}
+          className={`mt-1 break-words text-sm font-medium text-[#D9D4CC] ${
+            ltr ? "text-left" : ""
+          }`}
+        >
           {value || "-"}
         </p>
       </div>

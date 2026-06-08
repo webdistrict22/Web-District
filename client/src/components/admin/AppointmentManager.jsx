@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   CalendarDays,
   Clock,
   FileText,
   Mail,
-  MessageSquare,
   Phone,
   Search,
   Trash2,
@@ -21,6 +20,7 @@ import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const appointmentStatuses = ["Pending", "Accepted", "Cancelled", "Rescheduled", "Done"];
 
@@ -76,10 +76,7 @@ function AppointmentManager() {
     }
   };
 
-  useEffect(() => {
-    fetchAppointments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useInitialLoad(fetchAppointments);
 
   const stats = useMemo(() => {
     return {

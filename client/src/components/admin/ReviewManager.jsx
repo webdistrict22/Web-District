@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Plus, Star, Trash2 } from "lucide-react";
 import api from "../../lib/axios";
@@ -12,6 +12,7 @@ import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   name: "",
@@ -58,9 +59,7 @@ function ReviewManager() {
     }
   };
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
+  useInitialLoad(fetchReviews);
 
   const filteredReviews = useMemo(() => {
     return reviews.filter((review) => {

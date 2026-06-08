@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const settingsSchema = new mongoose.Schema(
   {
+    singletonKey: {
+      type: String,
+      default: "primary",
+      select: false,
+    },
+
     agencyName: {
       type: String,
       default: "Web District",
@@ -55,6 +61,19 @@ const settingsSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+  }
+);
+
+settingsSchema.index(
+  {
+    singletonKey: 1,
+  },
+  {
+    unique: true,
+    name: "unique_settings_singleton",
+    partialFilterExpression: {
+      singletonKey: { $type: "string" },
+    },
   }
 );
 

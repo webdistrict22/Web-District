@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
@@ -6,6 +6,7 @@ import Loader from "../../components/common/Loader";
 import ContractList from "../../components/dashboard/ContractList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 function ClientContracts() {
   const [contracts, setContracts] = useState([]);
@@ -28,9 +29,7 @@ function ClientContracts() {
     }
   };
 
-  useEffect(() => {
-    fetchContracts();
-  }, []);
+  useInitialLoad(fetchContracts);
 
   return (
     <div className="grid gap-5">

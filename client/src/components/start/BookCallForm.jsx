@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
@@ -9,6 +9,7 @@ import Input from "../common/Input";
 import Textarea from "../common/Textarea";
 import AvailableSlots from "./AvailableSlots";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   name: "",
@@ -37,12 +38,16 @@ function BookCallForm({ className = "" }) {
 
   const [isSlotsLoading, setIsSlotsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState("");
 
   const updateField = (field, value) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormError("");
   };
 
   const fetchSlots = async () => {
@@ -50,32 +55,44 @@ function BookCallForm({ className = "" }) {
       setIsSlotsLoading(true);
       const { data } = await api.get("/slots/available");
       setSlots(data.slots || []);
-    } catch (error) {
+    } catch {
       toast.error(t("start.callForm.loadError"));
     } finally {
       setIsSlotsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchSlots();
-  }, []);
+  useInitialLoad(fetchSlots);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedSlot) {
-      toast.error(t("start.callForm.validationSlot"));
-      return;
-    }
+    const detailsMessage = t("start.callForm.validationDetails");
+    const nextErrors = {
+      slot: selectedSlot ? "" : t("start.callForm.validationSlot"),
+      name: form.name ? "" : detailsMessage,
+      phone: form.phone ? "" : detailsMessage,
+      email: form.email ? "" : detailsMessage,
+      topic: form.topic ? "" : detailsMessage,
+    };
 
-    if (!form.name || !form.phone || !form.email || !form.topic) {
-      toast.error(t("start.callForm.validationDetails"));
+    if (
+      nextErrors.slot ||
+      nextErrors.name ||
+      nextErrors.phone ||
+      nextErrors.email ||
+      nextErrors.topic
+    ) {
+      const message = nextErrors.slot || detailsMessage;
+      setFieldErrors(nextErrors);
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     try {
       setIsSubmitting(true);
+      setFormError("");
 
       await api.post("/appointments", {
         slot: selectedSlot,
@@ -100,9 +117,9 @@ function BookCallForm({ className = "" }) {
 
       navigate("/success?type=call");
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "start.callForm.error")
-      );
+      const message = getErrorMessage(error, "start.callForm.error");
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -132,24 +149,59 @@ function BookCallForm({ className = "" }) {
 
       <form
         onSubmit={handleSubmit}
+        noValidate
+        aria-busy={isSubmitting}
         className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"
       >
         <div>
-          <p className="mb-4 font-semibold text-[#F8F7F4]">
+          <p
+            id="available-slots-label"
+            className="mb-4 font-semibold text-[#F8F7F4]"
+          >
             {t("start.callForm.availableSlots")}
           </p>
           <AvailableSlots
             slots={slots}
             selectedSlot={selectedSlot}
-            setSelectedSlot={setSelectedSlot}
+            setSelectedSlot={(slotId) => {
+              setSelectedSlot(slotId);
+              if (slotId) {
+                setFieldErrors((prev) => ({ ...prev, slot: "" }));
+                setFormError("");
+              }
+            }}
             isLoading={isSlotsLoading}
+            labelId="available-slots-label"
+            errorId={fieldErrors.slot ? "available-slots-error" : undefined}
           />
+          {fieldErrors.slot && (
+            <p
+              id="available-slots-error"
+              role="alert"
+              className="mt-2 text-sm text-[#C4A77D]"
+            >
+              {fieldErrors.slot}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-5">
+          {formError && (
+            <p
+              role="alert"
+              className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+            >
+              {formError}
+            </p>
+          )}
+
           <div className="grid gap-5 md:grid-cols-2">
             <Input
               label={t("start.requestForm.name")}
+              name="name"
+              autoComplete="name"
+              required
+              error={fieldErrors.name}
               placeholder={t("start.requestForm.namePlaceholder")}
               value={form.name}
               onChange={(e) => updateField("name", e.target.value)}
@@ -157,6 +209,8 @@ function BookCallForm({ className = "" }) {
 
             <Input
               label={t("start.requestForm.businessName")}
+              name="businessName"
+              autoComplete="organization"
               placeholder={t("start.requestForm.businessNamePlaceholder")}
               value={form.businessName}
               onChange={(e) => updateField("businessName", e.target.value)}
@@ -164,6 +218,11 @@ function BookCallForm({ className = "" }) {
 
             <Input
               label={t("start.requestForm.phone")}
+              type="tel"
+              name="phone"
+              autoComplete="tel"
+              required
+              error={fieldErrors.phone}
               placeholder={t("start.requestForm.phonePlaceholder")}
               className="wd-ltr"
               value={form.phone}
@@ -173,6 +232,10 @@ function BookCallForm({ className = "" }) {
             <Input
               label={t("start.requestForm.email")}
               type="email"
+              name="email"
+              autoComplete="email"
+              required
+              error={fieldErrors.email}
               placeholder={t("start.requestForm.emailPlaceholder")}
               className="wd-ltr"
               value={form.email}
@@ -182,6 +245,9 @@ function BookCallForm({ className = "" }) {
 
           <Input
             label={t("start.callForm.topic")}
+            name="topic"
+            required
+            error={fieldErrors.topic}
             placeholder={t("start.callForm.topicPlaceholder")}
             value={form.topic}
             onChange={(e) => updateField("topic", e.target.value)}
@@ -189,6 +255,7 @@ function BookCallForm({ className = "" }) {
 
           <Textarea
             label={t("start.callForm.notes")}
+            name="notes"
             placeholder={t("start.callForm.notesPlaceholder")}
             value={form.notes}
             onChange={(e) => updateField("notes", e.target.value)}
@@ -200,6 +267,9 @@ function BookCallForm({ className = "" }) {
                 ? t("start.callForm.submitting")
                 : t("start.callForm.submit")}
             </Button>
+            <span className="sr-only" aria-live="polite">
+              {isSubmitting ? t("start.callForm.submitting") : ""}
+            </span>
 
             {isAuthenticated && (
               <Button to="/account/appointments" variant="secondary">

@@ -18,6 +18,7 @@ function Process() {
       <PageMeta
         title="Process"
         description="See how Web District plans, builds, and launches professional websites."
+        canonical="/process"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
@@ -52,8 +53,9 @@ function Process() {
           </div>
 
           <div className="grid gap-3">
-            {processQuestions.map((item) => {
+            {processQuestions.map((item, index) => {
               const isOpen = openQuestion === item.question;
+              const panelId = `process-answer-${index}`;
 
               return (
                 <article
@@ -65,6 +67,8 @@ function Process() {
                     onClick={() =>
                       setOpenQuestion(isOpen ? "" : item.question)
                     }
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
                     className="flex w-full items-center justify-between gap-5 p-5 text-left transition hover:bg-white/[0.025] md:p-6"
                   >
                     <h3 className="font-display text-lg font-bold tracking-[-0.04em] text-[#F8F7F4] md:text-xl">
@@ -81,7 +85,10 @@ function Process() {
                   </button>
 
                   {isOpen && (
-                    <div className="border-t border-white/10 px-5 pb-5 pt-4 md:px-6 md:pb-6">
+                    <div
+                      id={panelId}
+                      className="border-t border-white/10 px-5 pb-5 pt-4 md:px-6 md:pb-6"
+                    >
                       <p className="max-w-3xl leading-8 text-[#D9D4CC]">
                         {item.answer}
                       </p>

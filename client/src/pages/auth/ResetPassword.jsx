@@ -8,6 +8,7 @@ import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -19,6 +20,8 @@ const initialForm = {
 function ResetPassword() {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState("");
 
   const { token } = useParams();
   const navigate = useNavigate();
@@ -30,28 +33,43 @@ function ResetPassword() {
       ...prev,
       [field]: value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.password || !form.confirmPassword) {
-      toast.error(t("auth.reset.validation"));
+      const message = t("auth.reset.validation");
+      setFieldErrors({
+        password: form.password ? "" : message,
+        confirmPassword: form.confirmPassword ? "" : message,
+      });
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      toast.error(t("auth.reset.noMatch"));
+      const message = t("auth.reset.noMatch");
+      setFieldErrors({ confirmPassword: message });
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     if (form.password.length < 6) {
-      toast.error(t("auth.reset.passwordLength"));
+      const message = t("auth.reset.passwordLength");
+      setFieldErrors({ password: message });
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     try {
       setIsLoading(true);
+      setFormError("");
 
       const { data } = await api.put(`/auth/reset-password/${token}`, form);
 
@@ -65,9 +83,9 @@ function ResetPassword() {
         replace: true,
       });
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "auth.reset.error")
-      );
+      const message = getErrorMessage(error, "auth.reset.error");
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +93,12 @@ function ResetPassword() {
 
   return (
     <main className="bg-[#080808]">
+      <PageMeta
+        title="Reset Password"
+        description="Set a new password for your Web District account."
+        robots="noindex,nofollow"
+      />
+
       <section className="wd-section-black pt-32 pb-10">
         <Container>
           <div className="mx-auto max-w-xl">
@@ -92,10 +116,28 @@ function ResetPassword() {
         <Container>
           <div className="mx-auto max-w-xl">
             <Card className="wd-card-on-black p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="grid gap-5">
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                aria-busy={isLoading}
+                className="grid gap-5"
+              >
+                {formError && (
+                  <p
+                    role="alert"
+                    className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+                  >
+                    {formError}
+                  </p>
+                )}
+
                 <Input
                   label={t("auth.reset.newPassword")}
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
+                  required
+                  error={fieldErrors.password}
                   placeholder={t("auth.signup.passwordPlaceholder")}
                   value={form.password}
                   onChange={(e) => updateField("password", e.target.value)}
@@ -104,6 +146,10 @@ function ResetPassword() {
                 <Input
                   label={t("auth.reset.confirmPassword")}
                   type="password"
+                  name="confirmPassword"
+                  autoComplete="new-password"
+                  required
+                  error={fieldErrors.confirmPassword}
                   placeholder={t("auth.reset.confirmPlaceholder")}
                   value={form.confirmPassword}
                   onChange={(e) =>
@@ -114,6 +160,9 @@ function ResetPassword() {
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? t("auth.reset.submitting") : t("auth.reset.submit")}
                 </Button>
+                <span className="sr-only" aria-live="polite">
+                  {isLoading ? t("auth.reset.submitting") : ""}
+                </span>
               </form>
 
               <p className="mt-6 text-center text-sm text-[#D9D4CC]">

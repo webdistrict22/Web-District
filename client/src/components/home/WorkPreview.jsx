@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
-import api from "../../lib/axios";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import { truncateText } from "../../lib/helpers";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
 import Container from "../common/Container";
@@ -37,10 +37,11 @@ function WorkPreview() {
           featured: "true",
         },
         signal,
+        timeout: PUBLIC_CONTENT_TIMEOUT,
       });
 
       setProjects(data.projects || []);
-    } catch (error) {
+    } catch {
       if (!signal?.aborted) {
         setProjects([]);
       }

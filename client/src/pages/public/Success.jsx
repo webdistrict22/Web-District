@@ -41,6 +41,7 @@ function Success() {
       <PageMeta
         title={t("success.metaTitle")}
         description={t("success.metaDescription")}
+        robots="noindex,nofollow"
       />
 
       <section className="relative overflow-hidden border-b border-[#F8F7F4]/10 pt-32 pb-16 md:pt-40 md:pb-20">

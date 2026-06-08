@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export const PUBLIC_CONTENT_TIMEOUT = 10000;
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   headers: {
@@ -29,21 +31,12 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401) {
-      const currentPath = window.location.pathname;
-
       localStorage.removeItem("webDistrictToken");
       localStorage.removeItem("webDistrictUser");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      const isAuthPage =
-        currentPath === "/login" ||
-        currentPath === "/signup" ||
-        currentPath === "/";
-
-      if (!isAuthPage) {
-        window.location.href = "/login";
-      }
+      window.dispatchEvent(new Event("webDistrictAuthInvalidated"));
     }
 
     return Promise.reject(error);

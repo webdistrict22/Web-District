@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   CalendarDays,
@@ -15,6 +15,7 @@ import Loader from "../../components/common/Loader";
 import StatusBadge from "../../components/common/StatusBadge";
 import api from "../../lib/axios";
 import { formatDate } from "../../lib/helpers";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const quickActions = [
   {
@@ -64,9 +65,7 @@ function AdminDashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
+  useInitialLoad(fetchDashboard);
 
   const statsCards = useMemo(() => {
     const stats = dashboard?.stats;

@@ -6,6 +6,17 @@ import LanguageProvider from "./context/LanguageContext";
 import SettingsProvider from "./context/SettingsContext";
 import WelcomeIntro from "./components/common/WelcomeIntro";
 import AppRoutes from "./routes/AppRoutes";
+import useLanguage from "./hooks/useLanguage";
+
+function SkipLink() {
+  const { t } = useLanguage();
+
+  return (
+    <a className="wd-skip-link" href="#main-content">
+      {t("accessibility.skipToMain")}
+    </a>
+  );
+}
 
 function App() {
   return (
@@ -13,7 +24,10 @@ function App() {
       <AuthProvider>
         <SettingsProvider>
           <WelcomeIntro />
-          <AppRoutes />
+          <div data-app-content>
+            <SkipLink />
+            <AppRoutes />
+          </div>
 
           <Toaster
             position="top-right"

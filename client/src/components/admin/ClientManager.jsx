@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   CalendarDays,
   FileText,
   Mail,
-  MessageSquare,
   Phone,
   Search,
   Star,
@@ -19,6 +18,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 function ClientManager() {
   const [clients, setClients] = useState([]);
@@ -79,10 +79,7 @@ function ClientManager() {
     }
   };
 
-  useEffect(() => {
-    fetchClients();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useInitialLoad(fetchClients);
 
   const handleApplyFilters = () => {
     fetchClients();

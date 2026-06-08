@@ -5,7 +5,10 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let statusCode =
+    err.statusCode ||
+    err.status ||
+    (res.statusCode === 200 ? 500 : res.statusCode);
   let message = err.message || "Server Error";
 
   if (err.name === "CastError") {
@@ -16,11 +19,15 @@ const errorHandler = (err, req, res, next) => {
   if (err.code === 11000) {
     statusCode = 400;
 
-    const duplicateField = Object.keys(err.keyValue || {})[0];
+    if (err.keyPattern?.client && err.keyPattern?.contract) {
+      message = "A review has already been submitted for this contract";
+    } else {
+      const duplicateField = Object.keys(err.keyValue || {})[0];
 
-    message = duplicateField
-      ? `${duplicateField} already exists`
-      : "Duplicate field value entered";
+      message = duplicateField
+        ? `${duplicateField} already exists`
+        : "Duplicate field value entered";
+    }
   }
 
   if (err.name === "ValidationError") {
@@ -30,14 +37,32 @@ const errorHandler = (err, req, res, next) => {
       .join(", ");
   }
 
-  if (err.message?.startsWith("CORS blocked origin")) {
-    statusCode = 403;
-    message = err.message;
+  if (err.name === "MulterError") {
+    statusCode = 400;
+    message =
+      err.code === "LIMIT_FILE_SIZE"
+        ? "Image file must be 5 MB or smaller"
+        : "Image upload failed";
   }
+
+  if (err.message === "CORS blocked origin") {
+    statusCode = 403;
+    message = "Origin is not allowed";
+  }
+
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    statusCode = 400;
+    message = "Invalid JSON request body";
+  }
+
+  const responseMessage =
+    process.env.NODE_ENV === "production" && statusCode >= 500
+      ? "Server Error"
+      : message;
 
   res.status(statusCode).json({
     success: false,
-    message,
+    message: responseMessage,
     stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
   });
 };

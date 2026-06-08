@@ -1,5 +1,8 @@
 export const translations = {
   en: {
+    accessibility: {
+      skipToMain: "Skip to main content",
+    },
     brand: {
       tagline: "Strategic Web Agency",
     },
@@ -25,8 +28,11 @@ export const translations = {
       openMenu: "Open mobile menu",
       closeOverlay: "Close mobile menu overlay",
       closeMenu: "Close mobile menu",
+      primaryNavigation: "Primary navigation",
+      mobileMenuTitle: "Mobile navigation",
       ticker: "WEBSITES YOUR BRAND GROWS WITH",
       languageToggle: "عربي",
+      languageSwitchLabel: "Switch language to Arabic",
     },
     footer: {
       text: "We don't just build websites. We craft digital work that feels like art.",
@@ -147,9 +153,9 @@ export const translations = {
       },
     },
     home: {
-      metaTitle: "Strategic Web Agency",
+      metaTitle: "Web District | Premium Website Development Agency",
       metaDescription:
-        "Web District builds clean, professional websites for brands, businesses, campaigns, and custom digital needs.",
+        "Premium websites and digital experiences for brands ready to grow online.",
       hero: {
         headline: "Your brand, brought online with care.",
         subline:
@@ -200,7 +206,7 @@ export const translations = {
     services: {
       metaTitle: "Services",
       metaDescription:
-        "Explore Web District website services including online stores, business websites, landing pages, and custom websites.",
+        "Explore Web District website services, including online stores, business websites, landing pages, custom websites, and website care.",
       hero: {
         eyebrow: "Services",
         title: "Websites built around the business goal.",
@@ -1192,6 +1198,9 @@ export const translations = {
     },
   },
   ar: {
+    accessibility: {
+      skipToMain: "تخطَّ إلى المحتوى الرئيسي",
+    },
     brand: {
       tagline: "وكالة متخصصة في تصميم وتطوير المواقع",
     },
@@ -1217,8 +1226,11 @@ export const translations = {
       openMenu: "افتح القائمة",
       closeOverlay: "إغلاق خلفية القائمة",
       closeMenu: "إغلاق القائمة",
+      primaryNavigation: "التنقل الرئيسي",
+      mobileMenuTitle: "التنقل عبر الهاتف",
       ticker: "مواقع تساعد علامتك التجارية على النمو",
       languageToggle: "EN",
+      languageSwitchLabel: "تغيير اللغة إلى الإنجليزية",
     },
     footer: {
       text: "نصمم مواقع لا تبدو جميلة فقط، بل تمنح علامتك حضورًا رقميًا متقنًا.",
@@ -1392,7 +1404,7 @@ export const translations = {
     services: {
       metaTitle: "الخدمات",
       metaDescription:
-        "تعرّف على خدمات Web District في تصميم المتاجر الإلكترونية والمواقع التعريفية وصفحات الهبوط والمواقع المخصصة.",
+        "تعرّف على خدمات Web District في تصميم المتاجر الإلكترونية والمواقع التعريفية وصفحات الهبوط والمواقع المخصصة والعناية بالمواقع.",
       hero: {
         eyebrow: "الخدمات",
         title: "مواقع مصممة لتحقيق أهداف عملك.",

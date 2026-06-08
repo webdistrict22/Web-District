@@ -13,6 +13,7 @@ function Contact() {
       <PageMeta
         title="Contact"
         description="Contact Web District through WhatsApp, Instagram, email, or phone."
+        canonical="/contact"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">

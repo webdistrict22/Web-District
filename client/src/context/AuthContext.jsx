@@ -1,52 +1,54 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import AuthContext from "./authContext";
 import api from "../lib/axios";
 import { STORAGE_KEYS } from "../lib/constants";
 
-export const AuthContext = createContext(null);
+const clearStoredAuth = () => {
+  localStorage.removeItem(STORAGE_KEYS.token);
+  localStorage.removeItem(STORAGE_KEYS.user);
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("webDistrictToken");
+  localStorage.removeItem("webDistrictUser");
+};
+
+const readStoredUser = () => {
+  const storedUser =
+    localStorage.getItem(STORAGE_KEYS.user) || localStorage.getItem("user");
+
+  if (!storedUser) return null;
+
+  try {
+    const parsedUser = JSON.parse(storedUser);
+
+    return parsedUser &&
+      typeof parsedUser === "object" &&
+      ["client", "admin"].includes(parsedUser.role)
+      ? parsedUser
+      : null;
+  } catch {
+    return null;
+  }
+};
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const saveAuth = (token, nextUser) => {
+  const saveAuth = useCallback((token, nextUser) => {
     localStorage.setItem(STORAGE_KEYS.token, token);
     localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(nextUser));
 
     setUser(nextUser);
-  };
+  }, []);
 
-  const clearAuth = () => {
-    localStorage.removeItem(STORAGE_KEYS.token);
-    localStorage.removeItem(STORAGE_KEYS.user);
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("webDistrictToken");
-    localStorage.removeItem("webDistrictUser");
-
+  const clearAuth = useCallback(() => {
+    clearStoredAuth();
     setUser(null);
-  };
+  }, []);
 
-  const loadStoredUser = () => {
-    const storedUser = localStorage.getItem(STORAGE_KEYS.user);
-    const storedToken = localStorage.getItem(STORAGE_KEYS.token);
-
-    if (!storedUser || !storedToken) {
-      setIsAuthLoading(false);
-      return;
-    }
-
-    try {
-      setUser(JSON.parse(storedUser));
-    } catch (error) {
-      clearAuth();
-    } finally {
-      setIsAuthLoading(false);
-    }
-  };
-
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       const { data } = await api.get("/auth/me");
 
@@ -55,16 +57,89 @@ function AuthProvider({ children }) {
 
       return data.user;
     } catch (error) {
-      clearAuth();
+      if (error.response?.status === 401) {
+        clearAuth();
+      }
+
       return null;
     }
-  };
+  }, [clearAuth]);
 
   useEffect(() => {
-    loadStoredUser();
-  }, []);
+    let isActive = true;
 
-  const login = async (credentials) => {
+    const handleAuthInvalidated = () => {
+      clearStoredAuth();
+
+      if (isActive) {
+        setUser(null);
+        setIsAuthLoading(false);
+      }
+    };
+
+    const validateStoredSession = async () => {
+      const storedToken =
+        localStorage.getItem(STORAGE_KEYS.token) ||
+        localStorage.getItem("token");
+      const storedUser = readStoredUser();
+
+      if (!storedToken) {
+        clearStoredAuth();
+
+        if (isActive) {
+          setIsAuthLoading(false);
+        }
+        return;
+      }
+
+      localStorage.setItem(STORAGE_KEYS.token, storedToken);
+
+      try {
+        const { data } = await api.get("/auth/me");
+
+        if (!isActive) return;
+
+        if (!data?.user) {
+          throw new Error("Invalid session response");
+        }
+
+        setUser(data.user);
+        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
+      } catch (error) {
+        const isRejectedSession = [401, 403].includes(error.response?.status);
+
+        if (isRejectedSession || !storedUser) {
+          clearStoredAuth();
+        }
+
+        if (isActive && isRejectedSession) {
+          setUser(null);
+        } else if (isActive && storedUser) {
+          setUser(storedUser);
+        }
+      } finally {
+        if (isActive) {
+          setIsAuthLoading(false);
+        }
+      }
+    };
+
+    window.addEventListener(
+      "webDistrictAuthInvalidated",
+      handleAuthInvalidated
+    );
+    validateStoredSession();
+
+    return () => {
+      isActive = false;
+      window.removeEventListener(
+        "webDistrictAuthInvalidated",
+        handleAuthInvalidated
+      );
+    };
+  }, [clearAuth]);
+
+  const login = useCallback(async (credentials) => {
     const { data } = await api.post("/auth/login", credentials);
 
     saveAuth(data.token, data.user);
@@ -72,9 +147,9 @@ function AuthProvider({ children }) {
     toast.success("Logged in successfully.");
 
     return data;
-  };
+  }, [saveAuth]);
 
-  const signup = async (payload) => {
+  const signup = useCallback(async (payload) => {
     const { data } = await api.post("/auth/signup", payload);
 
     saveAuth(data.token, data.user);
@@ -82,12 +157,12 @@ function AuthProvider({ children }) {
     toast.success("Account created successfully.");
 
     return data;
-  };
+  }, [saveAuth]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     clearAuth();
     toast.success("Logged out successfully.");
-  };
+  }, [clearAuth]);
 
   const value = useMemo(
     () => ({
@@ -101,7 +176,7 @@ function AuthProvider({ children }) {
       refreshUser,
       setUser,
     }),
-    [user, isAuthLoading]
+    [isAuthLoading, login, logout, refreshUser, signup, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

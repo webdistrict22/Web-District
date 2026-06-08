@@ -7,10 +7,15 @@ function NotFound() {
   const { t } = useLanguage();
 
   return (
-    <main className="wd-section-black flex min-h-screen items-center py-32">
+    <main
+      id="main-content"
+      tabIndex="-1"
+      className="wd-section-black flex min-h-screen scroll-mt-8 items-center py-32"
+    >
       <PageMeta
         title={t("notFound.metaTitle")}
         description={t("notFound.metaDescription")}
+        robots="noindex,nofollow"
       />
 
       <Container>

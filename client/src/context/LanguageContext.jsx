@@ -1,7 +1,6 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import LanguageContext from "./languageContext";
 import { translations } from "../i18n/translations";
-
-export const LanguageContext = createContext(null);
 
 const LANGUAGE_STORAGE_KEY = "webDistrictLanguage";
 const supportedLanguages = ["en", "ar"];

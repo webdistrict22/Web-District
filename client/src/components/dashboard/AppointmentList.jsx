@@ -68,9 +68,20 @@ function AppointmentList({ appointments = [] }) {
                   ? `${appointment.slot.startTime} - ${appointment.slot.endTime}`
                   : "-"
               }
+              ltr
             />
-            <InfoItem icon={Phone} label={t("common.labels.phone")} value={appointment.phone} />
-            <InfoItem icon={Mail} label={t("common.labels.email")} value={appointment.email} />
+            <InfoItem
+              icon={Phone}
+              label={t("common.labels.phone")}
+              value={appointment.phone}
+              ltr
+            />
+            <InfoItem
+              icon={Mail}
+              label={t("common.labels.email")}
+              value={appointment.email}
+              ltr
+            />
           </div>
 
           {appointment.notes && (
@@ -105,13 +116,18 @@ function AppointmentList({ appointments = [] }) {
   );
 }
 
-function InfoItem({ icon: Icon, label, value }) {
+function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
       <div>
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-medium text-[#D9D4CC]">
+        <p
+          dir={ltr ? "ltr" : undefined}
+          className={`mt-1 break-words text-sm font-medium text-[#D9D4CC] ${
+            ltr ? "text-left" : ""
+          }`}
+        >
           {value || "-"}
         </p>
       </div>

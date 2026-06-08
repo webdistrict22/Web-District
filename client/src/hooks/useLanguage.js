@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { LanguageContext } from "../context/LanguageContext";
+import LanguageContext from "../context/languageContext";
 
 function useLanguage() {
   const context = useContext(LanguageContext);
@@ -12,4 +12,3 @@ function useLanguage() {
 }
 
 export default useLanguage;
-

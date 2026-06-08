@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { CheckCircle2, CircleDashed } from "lucide-react";
 import Card from "../../components/common/Card";
@@ -8,6 +8,7 @@ import EmptyState from "../../components/common/EmptyState";
 import StatusBadge from "../../components/common/StatusBadge";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const statusSteps = [
   "Draft",
@@ -38,9 +39,7 @@ function ClientProjectStatus() {
     }
   };
 
-  useEffect(() => {
-    fetchContracts();
-  }, []);
+  useInitialLoad(fetchContracts);
 
   return (
     <div className="grid gap-5">

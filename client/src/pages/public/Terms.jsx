@@ -13,6 +13,7 @@ function Terms() {
       <PageMeta
         title={t("legal.terms.metaTitle")}
         description={t("legal.terms.metaDescription")}
+        canonical="/terms"
       />
 
       <section className="wd-section-black pt-32 pb-8 md:pb-10">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   CheckCircle2,
   CircleSlash,
@@ -7,9 +7,8 @@ import {
   MessageCircle,
   ShieldCheck,
   Sparkles,
-  Wrench,
 } from "lucide-react";
-import api from "../../lib/axios";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
@@ -18,6 +17,7 @@ import ServiceCard from "../../components/services/ServiceCard";
 import { AGENCY } from "../../lib/constants";
 import { getWhatsappLink, truncateText } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const websiteCareIcons = [
   Sparkles,
@@ -37,17 +37,17 @@ function Services() {
 
   const fetchPackages = async () => {
     try {
-      const { data } = await api.get("/packages/public");
+      const { data } = await api.get("/packages/public", {
+        timeout: PUBLIC_CONTENT_TIMEOUT,
+      });
 
       setPackages(data.packages || []);
-    } catch (error) {
+    } catch {
       setPackages([]);
     }
   };
 
-  useEffect(() => {
-    fetchPackages();
-  }, []);
+  useInitialLoad(fetchPackages);
 
   const services = useMemo(() => {
     const fallbackServices = t("services.cards", []);
@@ -89,6 +89,7 @@ function Services() {
       <PageMeta
         title={t("services.metaTitle")}
         description={t("services.metaDescription")}
+        canonical="/services"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">

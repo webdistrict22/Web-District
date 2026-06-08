@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
@@ -9,6 +9,7 @@ import Loader from "../../components/common/Loader";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   businessName: "",
@@ -35,6 +36,8 @@ function ClientReviews() {
   }));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [formError, setFormError] = useState("");
   const [contracts, setContracts] = useState([]);
   const [isCheckingContracts, setIsCheckingContracts] = useState(true);
 
@@ -55,27 +58,34 @@ function ClientReviews() {
     }
   };
 
-  useEffect(() => {
-    fetchContracts();
-  }, []);
+  useInitialLoad(fetchContracts);
 
   const updateField = (field, value) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    if (field === "message") {
+      setMessageError("");
+    }
+    setFormError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.message) {
-      toast.error(t("client.reviews.validation"));
+      const message = t("client.reviews.validation");
+      setMessageError(message);
+      setFormError(message);
+      toast.error(message);
       return;
     }
 
     try {
       setIsSubmitting(true);
+      setFormError("");
 
       await api.post("/reviews/submit", {
         ...form,
@@ -89,7 +99,9 @@ function ClientReviews() {
         businessName: user?.businessName || "",
       });
     } catch (error) {
-      toast.error(getErrorMessage(error, "client.reviews.error"));
+      const message = getErrorMessage(error, "client.reviews.error");
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -131,10 +143,26 @@ function ClientReviews() {
         </Card>
       ) : (
         <Card className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="grid gap-5">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            aria-busy={isSubmitting}
+            className="grid gap-5"
+          >
+            {formError && (
+              <p
+                role="alert"
+                className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+              >
+                {formError}
+              </p>
+            )}
+
             <div className="grid gap-5 md:grid-cols-3">
               <Input
                 label={t("common.labels.businessName")}
+                name="businessName"
+                autoComplete="organization"
                 placeholder={t("client.reviews.businessPlaceholder")}
                 value={form.businessName}
                 onChange={(e) => updateField("businessName", e.target.value)}
@@ -142,6 +170,7 @@ function ClientReviews() {
 
               <Input
                 label={t("client.reviews.role")}
+                name="role"
                 placeholder={t("client.reviews.rolePlaceholder")}
                 value={translateValue("reviewRoles", form.role)}
                 onChange={(e) =>
@@ -154,6 +183,7 @@ function ClientReviews() {
 
               <Select
                 label={t("client.reviews.rating")}
+                name="rating"
                 value={form.rating}
                 onChange={(e) => updateField("rating", e.target.value)}
               >
@@ -167,6 +197,9 @@ function ClientReviews() {
 
             <Textarea
               label={t("client.reviews.message")}
+              name="message"
+              required
+              error={messageError}
               placeholder={t("client.reviews.messagePlaceholder")}
               value={form.message}
               onChange={(e) => updateField("message", e.target.value)}
@@ -177,6 +210,9 @@ function ClientReviews() {
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? t("client.reviews.submitting") : t("client.reviews.submit")}
               </Button>
+              <span className="sr-only" aria-live="polite">
+                {isSubmitting ? t("client.reviews.submitting") : ""}
+              </span>
             </div>
           </form>
         </Card>

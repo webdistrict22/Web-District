@@ -46,7 +46,11 @@ function ClientDashboard() {
           label={t("common.labels.business")}
           value={user?.businessName || t("client.dashboard.businessFallback")}
         />
-        <InfoCard label={t("common.labels.email")} value={user?.email} />
+        <InfoCard
+          label={t("common.labels.email")}
+          value={user?.email}
+          ltr
+        />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-4">
@@ -106,11 +110,16 @@ function ClientDashboard() {
   );
 }
 
-function InfoCard({ label, value }) {
+function InfoCard({ label, value, ltr = false }) {
   return (
     <Card className="p-6">
       <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="mt-2 break-words font-semibold text-[#F8F7F4]">
+      <p
+        dir={ltr ? "ltr" : undefined}
+        className={`mt-2 break-words font-semibold text-[#F8F7F4] ${
+          ltr ? "text-left" : ""
+        }`}
+      >
         {value || "-"}
       </p>
     </Card>

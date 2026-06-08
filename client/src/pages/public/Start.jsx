@@ -20,6 +20,7 @@ function Start() {
       <PageMeta
         title="Start Your Project"
         description="Tell Web District about your website project and start with a clear direction."
+        canonical="/start"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">

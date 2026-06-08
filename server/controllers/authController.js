@@ -3,6 +3,13 @@ const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const asyncHandler = require("../middleware/asyncHandler");
 const {
+  createValidationError,
+  cleanText,
+  cleanEmail,
+  cleanPhone,
+  cleanPassword,
+} = require("../utils/validation");
+const {
   notifyNewClientSignup,
   sendPasswordResetEmail,
   sendWelcomeEmailToClient,
@@ -19,12 +26,20 @@ const serializeAuthUser = (user) => ({
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, businessName, email, phone, password } = req.body;
-
-  if (!name || !email || !password) {
-    res.status(400);
-    throw new Error("Name, email, and password are required");
-  }
+  const body = req.body || {};
+  const name = cleanText(body.name, "Name", {
+    required: true,
+    max: 80,
+  });
+  const businessName = cleanText(body.businessName, "Business name", {
+    max: 120,
+  });
+  const email = cleanEmail(body.email);
+  const phone = cleanPhone(body.phone);
+  const password = cleanPassword(body.password, "Password", {
+    min: 6,
+    max: 128,
+  });
 
   const existingUser = await User.findOne({ email });
 
@@ -65,12 +80,9 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("Email and password are required");
-  }
+  const body = req.body || {};
+  const email = cleanEmail(body.email);
+  const password = cleanPassword(body.password);
 
   const user = await User.findOne({ email }).select("+password");
 
@@ -102,12 +114,7 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    res.status(400);
-    throw new Error("Email is required");
-  }
+  const email = cleanEmail(req.body?.email);
 
   const genericMessage =
     "If an account exists with this email, a password reset link has been sent.";
@@ -150,22 +157,30 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-  const { password, confirmPassword } = req.body;
-
-  if (!password || !confirmPassword) {
-    res.status(400);
-    throw new Error("Password and confirmation are required");
-  }
+  const body = req.body || {};
+  const token = cleanText(req.params.token, "Password reset token", {
+    required: true,
+    max: 128,
+  });
+  const password = cleanPassword(body.password, "Password", {
+    min: 6,
+    max: 128,
+  });
+  const confirmPassword = cleanPassword(
+    body.confirmPassword,
+    "Password confirmation",
+    {
+      min: 6,
+      max: 128,
+    }
+  );
 
   if (password !== confirmPassword) {
-    res.status(400);
-    throw new Error("Passwords do not match");
+    throw createValidationError("Passwords do not match");
   }
 
-  if (password.length < 6) {
-    res.status(400);
-    throw new Error("Password must be at least 6 characters");
+  if (!/^[a-f0-9]{64}$/i.test(token)) {
+    throw createValidationError("Password reset token is invalid");
   }
 
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");

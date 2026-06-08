@@ -10,7 +10,8 @@ function Loader({ text = "Loading...", page = false }) {
       {!logoFailed ? (
         <img
           src={logoSrc}
-          alt="Web District"
+          alt=""
+          aria-hidden="true"
           width="112"
           height="64"
           loading="eager"
@@ -27,7 +28,11 @@ function Loader({ text = "Loading...", page = false }) {
   );
 
   const content = (
-    <div className="relative z-10 flex flex-col items-center text-center">
+    <div
+      className="relative z-10 flex flex-col items-center text-center"
+      role="status"
+      aria-live="polite"
+    >
       {mark}
 
       <div className="mt-7 h-px w-32 overflow-hidden rounded-full bg-[#F8F7F4]/10">

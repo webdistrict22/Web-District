@@ -42,6 +42,18 @@ const callSlotSchema = new mongoose.Schema(
   }
 );
 
+callSlotSchema.index(
+  {
+    date: 1,
+    startTime: 1,
+    endTime: 1,
+  },
+  {
+    unique: true,
+    name: "unique_call_slot_time",
+  }
+);
+
 const CallSlot = mongoose.model("CallSlot", callSlotSchema);
 
 module.exports = CallSlot;

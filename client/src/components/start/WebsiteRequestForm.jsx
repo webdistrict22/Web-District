@@ -38,24 +38,44 @@ function WebsiteRequestForm({ className = "" }) {
   }));
 
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState("");
 
   const updateField = (field, value) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.phone || !form.email || !form.projectDetails) {
-      toast.error(t("start.requestForm.validation"));
+    const validationMessage = t("start.requestForm.validation");
+    const nextErrors = {
+      name: form.name ? "" : validationMessage,
+      phone: form.phone ? "" : validationMessage,
+      email: form.email ? "" : validationMessage,
+      projectDetails: form.projectDetails ? "" : validationMessage,
+    };
+
+    if (
+      nextErrors.name ||
+      nextErrors.phone ||
+      nextErrors.email ||
+      nextErrors.projectDetails
+    ) {
+      setFieldErrors(nextErrors);
+      setFormError(validationMessage);
+      toast.error(validationMessage);
       return;
     }
 
     try {
       setIsLoading(true);
+      setFormError("");
 
       await api.post("/requests", form);
 
@@ -75,9 +95,9 @@ function WebsiteRequestForm({ className = "" }) {
 
       navigate("/success?type=request");
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "start.requestForm.error")
-      );
+      const message = getErrorMessage(error, "start.requestForm.error");
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -97,10 +117,28 @@ function WebsiteRequestForm({ className = "" }) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid gap-5">
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        aria-busy={isLoading}
+        className="grid gap-5"
+      >
+        {formError && (
+          <p
+            role="alert"
+            className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+          >
+            {formError}
+          </p>
+        )}
+
         <div className="grid gap-5 md:grid-cols-2">
           <Input
             label={t("start.requestForm.name")}
+            name="name"
+            autoComplete="name"
+            required
+            error={fieldErrors.name}
             placeholder={t("start.requestForm.namePlaceholder")}
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
@@ -108,6 +146,8 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Input
             label={t("start.requestForm.businessName")}
+            name="businessName"
+            autoComplete="organization"
             placeholder={t("start.requestForm.businessNamePlaceholder")}
             value={form.businessName}
             onChange={(e) => updateField("businessName", e.target.value)}
@@ -115,6 +155,11 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Input
             label={t("start.requestForm.phone")}
+            type="tel"
+            name="phone"
+            autoComplete="tel"
+            required
+            error={fieldErrors.phone}
             placeholder={t("start.requestForm.phonePlaceholder")}
             className="wd-ltr"
             value={form.phone}
@@ -124,6 +169,10 @@ function WebsiteRequestForm({ className = "" }) {
           <Input
             label={t("start.requestForm.email")}
             type="email"
+            name="email"
+            autoComplete="email"
+            required
+            error={fieldErrors.email}
             placeholder={t("start.requestForm.emailPlaceholder")}
             className="wd-ltr"
             value={form.email}
@@ -132,6 +181,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Select
             label={t("start.requestForm.websiteType")}
+            name="websiteType"
             value={form.websiteType}
             onChange={(e) => updateField("websiteType", e.target.value)}
           >
@@ -149,6 +199,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Select
             label={t("start.requestForm.preferredContact")}
+            name="preferredContactMethod"
             value={form.preferredContactMethod}
             onChange={(e) =>
               updateField("preferredContactMethod", e.target.value)
@@ -163,6 +214,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Select
             label={t("start.requestForm.identity")}
+            name="hasBrandIdentity"
             value={form.hasBrandIdentity}
             onChange={(e) => updateField("hasBrandIdentity", e.target.value)}
           >
@@ -175,6 +227,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Select
             label={t("start.requestForm.content")}
+            name="hasContentReady"
             value={form.hasContentReady}
             onChange={(e) => updateField("hasContentReady", e.target.value)}
           >
@@ -187,6 +240,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Input
             label={t("start.requestForm.budget")}
+            name="budgetRange"
             placeholder={t("start.requestForm.optional")}
             value={form.budgetRange}
             onChange={(e) => updateField("budgetRange", e.target.value)}
@@ -194,6 +248,7 @@ function WebsiteRequestForm({ className = "" }) {
 
           <Input
             label={t("start.requestForm.deadline")}
+            name="deadline"
             placeholder={t("start.requestForm.optional")}
             value={form.deadline}
             onChange={(e) => updateField("deadline", e.target.value)}
@@ -202,6 +257,9 @@ function WebsiteRequestForm({ className = "" }) {
 
         <Textarea
           label={t("start.requestForm.details")}
+          name="projectDetails"
+          required
+          error={fieldErrors.projectDetails}
           placeholder={t("start.requestForm.detailsPlaceholder")}
           value={form.projectDetails}
           onChange={(e) => updateField("projectDetails", e.target.value)}
@@ -213,6 +271,9 @@ function WebsiteRequestForm({ className = "" }) {
               ? t("start.requestForm.submitting")
               : t("start.requestForm.submit")}
           </Button>
+          <span className="sr-only" aria-live="polite">
+            {isLoading ? t("start.requestForm.submitting") : ""}
+          </span>
         </div>
       </form>
     </Card>

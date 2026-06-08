@@ -9,6 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Container from "../common/Container";
+import PageMeta from "../common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -27,7 +28,13 @@ function DashboardLayout() {
   const { t, toggleLanguage } = useLanguage();
 
   return (
-    <main className="min-h-screen bg-[#080808] pb-20 pt-28">
+    <main
+      id="main-content"
+      tabIndex="-1"
+      className="min-h-screen scroll-mt-28 bg-[#080808] pb-20 pt-28"
+    >
+      <PageMeta title="Client Account" robots="noindex,nofollow" />
+
       <Container>
         <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">
           <div>
@@ -41,6 +48,7 @@ function DashboardLayout() {
             <button
               type="button"
               onClick={toggleLanguage}
+              aria-label={t("nav.languageSwitchLabel")}
               className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
             >
               {t("nav.languageToggle")}

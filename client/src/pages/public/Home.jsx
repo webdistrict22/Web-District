@@ -13,6 +13,7 @@ function Home() {
       <PageMeta
         title={t("home.metaTitle")}
         description={t("home.metaDescription")}
+        canonical="/"
       />
 
       <HeroSection />

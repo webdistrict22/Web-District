@@ -56,6 +56,12 @@ const appointmentSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+    slotReleased: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
+
     adminNotes: {
       type: String,
       default: "",

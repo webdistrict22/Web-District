@@ -8,20 +8,49 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 dotenv.config();
 
-connectDB();
-
 const app = express();
 
 const PORT = process.env.PORT || 5000;
+const isProduction = process.env.NODE_ENV === "production";
 
-const allowedOrigins = [
+const normalizeOrigin = (value) => {
+  const candidate = String(value || "").trim();
+
+  if (!candidate) return "";
+
+  try {
+    const parsedUrl = new URL(candidate);
+
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+      return "";
+    }
+
+    return parsedUrl.origin;
+  } catch (error) {
+    return "";
+  }
+};
+
+const isLocalOrigin = (origin) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+
+const configuredOrigins = [
   process.env.CLIENT_URL,
   ...(process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+    ? process.env.ALLOWED_ORIGINS.split(",")
     : []),
-  "http://localhost:5173",
-  "http://localhost:3000",
-].filter(Boolean);
+]
+  .map(normalizeOrigin)
+  .filter((origin) => origin && (!isProduction || !isLocalOrigin(origin)));
+
+const developmentOrigins = isProduction
+  ? []
+  : ["http://localhost:5173", "http://localhost:3000"];
+
+const allowedOrigins = new Set([
+  ...configuredOrigins,
+  ...developmentOrigins,
+]);
 
 app.set("trust proxy", 1);
 
@@ -38,13 +67,14 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      if (allowedOrigins.has(normalizeOrigin(origin))) {
         return callback(null, true);
       }
 
-      return callback(new Error(`CORS blocked origin: ${origin}`));
+      return callback(new Error("CORS blocked origin"));
     },
     credentials: true,
+    optionsSuccessStatus: 204,
   })
 );
 
@@ -53,9 +83,10 @@ app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 500,
+  limit: 500,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === "OPTIONS",
   message: {
     success: false,
     message: "Too many requests. Please try again later.",
@@ -98,6 +129,17 @@ app.use("/api/uploads", require("./routes/uploadRoutes"));
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error(`Server startup failed: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();

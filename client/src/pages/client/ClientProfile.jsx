@@ -55,11 +55,17 @@ function ClientProfile() {
           </p>
 
           <div className="mt-8 grid gap-3">
-            <InfoRow icon={Mail} label={t("common.labels.email")} value={user?.email} />
+            <InfoRow
+              icon={Mail}
+              label={t("common.labels.email")}
+              value={user?.email}
+              ltr
+            />
             <InfoRow
               icon={Phone}
               label={t("common.labels.phone")}
               value={user?.phone || t("common.labels.notAdded")}
+              ltr
             />
             <InfoRow
               icon={UserRound}
@@ -115,14 +121,19 @@ function ClientProfile() {
   );
 }
 
-function InfoRow({ icon: Icon, label, value }) {
+function InfoRow({ icon: Icon, label, value, ltr = false }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
       <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
 
       <div className="min-w-0">
         <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p className="mt-1 break-words text-sm font-semibold text-[#D9D4CC]">
+        <p
+          dir={ltr ? "ltr" : undefined}
+          className={`mt-1 break-words text-sm font-semibold text-[#D9D4CC] ${
+            ltr ? "text-left" : ""
+          }`}
+        >
           {value || "-"}
         </p>
       </div>

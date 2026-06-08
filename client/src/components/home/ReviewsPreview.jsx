@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import api from "../../lib/axios";
+import { useMemo, useState } from "react";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import Container from "../common/Container";
 import SectionHeader from "../common/SectionHeader";
 import Card from "../common/Card";
 import Button from "../common/Button";
 import useLanguage from "../../hooks/useLanguage";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 function ReviewsPreview() {
   const [reviews, setReviews] = useState([]);
@@ -15,19 +16,19 @@ function ReviewsPreview() {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get("/reviews/public");
+      const { data } = await api.get("/reviews/public", {
+        timeout: PUBLIC_CONTENT_TIMEOUT,
+      });
 
       setReviews(data.reviews || []);
-    } catch (error) {
+    } catch {
       setReviews([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
+  useInitialLoad(fetchReviews);
 
   const displayReviews = useMemo(() => reviews.slice(0, 3), [reviews]);
 

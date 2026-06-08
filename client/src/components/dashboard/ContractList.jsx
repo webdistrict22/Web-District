@@ -59,6 +59,7 @@ function ContractList({
       title: t("client.contracts.acceptTitle"),
       message: t("client.contracts.acceptMessage"),
       confirmText: t("client.contracts.acceptConfirm"),
+      cancelText: t("common.buttons.cancel"),
     });
 
     if (!confirmed) return;
@@ -114,7 +115,7 @@ function ContractList({
       {contracts.map((contract) => {
         const canAccept =
           allowClientActions &&
-          ["Draft", "Sent"].includes(contract.status);
+          contract.status === "Sent";
 
         const canSendNote = allowClientActions;
 

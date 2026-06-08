@@ -1,6 +1,11 @@
 const WebsiteRequest = require("../models/WebsiteRequest");
 const asyncHandler = require("../middleware/asyncHandler");
 const {
+  cleanText,
+  cleanEmail,
+  cleanPhone,
+} = require("../utils/validation");
+const {
   notifyNewWebsiteRequest,
   sendWebsiteRequestConfirmationToClient,
   sendWebsiteRequestStatusToClient,
@@ -10,26 +15,59 @@ const {
 // @route   POST /api/requests
 // @access  Public, optionally logged-in client
 const createWebsiteRequest = asyncHandler(async (req, res) => {
-  const {
-    name,
-    businessName,
-    phone,
-    email,
-    websiteType,
-    hasBrandIdentity,
-    hasContentReady,
-    budgetRange,
-    deadline,
-    projectDetails,
-    preferredContactMethod,
-  } = req.body;
-
-  if (!name || !phone || !email || !websiteType || !projectDetails) {
-    res.status(400);
-    throw new Error(
-      "Name, phone, email, website type, and project details are required"
-    );
-  }
+  const body = req.body || {};
+  const name = cleanText(body.name, "Name", {
+    required: true,
+    max: 80,
+  });
+  const businessName = cleanText(body.businessName, "Business name", {
+    max: 120,
+  });
+  const phone = cleanPhone(body.phone, "Phone", { required: true });
+  const email = cleanEmail(body.email);
+  const websiteType = cleanText(body.websiteType, "Website type", {
+    required: true,
+    max: 80,
+  });
+  const hasBrandIdentity =
+    body.hasBrandIdentity === undefined
+      ? undefined
+      : cleanText(body.hasBrandIdentity, "Brand identity status", {
+          required: true,
+          max: 20,
+        });
+  const hasContentReady =
+    body.hasContentReady === undefined
+      ? undefined
+      : cleanText(body.hasContentReady, "Content readiness status", {
+          required: true,
+          max: 20,
+        });
+  const budgetRange = cleanText(body.budgetRange, "Budget range", {
+    max: 120,
+  });
+  const deadline = cleanText(body.deadline, "Deadline", {
+    max: 120,
+  });
+  const projectDetails = cleanText(
+    body.projectDetails,
+    "Project details",
+    {
+      required: true,
+      max: 2500,
+    }
+  );
+  const preferredContactMethod =
+    body.preferredContactMethod === undefined
+      ? undefined
+      : cleanText(
+          body.preferredContactMethod,
+          "Preferred contact method",
+          {
+            required: true,
+            max: 40,
+          }
+        );
 
   const websiteRequest = await WebsiteRequest.create({
     client: req.user?._id || null,
@@ -151,6 +189,7 @@ const getWebsiteRequestById = asyncHandler(async (req, res) => {
 // @route   PUT /api/requests/:id
 // @access  Admin
 const updateWebsiteRequest = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const request = await WebsiteRequest.findById(req.params.id);
 
   if (!request) {
@@ -177,14 +216,14 @@ const updateWebsiteRequest = asyncHandler(async (req, res) => {
   ];
 
   allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      request[field] = req.body[field];
+    if (body[field] !== undefined) {
+      request[field] = body[field];
     }
   });
 
   const updatedRequest = await request.save();
 
-  if (req.body.status !== undefined && updatedRequest.status !== previousStatus) {
+  if (body.status !== undefined && updatedRequest.status !== previousStatus) {
     sendWebsiteRequestStatusToClient(updatedRequest)
       .then((result) =>
         console.log("[Email] Website request status email:", result)

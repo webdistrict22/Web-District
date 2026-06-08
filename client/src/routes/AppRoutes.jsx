@@ -8,8 +8,6 @@ import {
 } from "react-router-dom";
 
 import PublicLayout from "../components/layout/PublicLayout";
-import DashboardLayout from "../components/layout/DashboardLayout";
-import AdminLayout from "../components/layout/AdminLayout";
 import Loader from "../components/common/Loader";
 import ScrollToTop from "../components/common/ScrollToTop";
 import Home from "../pages/public/Home";
@@ -18,6 +16,11 @@ import useLanguage from "../hooks/useLanguage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicOnlyRoute from "./PublicOnlyRoute";
 import AdminRoute from "./AdminRoute";
+
+const DashboardLayout = lazy(() =>
+  import("../components/layout/DashboardLayout")
+);
+const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
 
 const Services = lazy(() => import("../pages/public/Services"));
 const Work = lazy(() => import("../pages/public/Work"));

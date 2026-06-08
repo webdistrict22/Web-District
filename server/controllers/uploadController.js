@@ -24,7 +24,20 @@ const uploadProjectImage = asyncHandler(async (req, res) => {
     throw new Error("Image file is required");
   }
 
-  const imageUrl = await uploadToCloudinary(req.file, projectImageFolder);
+  let imageUrl;
+
+  try {
+    imageUrl = await uploadToCloudinary(req.file, projectImageFolder);
+  } catch (error) {
+    console.error("Cloudinary image upload failed:", {
+      name: error.name || "Error",
+      httpCode: error.http_code || null,
+    });
+
+    const uploadError = new Error("Image upload failed. Please try again.");
+    uploadError.statusCode = 502;
+    throw uploadError;
+  }
 
   res.status(201).json({
     success: true,

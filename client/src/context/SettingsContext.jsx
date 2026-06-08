@@ -1,8 +1,12 @@
-import { createContext, useEffect, useState } from "react";
-import api from "../lib/axios";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import SettingsContext from "./settingsContext";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../lib/axios";
 import { AGENCY } from "../lib/constants";
-
-export const SettingsContext = createContext(null);
 
 const fallbackSettings = {
   agencyName: AGENCY.name,
@@ -36,17 +40,20 @@ function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(fallbackSettings);
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
 
-  const fetchSettings = async (signal) => {
+  const fetchSettings = useCallback(async (signal) => {
     try {
       setIsSettingsLoading(true);
 
-      const { data } = await api.get("/settings/public", { signal });
+      const { data } = await api.get("/settings/public", {
+        signal,
+        timeout: PUBLIC_CONTENT_TIMEOUT,
+      });
 
       setSettings({
         ...fallbackSettings,
         ...(data.settings || {}),
       });
-    } catch (error) {
+    } catch {
       if (!signal?.aborted) {
         setSettings(fallbackSettings);
       }
@@ -55,7 +62,7 @@ function SettingsProvider({ children }) {
         setIsSettingsLoading(false);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,13 +74,16 @@ function SettingsProvider({ children }) {
       controller.abort();
       cancelScheduledFetch?.();
     };
-  }, []);
+  }, [fetchSettings]);
 
-  const value = {
-    settings,
-    isSettingsLoading,
-    refetchSettings: fetchSettings,
-  };
+  const value = useMemo(
+    () => ({
+      settings,
+      isSettingsLoading,
+      refetchSettings: fetchSettings,
+    }),
+    [fetchSettings, isSettingsLoading, settings]
+  );
 
   return (
     <SettingsContext.Provider value={value}>

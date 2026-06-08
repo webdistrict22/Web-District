@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, UserRound } from "lucide-react";
 import Button from "../common/Button";
@@ -13,11 +13,15 @@ function Navbar() {
   const { isAuthenticated, isAdmin } = useAuth();
   const { t, toggleLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef(null);
   const location = useLocation();
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
+    const timerId = window.setTimeout(closeMenu, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [closeMenu, location.pathname]);
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "";
@@ -29,8 +33,15 @@ function Navbar() {
 
   return (
     <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#080808]/96 shadow-[0_12px_38px_rgba(0,0,0,0.24)] backdrop-blur-sm md:backdrop-blur-xl">
-      <nav className="wd-container flex h-20 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
+      <nav
+        className="wd-container flex h-20 items-center justify-between"
+        aria-label={t("nav.primaryNavigation")}
+      >
+        <Link
+          to="/"
+          className="flex items-center gap-3"
+          aria-label="Web District"
+        >
           <BrandLogo />
         </Link>
 
@@ -62,7 +73,7 @@ function Navbar() {
             type="button"
             onClick={toggleLanguage}
             className="inline-flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-            aria-label={t("nav.languageToggle")}
+            aria-label={t("nav.languageSwitchLabel")}
           >
             {t("nav.languageToggle")}
           </button>
@@ -72,6 +83,9 @@ function Navbar() {
               to={isAdmin ? "/admin" : "/account"}
               className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
               title={isAdmin ? t("nav.adminDashboard") : t("nav.account")}
+              aria-label={
+                isAdmin ? t("nav.adminDashboard") : t("nav.clientAccount")
+              }
             >
               <UserRound size={18} />
             </Link>
@@ -95,17 +109,20 @@ function Navbar() {
           <button
             type="button"
             onClick={toggleLanguage}
-            aria-label={t("nav.languageToggle")}
+            aria-label={t("nav.languageSwitchLabel")}
             className="inline-flex h-11 min-w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-xs font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
           >
             {t("nav.languageToggle")}
           </button>
 
           <button
+            ref={menuButtonRef}
             type="button"
             onClick={() => setIsMenuOpen(true)}
             aria-label={t("nav.openMenu")}
             aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu-panel"
+            aria-haspopup="dialog"
             className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
           >
             <Menu size={20} />
@@ -114,7 +131,11 @@ function Navbar() {
       </nav>
 
       <NavbarTicker />
-      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={closeMenu}
+        triggerRef={menuButtonRef}
+      />
     </header>
   );
 }

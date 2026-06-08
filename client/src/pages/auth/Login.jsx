@@ -18,6 +18,8 @@ const initialForm = {
 function Login() {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState("");
 
   const { login } = useAuth();
   const { getErrorMessage, t } = useLanguage();
@@ -29,19 +31,30 @@ function Login() {
       ...prev,
       [field]: value,
     }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setFormError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
-      toast.error(t("auth.login.validation"));
+    const validationMessage = t("auth.login.validation");
+    const nextErrors = {
+      email: form.email ? "" : validationMessage,
+      password: form.password ? "" : validationMessage,
+    };
+
+    if (nextErrors.email || nextErrors.password) {
+      setFieldErrors(nextErrors);
+      setFormError(validationMessage);
+      toast.error(validationMessage);
       return;
     }
 
     try {
       setIsLoading(true);
-      const user = await login(form);
+      setFormError("");
+      const result = await login(form);
 
       const from = location.state?.from;
 
@@ -50,11 +63,13 @@ function Login() {
         return;
       }
 
-      navigate(user.role === "admin" ? "/admin" : "/account", {
+      navigate(result.user.role === "admin" ? "/admin" : "/account", {
         replace: true,
       });
     } catch (error) {
-      toast.error(getErrorMessage(error, "auth.login.error"));
+      const message = getErrorMessage(error, "auth.login.error");
+      setFormError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -65,6 +80,7 @@ function Login() {
       <PageMeta
         title="Login"
         description="Login to your Web District client account."
+        robots="noindex,nofollow"
       />
 
       <section className="wd-section-black pt-32 pb-10">
@@ -84,10 +100,28 @@ function Login() {
         <Container>
         <div className="mx-auto max-w-xl">
           <Card className="wd-card-on-black p-6 md:p-8">
-            <form onSubmit={handleSubmit} className="grid gap-5">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              aria-busy={isLoading}
+              className="grid gap-5"
+            >
+              {formError && (
+                <p
+                  role="alert"
+                  className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
+                >
+                  {formError}
+                </p>
+              )}
+
               <Input
                 label={t("auth.login.email")}
                 type="email"
+                name="email"
+                autoComplete="email"
+                required
+                error={fieldErrors.email}
                 placeholder="you@example.com"
                 className="wd-ltr"
                 value={form.email}
@@ -97,6 +131,10 @@ function Login() {
               <Input
                 label={t("auth.login.password")}
                 type="password"
+                name="password"
+                autoComplete="current-password"
+                required
+                error={fieldErrors.password}
                 placeholder={t("auth.login.passwordPlaceholder")}
                 value={form.password}
                 onChange={(e) => updateField("password", e.target.value)}
@@ -114,6 +152,9 @@ function Login() {
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
               </Button>
+              <span className="sr-only" aria-live="polite">
+                {isLoading ? t("auth.login.submitting") : ""}
+              </span>
             </form>
 
             <p className="mt-6 text-center text-sm text-[#D9D4CC]">

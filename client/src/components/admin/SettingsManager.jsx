@@ -61,12 +61,17 @@ function ControlManager({ initialTab = "slots" }) {
       </Card>
 
       <Card className="p-3">
-        <div className="grid gap-2 md:grid-cols-4">
+        <div
+          className="grid gap-2 md:grid-cols-4"
+          role="group"
+          aria-label="Control sections"
+        >
           {controlTabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
+              aria-pressed={activeTab === tab.id}
               className={`rounded-2xl border p-4 text-left transition ${
                 activeTab === tab.id
                   ? "border-[#C4A77D]/45 bg-[#C4A77D]/12 text-[#F8F7F4]"
@@ -82,7 +87,9 @@ function ControlManager({ initialTab = "slots" }) {
         </div>
       </Card>
 
-      <ActiveComponent />
+      <div>
+        <ActiveComponent />
+      </div>
     </div>
   );
 }

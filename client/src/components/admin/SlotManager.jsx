@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { CalendarDays, Clock, Plus, Search, Trash2 } from "lucide-react";
 import api from "../../lib/axios";
@@ -10,6 +10,7 @@ import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   date: "",
@@ -46,9 +47,7 @@ function SlotManager() {
     }
   };
 
-  useEffect(() => {
-    fetchSlots();
-  }, []);
+  useInitialLoad(fetchSlots);
 
   const filteredSlots = useMemo(() => {
     if (filter === "Available") {

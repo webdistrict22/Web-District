@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import api from "../../lib/axios";
 import Card from "../common/Card";
 import Button from "../common/Button";
@@ -10,6 +10,7 @@ import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const initialForm = {
   question: "",
@@ -50,9 +51,7 @@ function FAQManager() {
     }
   };
 
-  useEffect(() => {
-    fetchFAQs();
-  }, []);
+  useInitialLoad(fetchFAQs);
 
   const filteredFAQs = useMemo(() => {
     return faqs.filter((faq) => {

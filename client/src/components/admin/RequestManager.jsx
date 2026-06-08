@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   CalendarDays,
@@ -20,6 +20,7 @@ import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const requestStatuses = [
   "New",
@@ -95,10 +96,7 @@ function RequestManager() {
     }
   };
 
-  useEffect(() => {
-    fetchRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useInitialLoad(fetchRequests);
 
   const updateFilter = (field, value) => {
     setFilters((prev) => ({

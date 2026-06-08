@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Plus, Search, Trash2 } from "lucide-react";
@@ -13,6 +13,7 @@ import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import ContractList from "../dashboard/ContractList";
 import { confirmAction } from "../../lib/alerts";
+import useInitialLoad from "../../hooks/useInitialLoad";
 
 const statuses = [
   "Draft",
@@ -126,7 +127,7 @@ function ContractManager() {
         requests: loadedRequests,
         appointments: loadedAppointments,
       };
-    } catch (error) {
+    } catch {
       return {
         requests: [],
         appointments: [],
@@ -170,31 +171,28 @@ function ContractManager() {
     }));
   };
 
-  useEffect(() => {
-    const setup = async () => {
-      fetchContracts();
+  const setupInitialData = async () => {
+    fetchContracts();
 
-      const loadedSources = await fetchSources();
+    const loadedSources = await fetchSources();
 
-      const source = searchParams.get("source");
-      const id = searchParams.get("id");
+    const source = searchParams.get("source");
+    const id = searchParams.get("id");
 
-      if (source === "request" && id) {
-        setSourceType("request");
-        setSourceId(id);
-        fillFromRequest(id, loadedSources.requests);
-      }
+    if (source === "request" && id) {
+      setSourceType("request");
+      setSourceId(id);
+      fillFromRequest(id, loadedSources.requests);
+    }
 
-      if (source === "appointment" && id) {
-        setSourceType("appointment");
-        setSourceId(id);
-        fillFromAppointment(id, loadedSources.appointments);
-      }
-    };
+    if (source === "appointment" && id) {
+      setSourceType("appointment");
+      setSourceId(id);
+      fillFromAppointment(id, loadedSources.appointments);
+    }
+  };
 
-    setup();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useInitialLoad(setupInitialData);
 
   const stats = useMemo(() => {
     return {

@@ -1,24 +1,21 @@
 const CallSlot = require("../models/CallSlot");
 const asyncHandler = require("../middleware/asyncHandler");
-
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+const {
+  datePattern,
+  timePattern,
+  formatUtcDate,
+  getFutureSlotQuery,
+} = require("../utils/slotTime");
 const dailySlotStartHour = 16;
 const dailySlotEndHour = 23;
 const rollingSlotDays = 30;
 const autoSlotNote = "Auto-generated daily discovery call slot.";
+const ensureCooldownMs = 6 * 60 * 60 * 1000;
 
-const formatDate = (date) => date.toISOString().slice(0, 10);
+let lastEnsureCompletedAt = 0;
+let ensureInFlight = null;
 
 const formatHour = (hour) => `${String(hour).padStart(2, "0")}:00`;
-
-const getTodayDateString = () => {
-  const today = new Date();
-
-  today.setUTCHours(0, 0, 0, 0);
-
-  return formatDate(today);
-};
 
 const buildDailySlotOperations = () => {
   const startDate = new Date();
@@ -32,7 +29,7 @@ const buildDailySlotOperations = () => {
 
     currentDate.setUTCDate(startDate.getUTCDate() + dayOffset);
 
-    const date = formatDate(currentDate);
+    const date = formatUtcDate(currentDate);
 
     for (let hour = dailySlotStartHour; hour < dailySlotEndHour; hour += 1) {
       const startTime = formatHour(hour);
@@ -65,13 +62,47 @@ const buildDailySlotOperations = () => {
   return operations;
 };
 
-const ensureDailyCallSlots = async () => {
-  const operations = buildDailySlotOperations();
+const ensureDailyCallSlots = () => {
+  const now = Date.now();
 
-  if (!operations.length) return;
+  if (
+    lastEnsureCompletedAt &&
+    now - lastEnsureCompletedAt < ensureCooldownMs
+  ) {
+    return null;
+  }
 
-  await CallSlot.bulkWrite(operations, { ordered: false });
+  if (ensureInFlight) {
+    return ensureInFlight;
+  }
+
+  ensureInFlight = (async () => {
+    const operations = buildDailySlotOperations();
+
+    if (!operations.length) return;
+
+    try {
+      await CallSlot.bulkWrite(operations, { ordered: false });
+    } catch (error) {
+      if (error?.code !== 11000) {
+        throw error;
+      }
+    }
+
+    lastEnsureCompletedAt = Date.now();
+  })().finally(() => {
+    ensureInFlight = null;
+  });
+
+  return ensureInFlight;
 };
+
+const findAvailableSlots = () =>
+  CallSlot.find({
+    ...getFutureSlotQuery(),
+    isActive: true,
+    isBooked: false,
+  }).sort({ date: 1, startTime: 1 });
 
 const isValidDateString = (date) => {
   if (!datePattern.test(date)) return false;
@@ -118,11 +149,20 @@ const findDuplicateSlot = ({ date, startTime, endTime, excludeId }) => {
   return CallSlot.findOne(query);
 };
 
+const throwDuplicateSlotError = (error, res) => {
+  if (error?.code !== 11000) {
+    throw error;
+  }
+
+  res.status(400);
+  throw new Error("A call slot with this exact date and time already exists");
+};
+
 // @desc    Create call slot
 // @route   POST /api/slots
 // @access  Admin
 const createCallSlot = asyncHandler(async (req, res) => {
-  const { date, startTime, endTime, notes } = req.body;
+  const { date, startTime, endTime, notes } = req.body || {};
 
   const validationError = validateSlotTime({ date, startTime, endTime });
 
@@ -138,12 +178,18 @@ const createCallSlot = asyncHandler(async (req, res) => {
     throw new Error("A call slot with this exact date and time already exists");
   }
 
-  const slot = await CallSlot.create({
-    date,
-    startTime,
-    endTime,
-    notes,
-  });
+  let slot;
+
+  try {
+    slot = await CallSlot.create({
+      date,
+      startTime,
+      endTime,
+      notes,
+    });
+  } catch (error) {
+    throwDuplicateSlotError(error, res);
+  }
 
   res.status(201).json({
     success: true,
@@ -156,15 +202,16 @@ const createCallSlot = asyncHandler(async (req, res) => {
 // @route   GET /api/slots/available
 // @access  Public
 const getAvailableSlots = asyncHandler(async (req, res) => {
-  await ensureDailyCallSlots();
+  const ensurePromise = ensureDailyCallSlots();
+  const safeEnsurePromise = ensurePromise?.catch((error) => {
+    console.error(`Call slot ensure failed: ${error.message}`);
+  });
+  let slots = await findAvailableSlots();
 
-  const today = getTodayDateString();
-
-  const slots = await CallSlot.find({
-    date: { $gte: today },
-    isActive: true,
-    isBooked: false,
-  }).sort({ date: 1, startTime: 1 });
+  if (!slots.length && safeEnsurePromise) {
+    await safeEnsurePromise;
+    slots = await findAvailableSlots();
+  }
 
   res.json({
     success: true,
@@ -177,7 +224,11 @@ const getAvailableSlots = asyncHandler(async (req, res) => {
 // @route   GET /api/slots
 // @access  Admin
 const getAllSlots = asyncHandler(async (req, res) => {
-  await ensureDailyCallSlots();
+  const ensurePromise = ensureDailyCallSlots();
+
+  if (ensurePromise) {
+    await ensurePromise;
+  }
 
   const slots = await CallSlot.find().sort({ date: 1, startTime: 1 });
 
@@ -192,7 +243,8 @@ const getAllSlots = asyncHandler(async (req, res) => {
 // @route   PUT /api/slots/:id
 // @access  Admin
 const updateCallSlot = asyncHandler(async (req, res) => {
-  const { date, startTime, endTime, isActive, isBooked, notes } = req.body;
+  const { date, startTime, endTime, isActive, isBooked, notes } =
+    req.body || {};
 
   const slot = await CallSlot.findById(req.params.id);
 
@@ -244,7 +296,13 @@ const updateCallSlot = asyncHandler(async (req, res) => {
   if (isActive !== undefined) slot.isActive = isActive;
   if (notes !== undefined) slot.notes = notes;
 
-  const updatedSlot = await slot.save();
+  let updatedSlot;
+
+  try {
+    updatedSlot = await slot.save();
+  } catch (error) {
+    throwDuplicateSlotError(error, res);
+  }
 
   res.json({
     success: true,

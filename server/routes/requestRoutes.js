@@ -10,10 +10,11 @@ const {
 
 const { protect, optionalAuth } = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/adminMiddleware");
+const { websiteRequestLimiter } = require("../middleware/rateLimiters");
 
 const router = express.Router();
 
-router.post("/", optionalAuth, createWebsiteRequest);
+router.post("/", websiteRequestLimiter, optionalAuth, createWebsiteRequest);
 
 router.get("/my", protect, getMyWebsiteRequests);
 

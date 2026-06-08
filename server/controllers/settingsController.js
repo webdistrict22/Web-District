@@ -1,6 +1,11 @@
 const Settings = require("../models/Settings");
 const asyncHandler = require("../middleware/asyncHandler");
 const sendEmail = require("../utils/sendEmail");
+const {
+  cleanText,
+  cleanEmail,
+  cleanPhone,
+} = require("../utils/validation");
 
 const { getEmailConfig, verifyEmailTransport } = sendEmail;
 
@@ -19,13 +24,72 @@ const previewEmail = (email = "") => {
 };
 
 const getOrCreateSettings = async () => {
-  let settings = await Settings.findOne();
+  await Settings.init();
 
-  if (!settings) {
-    settings = await Settings.create({});
+  const existingSettings = await Settings.findOne({
+    singletonKey: "primary",
+  });
+
+  if (existingSettings) {
+    return existingSettings;
   }
 
-  return settings;
+  const legacySettings = await Settings.findOne({
+    singletonKey: { $exists: false },
+  })
+    .sort({ _id: 1 })
+    .select("+singletonKey");
+
+  if (legacySettings) {
+    try {
+      const adoptedSettings = await Settings.findOneAndUpdate(
+        {
+          _id: legacySettings._id,
+          singletonKey: { $exists: false },
+        },
+        {
+          $set: {
+            singletonKey: "primary",
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (adoptedSettings) {
+        return adoptedSettings;
+      }
+    } catch (error) {
+      if (error?.code !== 11000) {
+        throw error;
+      }
+    }
+  }
+
+  try {
+    return await Settings.findOneAndUpdate(
+      {
+        singletonKey: "primary",
+      },
+      {
+        $setOnInsert: {
+          singletonKey: "primary",
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+  } catch (error) {
+    if (error?.code !== 11000) {
+      throw error;
+    }
+
+    return Settings.findOne({ singletonKey: "primary" });
+  }
 };
 
 const getPublicSettings = asyncHandler(async (req, res) => {
@@ -38,26 +102,38 @@ const getPublicSettings = asyncHandler(async (req, res) => {
 });
 
 const updateSettings = asyncHandler(async (req, res) => {
+  const body = req.body || {};
   const settings = await getOrCreateSettings();
 
-  const fields = [
-    "agencyName",
-    "phone",
-    "whatsapp",
-    "instagram",
-    "email",
-    "heroHeadline",
-    "heroSubtext",
-    "primaryCTA",
-    "secondaryCTA",
-    "footerText",
-  ];
+  const textFields = {
+    agencyName: ["Agency name", 120],
+    instagram: ["Instagram", 120],
+    heroHeadline: ["Hero headline", 160],
+    heroSubtext: ["Hero subtext", 500],
+    primaryCTA: ["Primary CTA", 80],
+    secondaryCTA: ["Secondary CTA", 80],
+    footerText: ["Footer text", 500],
+  };
 
-  fields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      settings[field] = req.body[field];
+  Object.entries(textFields).forEach(([field, [label, max]]) => {
+    if (body[field] !== undefined) {
+      settings[field] = cleanText(body[field], label, { max });
     }
   });
+
+  if (body.phone !== undefined) {
+    settings.phone = cleanPhone(body.phone, "Phone");
+  }
+
+  if (body.whatsapp !== undefined) {
+    settings.whatsapp = cleanPhone(body.whatsapp, "WhatsApp");
+  }
+
+  if (body.email !== undefined) {
+    settings.email = cleanEmail(body.email, "Email", {
+      required: false,
+    });
+  }
 
   const updatedSettings = await settings.save();
 
@@ -93,7 +169,8 @@ const getEmailStatus = asyncHandler(async (req, res) => {
 
 const sendTestEmail = asyncHandler(async (req, res) => {
   const { emailUser, ownerEmail } = getEmailConfig();
-  const to = String(req.body?.to || ownerEmail || emailUser || "").trim();
+  const fallbackRecipient = ownerEmail || emailUser || "";
+  const to = cleanEmail(req.body?.to || fallbackRecipient, "Recipient email");
 
   const verification = await verifyEmailTransport();
 

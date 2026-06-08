@@ -53,6 +53,24 @@ function WelcomeIntro() {
   }, []);
 
   useEffect(() => {
+    const appContent = document.querySelector("[data-app-content]");
+
+    if (!isVisible || !appContent) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+
+    appContent.setAttribute("inert", "");
+    appContent.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      appContent.removeAttribute("inert");
+      appContent.removeAttribute("aria-hidden");
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
     if (!isVisible || brandMode !== "pending") return undefined;
 
     let isActive = true;
@@ -136,8 +154,7 @@ function WelcomeIntro() {
   return (
     <div
       className={`wd-welcome-intro ${isLeaving ? "is-leaving" : ""}`}
-      aria-label={t("welcome.aria")}
-      role="status"
+      aria-hidden="true"
     >
       <style>
         {`
@@ -325,7 +342,7 @@ function WelcomeIntro() {
             {brandMode === "logo" ? (
               <img
                 src={logoSrc}
-                alt="Web District"
+                alt=""
                 width="164"
                 height="92"
                 loading="eager"

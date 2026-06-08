@@ -9,7 +9,7 @@ export const formatDate = (date, locale = "en") => {
       month: "short",
       day: "numeric",
     }).format(new Date(date));
-  } catch (error) {
+  } catch {
     return "—";
   }
 };
@@ -25,7 +25,7 @@ export const formatDateTime = (date, locale = "en") => {
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(date));
-  } catch (error) {
+  } catch {
     return "—";
   }
 };

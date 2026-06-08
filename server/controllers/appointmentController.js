@@ -1,6 +1,12 @@
 const Appointment = require("../models/Appointment");
 const CallSlot = require("../models/CallSlot");
 const asyncHandler = require("../middleware/asyncHandler");
+const { getFutureSlotQuery, isFutureSlot } = require("../utils/slotTime");
+const {
+  cleanText,
+  cleanEmail,
+  cleanPhone,
+} = require("../utils/validation");
 
 const {
   notifyNewAppointment,
@@ -12,18 +18,34 @@ const {
 // @route   POST /api/appointments
 // @access  Public, optionally logged-in client
 const createAppointment = asyncHandler(async (req, res) => {
-  const { slot, name, businessName, phone, email, topic, notes } = req.body;
-
-  if (!slot || !name || !phone || !email || !topic) {
-    res.status(400);
-    throw new Error("Slot, name, phone, email, and topic are required");
-  }
+  const body = req.body || {};
+  const slot = cleanText(body.slot, "Slot", {
+    required: true,
+    max: 64,
+  });
+  const name = cleanText(body.name, "Name", {
+    required: true,
+    max: 80,
+  });
+  const businessName = cleanText(body.businessName, "Business name", {
+    max: 120,
+  });
+  const phone = cleanPhone(body.phone, "Phone", { required: true });
+  const email = cleanEmail(body.email);
+  const topic = cleanText(body.topic, "Discussion topic", {
+    required: true,
+    max: 160,
+  });
+  const notes = cleanText(body.notes, "Notes", {
+    max: 500,
+  });
 
   const selectedSlot = await CallSlot.findOneAndUpdate(
     {
       _id: slot,
       isActive: true,
       isBooked: false,
+      ...getFutureSlotQuery(),
     },
     {
       isBooked: true,
@@ -39,6 +61,11 @@ const createAppointment = asyncHandler(async (req, res) => {
     if (!existingSlot) {
       res.status(404);
       throw new Error("Selected slot not found");
+    }
+
+    if (!isFutureSlot(existingSlot)) {
+      res.status(400);
+      throw new Error("This slot is in the past and can no longer be booked");
     }
 
     res.status(400);
@@ -172,7 +199,10 @@ const getAppointmentById = asyncHandler(async (req, res) => {
 // @route   PUT /api/appointments/:id
 // @access  Admin
 const updateAppointment = asyncHandler(async (req, res) => {
-  const appointment = await Appointment.findById(req.params.id);
+  const body = req.body || {};
+  const appointment = await Appointment.findById(req.params.id).select(
+    "+slotReleased"
+  );
 
   if (!appointment) {
     res.status(404);
@@ -193,19 +223,53 @@ const updateAppointment = asyncHandler(async (req, res) => {
   ];
 
   allowedFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      appointment[field] = req.body[field];
+    if (body[field] !== undefined) {
+      appointment[field] = body[field];
     }
   });
 
   const updatedAppointment = await appointment.save();
+
+  if (
+    updatedAppointment.status === "Cancelled" &&
+    updatedAppointment.slot &&
+    !updatedAppointment.slotReleased
+  ) {
+    const releaseClaim = await Appointment.findOneAndUpdate(
+      {
+        _id: updatedAppointment._id,
+        status: "Cancelled",
+        slotReleased: false,
+      },
+      {
+        slotReleased: true,
+      },
+      {
+        new: true,
+      }
+    ).select("+slotReleased");
+
+    if (releaseClaim) {
+      try {
+        await CallSlot.findByIdAndUpdate(updatedAppointment.slot, {
+          isBooked: false,
+        });
+      } catch (error) {
+        await Appointment.findByIdAndUpdate(updatedAppointment._id, {
+          slotReleased: false,
+        });
+
+        throw error;
+      }
+    }
+  }
 
   const populatedAppointment = await Appointment.findById(updatedAppointment._id)
     .populate("slot")
     .populate("client", "name email phone businessName");
 
   if (
-    req.body.status !== undefined &&
+    body.status !== undefined &&
     populatedAppointment.status !== previousStatus
   ) {
     sendAppointmentStatusToClient(populatedAppointment)
@@ -228,14 +292,20 @@ const updateAppointment = asyncHandler(async (req, res) => {
 // @route   DELETE /api/appointments/:id
 // @access  Admin
 const deleteAppointment = asyncHandler(async (req, res) => {
-  const appointment = await Appointment.findById(req.params.id);
+  const appointment = await Appointment.findById(req.params.id).select(
+    "+slotReleased"
+  );
 
   if (!appointment) {
     res.status(404);
     throw new Error("Appointment not found");
   }
 
-  if (appointment.slot) {
+  if (
+    appointment.slot &&
+    appointment.status !== "Cancelled" &&
+    !appointment.slotReleased
+  ) {
     await CallSlot.findByIdAndUpdate(appointment.slot, {
       isBooked: false,
     });

@@ -66,6 +66,22 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.index(
+  {
+    client: 1,
+    contract: 1,
+  },
+  {
+    unique: true,
+    name: "unique_client_contract_review",
+    partialFilterExpression: {
+      client: { $type: "objectId" },
+      contract: { $type: "objectId" },
+      isManual: false,
+    },
+  }
+);
+
 const Review = mongoose.model("Review", reviewSchema);
 
 module.exports = Review;

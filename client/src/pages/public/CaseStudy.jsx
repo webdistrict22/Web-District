@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../lib/axios";
 import Container from "../../components/common/Container";
@@ -17,7 +17,7 @@ function CaseStudy() {
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     setIsLoading(true);
 
     const fallbackProject = getFallbackProjectBySlug(slug);
@@ -32,23 +32,32 @@ function CaseStudy() {
       const { data } = await api.get(`/projects/public/${slug}`);
 
       setProject(data.project);
-    } catch (error) {
+    } catch {
       setProject(null);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchProject();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  const projectName = project?.title || project?.name || "Case Study";
+  useEffect(() => {
+    const timerId = window.setTimeout(fetchProject, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [fetchProject]);
+
+  const projectName = project?.title || project?.name;
+  const metaTitle = projectName ? `${projectName} Case Study` : "Case Study";
+  const metaDescription = projectName
+    ? `A closer look at ${projectName}, including website structure, features, and project direction.`
+    : "A closer look at a Web District website project.";
   const pageMeta = (
     <PageMeta
-      title={projectName}
-      description="A closer look at a Web District website project, features, structure, and results."
+      title={metaTitle}
+      description={metaDescription}
+      canonical={`/work/${slug}`}
+      image={project?.coverImage}
+      type="article"
+      robots={!isLoading && !project ? "noindex,nofollow" : "index,follow"}
     />
   );
 

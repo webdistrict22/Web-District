@@ -659,6 +659,13 @@ export const translations = {
           },
         ],
       },
+      whatsapp: {
+        title: "Prefer WhatsApp?",
+        description: "Message us directly.",
+        button: "Message us on WhatsApp",
+        message:
+          "Hi Web District, I’m interested in starting a website project.",
+      },
       requestForm: {
         eyebrow: "Website request",
         title: "Tell us what you need.",
@@ -1857,6 +1864,13 @@ export const translations = {
             description: "الأفضل إذا أردت مناقشة رؤية الموقع أولًا.",
           },
         ],
+      },
+      whatsapp: {
+        title: "تفضّل واتساب؟",
+        description: "راسلنا مباشرة.",
+        button: "راسلنا على واتساب",
+        message:
+          "مرحبًا Web District، أريد البدء في مشروع موقع إلكتروني.",
       },
       requestForm: {
         eyebrow: "طلب مشروع",

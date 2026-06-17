@@ -13,6 +13,7 @@
     "qa:workflow": "node scripts/qa/workflowSmoke.js",
     "qa:admin": "node scripts/qa/adminSmoke.js",
     "qa:write": "node scripts/qa/writeSmoke.js",
+    "qa:guest-claim": "node scripts/qa/guestClaimSmoke.js",
     "qa": "node scripts/qa/runAll.js"
   },
   "keywords": [],

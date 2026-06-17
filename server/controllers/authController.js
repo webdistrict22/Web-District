@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const asyncHandler = require("../middleware/asyncHandler");
+const { linkGuestRecords } = require("../utils/linkGuestRecords");
 const {
   createValidationError,
   cleanText,
@@ -24,6 +25,20 @@ const serializeAuthUser = (user) => ({
   role: user.role,
   isActive: user.isActive,
 });
+
+const claimGuestRecordsForUser = async (user) => {
+  try {
+    return await linkGuestRecords(user);
+  } catch (error) {
+    console.error("[GuestClaim] Failed to link guest records");
+
+    return {
+      linkedRequests: 0,
+      linkedAppointments: 0,
+      linkedContracts: 0,
+    };
+  }
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   const body = req.body || {};
@@ -58,6 +73,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   const token = generateToken(user);
+  const claimedRecords = await claimGuestRecordsForUser(user);
 
   notifyNewClientSignup(user)
     .then((result) => console.log("[Email] Signup notification:", result))
@@ -76,6 +92,7 @@ const registerUser = asyncHandler(async (req, res) => {
     message: "Account created successfully",
     token,
     user: serializeAuthUser(user),
+    claimedRecords,
   });
 });
 
@@ -97,12 +114,14 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const token = generateToken(user);
+  const claimedRecords = await claimGuestRecordsForUser(user);
 
   res.json({
     success: true,
     message: "Logged in successfully",
     token,
     user: serializeAuthUser(user),
+    claimedRecords,
   });
 });
 
@@ -110,6 +129,15 @@ const getMe = asyncHandler(async (req, res) => {
   res.json({
     success: true,
     user: serializeAuthUser(req.user),
+  });
+});
+
+const claimRecords = asyncHandler(async (req, res) => {
+  const claimedRecords = await claimGuestRecordsForUser(req.user);
+
+  res.json({
+    success: true,
+    claimedRecords,
   });
 });
 
@@ -215,6 +243,7 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  claimRecords,
   forgotPassword,
   resetPassword,
 };

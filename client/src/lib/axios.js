@@ -30,7 +30,7 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    if (status === 401) {
+    if (status === 401 && !error.config?.skipAuthInvalidation) {
       localStorage.removeItem("webDistrictToken");
       localStorage.removeItem("webDistrictUser");
       localStorage.removeItem("token");

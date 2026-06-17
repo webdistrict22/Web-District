@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import AuthContext from "./authContext.js";
 import api from "../lib/axios";
@@ -35,6 +35,25 @@ const readStoredUser = () => {
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const claimedSessionUsersRef = useRef(new Set());
+
+  const claimGuestRecordsOnce = useCallback(async (nextUser) => {
+    if (!nextUser || nextUser.role !== "client") return;
+
+    const claimKey = nextUser._id || nextUser.id || nextUser.email;
+
+    if (!claimKey || claimedSessionUsersRef.current.has(claimKey)) return;
+
+    claimedSessionUsersRef.current.add(claimKey);
+
+    try {
+      await api.post("/auth/claim-records", undefined, {
+        skipAuthInvalidation: true,
+      });
+    } catch {
+      // Best-effort only: a failed claim should not disrupt the session.
+    }
+  }, []);
 
   const saveAuth = useCallback((token, nextUser) => {
     localStorage.setItem(STORAGE_KEYS.token, token);
@@ -103,6 +122,10 @@ function AuthProvider({ children }) {
           throw new Error("Invalid session response");
         }
 
+        await claimGuestRecordsOnce(data.user);
+
+        if (!isActive) return;
+
         setUser(data.user);
         localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
       } catch (error) {
@@ -137,7 +160,7 @@ function AuthProvider({ children }) {
         handleAuthInvalidated
       );
     };
-  }, [clearAuth]);
+  }, [claimGuestRecordsOnce, clearAuth]);
 
   const login = useCallback(async (credentials) => {
     const { data } = await api.post("/auth/login", credentials);

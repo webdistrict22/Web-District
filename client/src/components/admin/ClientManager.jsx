@@ -23,6 +23,7 @@ import useInitialLoad from "../../hooks/useInitialLoad";
 function ClientManager() {
   const [clients, setClients] = useState([]);
   const [selectedClientData, setSelectedClientData] = useState(null);
+  const [expandedClientId, setExpandedClientId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState("");
@@ -94,6 +95,17 @@ function ClientManager() {
     setTimeout(() => {
       fetchClients();
     }, 0);
+  };
+
+  const handleToggleDetails = (client) => {
+    if (expandedClientId === client._id) {
+      setExpandedClientId("");
+      setSelectedClientData(null);
+      return;
+    }
+
+    setExpandedClientId(client._id);
+    fetchClientDetails(client._id);
   };
 
   const handleToggleStatus = async (client) => {
@@ -205,10 +217,13 @@ function ClientManager() {
               <ClientCard
                 key={client._id}
                 client={client}
-                onViewDetails={fetchClientDetails}
+                onToggleDetails={handleToggleDetails}
                 onToggleStatus={handleToggleStatus}
                 isUpdating={updatingId === client._id}
-                isSelected={selectedClientData?.client?._id === client._id}
+                isExpanded={expandedClientId === client._id}
+                isDetailsLoading={
+                  isDetailsLoading && expandedClientId === client._id
+                }
               />
             ))}
           </div>
@@ -232,15 +247,16 @@ function ClientManager() {
 
 function ClientCard({
   client,
-  onViewDetails,
+  onToggleDetails,
   onToggleStatus,
   isUpdating,
-  isSelected,
+  isExpanded,
+  isDetailsLoading,
 }) {
   return (
     <Card
       className={`p-6 transition ${
-        isSelected ? "border-[#C4A77D]/50" : "hover:border-[#C4A77D]/25"
+        isExpanded ? "border-[#C4A77D]/50" : "hover:border-[#C4A77D]/25"
       }`}
     >
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
@@ -271,8 +287,13 @@ function ClientCard({
         </div>
 
         <div className="flex shrink-0 gap-2">
-          <Button type="button" variant="secondary" onClick={() => onViewDetails(client._id)}>
-            Details
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => onToggleDetails(client)}
+            aria-expanded={isExpanded}
+          >
+            {isExpanded ? "Hide details" : "Show details"}
           </Button>
         </div>
       </div>
@@ -292,6 +313,44 @@ function ClientCard({
         <MiniStat label="Calls" value={client.counts?.appointments || 0} />
         <MiniStat label="Reviews" value={client.counts?.reviews || 0} />
       </div>
+
+      {isExpanded && (
+        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
+              Client details
+            </span>
+
+            {isDetailsLoading && (
+              <span className="rounded-full border border-[#C4A77D]/20 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
+                Loading linked activity...
+              </span>
+            )}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <DetailItem label="Name" value={client.name} />
+            <DetailItem
+              label="Business"
+              value={client.businessName || "Not added"}
+            />
+            <DetailItem label="Email" value={client.email} ltr />
+            <DetailItem
+              label="Phone"
+              value={client.phone || "Not added"}
+              ltr
+            />
+            <DetailItem label="Role" value={client.role || "client"} />
+            <DetailItem label="Joined" value={formatDate(client.createdAt)} />
+            <DetailItem label="Requests" value={client.counts?.requests ?? 0} />
+            <DetailItem
+              label="Calls"
+              value={client.counts?.appointments ?? 0}
+            />
+            <DetailItem label="Reviews" value={client.counts?.reviews ?? 0} />
+          </div>
+        </div>
+      )}
 
       <div className="mt-6">
         <Button
@@ -328,7 +387,7 @@ function ClientDetailsPanel({ data, isLoading }) {
         </h3>
 
         <p className="mt-3 leading-7 text-[#D9D4CC]">
-          Click Details on any client account to view linked requests,
+          Click Show details on any client account to view linked requests,
           appointments, and reviews.
         </p>
       </Card>
@@ -486,6 +545,25 @@ function InfoItem({ icon: Icon, label, value, ltr = false }) {
           {value || "—"}
         </p>
       </div>
+    </div>
+  );
+}
+
+function DetailItem({ label, value, ltr = false }) {
+  const displayValue =
+    value === null || value === undefined || value === "" ? "Not added" : value;
+
+  return (
+    <div className="min-w-0 max-w-full rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+      <p className="text-xs text-[#D9D4CC]">{label}</p>
+      <p
+        dir={ltr ? "ltr" : undefined}
+        className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+          ltr ? "wd-ltr" : ""
+        }`}
+      >
+        {displayValue}
+      </p>
     </div>
   );
 }

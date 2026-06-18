@@ -358,7 +358,7 @@ function ContractManager() {
 
       setContracts((prev) => prev.filter((item) => item._id !== contractId));
 
-      toast.success("Contract deleted successfully.");
+      toast.success("Contract deleted successfully.", { duration: 4200 });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete contract.");
     } finally {

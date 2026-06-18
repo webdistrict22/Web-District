@@ -178,7 +178,7 @@ function RequestManager() {
         prev.filter((request) => request._id !== requestId)
       );
 
-      toast.success("Request deleted successfully.");
+      toast.success("Request deleted successfully.", { duration: 4200 });
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to delete request."

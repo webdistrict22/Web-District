@@ -57,8 +57,6 @@ export const CONTRACT_STATUSES = [
 
 export const REVIEW_STATUSES = ["Pending", "Approved", "Rejected"];
 
-export const CONTACT_MESSAGE_STATUSES = ["New", "Read", "Replied", "Archived"];
-
 export const STORAGE_KEYS = {
   token: "webDistrictToken",
   user: "webDistrictUser",

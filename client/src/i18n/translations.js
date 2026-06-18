@@ -982,7 +982,7 @@ export const translations = {
         noteEyebrow: "Account note",
         noteTitle: "Keep your requests linked.",
         noteDescription:
-          "When you submit a website request or book a call while logged in, it appears in your client dashboard automatically. If you submit while logged out, it will still reach Web District, but it will not appear inside this account.",
+          "Requests or calls submitted before signing in can appear here after you sign up or log in with the same email address.",
         quickCards: [
           {
             title: "Requests",
@@ -2185,7 +2185,7 @@ export const translations = {
         noteEyebrow: "ملاحظة الحساب",
         noteTitle: "أرسل طلباتك وأنت مسجّل الدخول.",
         noteDescription:
-          "عند إرسال طلب مشروع أو حجز مكالمة أثناء تسجيل الدخول، يظهر ذلك تلقائيًا في لوحة الحساب. إذا أرسلت وأنت غير مسجل، سيصل الطلب إلى Web District، لكنه لن يظهر داخل هذا الحساب.",
+          "يمكن أن تظهر الطلبات أو المكالمات التي أرسلتها قبل تسجيل الدخول هنا بعد التسجيل أو تسجيل الدخول بنفس البريد الإلكتروني.",
         quickCards: [
           {
             title: "طلبات المشاريع",

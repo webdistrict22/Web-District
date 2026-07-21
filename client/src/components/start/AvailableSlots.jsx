@@ -110,6 +110,8 @@ function AvailableSlots({
     <Card
       className="p-4"
       role="group"
+      tabIndex="-1"
+      data-validation-name="slot"
       aria-labelledby={labelId}
       aria-describedby={errorId}
       aria-invalid={errorId ? true : undefined}
@@ -142,7 +144,7 @@ function AvailableSlots({
               aria-pressed={isActive}
               className={`rounded-2xl border px-3 py-3 text-left transition forced-color-adjust-none ${
                 isActive
-                  ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#F3EEE4]"
+                  ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#080808]"
                   : "border-white/10 bg-white/[0.035] text-[#D6CFC2] hover:border-[#C4A77D]/45 hover:text-[#F3EEE4]"
               }`}
             >
@@ -184,7 +186,7 @@ function AvailableSlots({
                   aria-pressed={isSelected}
                   className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition forced-color-adjust-none ${
                     isSelected
-                      ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#F3EEE4]"
+                      ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#080808]"
                       : "border-white/10 bg-white/[0.035] text-[#D6CFC2] hover:border-[#C4A77D]/45 hover:text-[#F3EEE4]"
                   }`}
                 >

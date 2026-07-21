@@ -17,6 +17,7 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
@@ -27,6 +28,7 @@ const appointmentStatuses = ["Pending", "Accepted", "Cancelled", "Rescheduled", 
 function AppointmentManager() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
 
@@ -40,6 +42,7 @@ function AppointmentManager() {
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const params = {};
 
@@ -68,9 +71,10 @@ function AppointmentManager() {
 
       setDrafts(nextDrafts);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to load call appointments."
-      );
+      const message =
+        error.response?.data?.message || "Failed to load call appointments.";
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -242,6 +246,8 @@ function AppointmentManager() {
 
       {isLoading ? (
         <Loader text="Loading call appointments..." />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchAppointments} />
       ) : appointments.length ? (
         <div className="grid gap-5">
           {appointments.map((appointment) => (

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
+import ErrorState from "../../components/common/ErrorState";
 import ContractList from "../../components/dashboard/ContractList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
@@ -11,19 +12,21 @@ import useInitialLoad from "../../hooks/useInitialLoad";
 function ClientContracts() {
   const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const { getErrorMessage, t } = useLanguage();
 
   const fetchContracts = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const { data } = await api.get("/contracts/my");
 
       setContracts(data.contracts || []);
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "client.contracts.loadError")
-      );
+      const message = getErrorMessage(error, "client.contracts.loadError");
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +58,8 @@ function ClientContracts() {
 
       {isLoading ? (
         <Loader text={t("client.contracts.loading")} />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : (
         <ContractList
           contracts={contracts}

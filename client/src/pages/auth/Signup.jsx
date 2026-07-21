@@ -9,6 +9,7 @@ import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 
 const initialForm = {
   name: "",
@@ -39,6 +40,7 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     const validationMessage = t("auth.signup.validation");
     const nextErrors = {
@@ -48,9 +50,12 @@ function Signup() {
     };
 
     if (nextErrors.name || nextErrors.email || nextErrors.password) {
+      const invalidFields = Object.keys(nextErrors).filter(
+        (field) => nextErrors[field]
+      );
       setFieldErrors(nextErrors);
       setFormError(validationMessage);
-      toast.error(validationMessage);
+      focusFirstInvalidControl(formElement, invalidFields);
       return;
     }
 
@@ -58,7 +63,7 @@ function Signup() {
       const message = t("auth.signup.passwordLength");
       setFieldErrors((prev) => ({ ...prev, password: message }));
       setFormError(message);
-      toast.error(message);
+      focusFirstInvalidControl(formElement, ["password"]);
       return;
     }
 
@@ -77,10 +82,10 @@ function Signup() {
   };
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Create Account"
-        description="Create a Web District client account to manage requests, appointments, and proposals."
+        title={t("auth.signup.eyebrow")}
+        description={t("auth.signup.description")}
         robots="noindex,nofollow"
       />
 
@@ -88,6 +93,7 @@ function Signup() {
         <Container>
         <div className="mx-auto max-w-2xl">
           <SectionHeader
+            as="h1"
             eyebrow={t("auth.signup.eyebrow")}
             title={t("auth.signup.title")}
             description={t("auth.signup.description")}
@@ -192,7 +198,7 @@ function Signup() {
         </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

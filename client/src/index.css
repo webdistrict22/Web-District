@@ -16,6 +16,9 @@
   --wd-text: #F3EEE4;
   --wd-muted: #D6CFC2;
   --wd-border: rgba(248,247,244,0.14);
+  --wd-control-border: rgba(243,238,228,0.24);
+  --wd-control-placeholder: #D6CFC2;
+  --wd-action-ink: #080808;
   --wd-border-light: rgba(32,32,32,0.14);
   --wd-accent: #C4A77D;
   --wd-accent-deep: #64131A;
@@ -128,6 +131,8 @@ select option {
 
 .font-display {
   font-family: "Sora", system-ui, sans-serif;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 html.lang-ar .font-display {
@@ -231,8 +236,8 @@ html.lang-ar .font-display {
 .wd-champagne-gradient {
   background-color: #A8874F !important;
   background-image: linear-gradient(135deg, #9F7B43 0%, #A8874F 100%) !important;
-  color: #F3EEE4 !important;
-  -webkit-text-fill-color: #F3EEE4;
+  color: var(--wd-action-ink) !important;
+  -webkit-text-fill-color: var(--wd-action-ink);
   forced-color-adjust: none;
   color-scheme: dark;
 }
@@ -240,8 +245,8 @@ html.lang-ar .font-display {
 .wd-champagne-gradient:hover {
   background-color: #B89458 !important;
   background-image: linear-gradient(135deg, #B89458 0%, var(--wd-champagne) 100%) !important;
-  color: #F3EEE4 !important;
-  -webkit-text-fill-color: #F3EEE4;
+  color: var(--wd-action-ink) !important;
+  -webkit-text-fill-color: var(--wd-action-ink);
 }
 
 @supports (color-scheme: only dark) {

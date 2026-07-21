@@ -37,7 +37,7 @@ function Success() {
   const Icon = content.icon;
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
         title={t("success.metaTitle")}
         description={t("success.metaDescription")}
@@ -94,11 +94,11 @@ function Success() {
 
                 <div className="mt-7 grid gap-3 sm:grid-cols-2">
                   {isAuthenticated ? (
-                    <Button to={content.accountPath} className="text-[#F8F7F4]">
+                    <Button to={content.accountPath}>
                       {content.accountLabel}
                     </Button>
                   ) : (
-                    <Button to="/start" className="text-[#F8F7F4]">
+                    <Button to="/start">
                       {t("success.startAnother")}
                     </Button>
                   )}
@@ -113,7 +113,7 @@ function Success() {
           </Card>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

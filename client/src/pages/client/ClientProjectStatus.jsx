@@ -5,6 +5,7 @@ import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import EmptyState from "../../components/common/EmptyState";
+import ErrorState from "../../components/common/ErrorState";
 import StatusBadge from "../../components/common/StatusBadge";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
@@ -21,19 +22,21 @@ const statusSteps = [
 function ClientProjectStatus() {
   const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const { getErrorMessage, t } = useLanguage();
 
   const fetchContracts = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const { data } = await api.get("/contracts/my");
 
       setContracts(data.contracts || []);
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "client.projectStatus.loadError")
-      );
+      const message = getErrorMessage(error, "client.projectStatus.loadError");
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -67,6 +70,8 @@ function ClientProjectStatus() {
 
       {isLoading ? (
         <Loader text={t("client.projectStatus.loading")} />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : contracts.length ? (
         <div className="grid gap-5">
           {contracts.map((contract) => (

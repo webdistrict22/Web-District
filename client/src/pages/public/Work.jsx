@@ -33,16 +33,17 @@ function Work() {
   );
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Work"
-        description="Explore selected Web District projects, website case studies, and digital work."
+        title={t("work.hero.eyebrow")}
+        description={t("work.hero.description")}
         canonical="/work"
       />
 
       <section className="wd-section-black pt-36 pb-4 md:pt-40 md:pb-4">
         <Container>
           <SectionHeader
+            as="h1"
             eyebrow={t("work.hero.eyebrow")}
             title={t("work.hero.title")}
             description={t("work.hero.description")}
@@ -65,7 +66,7 @@ function Work() {
       </section>
 
       <ReviewsPreview />
-    </main>
+    </>
   );
 }
 

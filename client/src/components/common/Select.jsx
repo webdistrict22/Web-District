@@ -36,7 +36,7 @@ function Select({
         aria-required={required || undefined}
         aria-invalid={error ? true : ariaInvalid}
         aria-describedby={describedBy || undefined}
-        className={`w-full rounded-2xl border border-[rgba(243,238,228,0.14)] bg-[#1B1B19] px-4 py-3 text-[#F3EEE4] outline-none transition focus:border-[#C4A77D] ${className}`}
+        className={`w-full rounded-2xl border border-[rgba(243,238,228,0.24)] bg-[#1B1B19] px-4 py-3 text-[#F3EEE4] outline-none transition focus:border-[#C4A77D] ${className}`}
         style={{ colorScheme: "dark", ...style }}
         {...props}
       >

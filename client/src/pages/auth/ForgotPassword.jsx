@@ -9,6 +9,7 @@ import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import useLanguage from "../../hooks/useLanguage";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -20,12 +21,13 @@ function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     if (!email) {
       const validationMessage = t("auth.forgot.validation");
       setEmailError(validationMessage);
       setFormError(validationMessage);
-      toast.error(validationMessage);
+      focusFirstInvalidControl(formElement, ["email"]);
       return;
     }
 
@@ -49,10 +51,10 @@ function ForgotPassword() {
   };
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Forgot Password"
-        description="Request a secure password reset link for your Web District account."
+        title={t("auth.forgot.eyebrow")}
+        description={t("auth.forgot.description")}
         robots="noindex,nofollow"
       />
 
@@ -60,6 +62,7 @@ function ForgotPassword() {
         <Container>
           <div className="mx-auto max-w-xl">
             <SectionHeader
+              as="h1"
               eyebrow={t("auth.forgot.eyebrow")}
               title={t("auth.forgot.title")}
               description={t("auth.forgot.description")}
@@ -129,7 +132,7 @@ function ForgotPassword() {
           </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

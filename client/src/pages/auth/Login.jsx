@@ -9,6 +9,7 @@ import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 
 const initialForm = {
   email: "",
@@ -37,6 +38,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     const validationMessage = t("auth.login.validation");
     const nextErrors = {
@@ -45,9 +47,12 @@ function Login() {
     };
 
     if (nextErrors.email || nextErrors.password) {
+      const invalidFields = Object.keys(nextErrors).filter(
+        (field) => nextErrors[field]
+      );
       setFieldErrors(nextErrors);
       setFormError(validationMessage);
-      toast.error(validationMessage);
+      focusFirstInvalidControl(formElement, invalidFields);
       return;
     }
 
@@ -76,10 +81,10 @@ function Login() {
   };
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Login"
-        description="Login to your Web District client account."
+        title={t("auth.login.eyebrow")}
+        description={t("auth.login.description")}
         robots="noindex,nofollow"
       />
 
@@ -87,6 +92,7 @@ function Login() {
         <Container>
         <div className="mx-auto max-w-xl">
           <SectionHeader
+            as="h1"
             eyebrow={t("auth.login.eyebrow")}
             title={t("auth.login.title")}
             description={t("auth.login.description")}
@@ -167,7 +173,7 @@ function Login() {
         </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

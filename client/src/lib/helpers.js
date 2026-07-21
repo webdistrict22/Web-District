@@ -30,12 +30,12 @@ export const formatDateTime = (date, locale = "en") => {
   }
 };
 
-export const formatMoney = (value, currency = "EGP") => {
+export const formatMoney = (value, currency = "EGP", locale = "en") => {
   const number = Number(value);
 
   if (!number) return "Not set";
 
-  return `${number.toLocaleString()} ${currency}`;
+  return `${new Intl.NumberFormat(resolveDateLocale(locale)).format(number)} ${currency}`;
 };
 
 export const getWhatsappLink = (phone, message = "") => {

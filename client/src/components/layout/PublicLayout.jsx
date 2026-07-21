@@ -6,9 +6,9 @@ function PublicLayout() {
   return (
     <div className="min-h-screen bg-[#080808] text-[#F8F7F4]">
       <Navbar />
-      <div id="main-content" tabIndex="-1" className="scroll-mt-28">
+      <main id="main-content" tabIndex="-1" className="scroll-mt-28">
         <Outlet />
-      </div>
+      </main>
       <Footer />
     </div>
   );

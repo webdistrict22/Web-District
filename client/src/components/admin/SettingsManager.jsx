@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import Card from "../common/Card";
 import SlotManager from "./SlotManager";
 import FAQManager from "./FAQManager";
@@ -10,37 +10,43 @@ const controlTabs = [
     id: "slots",
     label: "Slots",
     description: "Manage call availability.",
+    path: "/admin/control/slots",
     Component: SlotManager,
   },
   {
     id: "faq",
     label: "FAQ",
     description: "Manage public questions.",
+    path: "/admin/control/faq",
     Component: FAQManager,
   },
   {
     id: "packages",
     label: "Packages",
     description: "Manage service packages.",
+    path: "/admin/control/packages",
     Component: PackageManager,
   },
   {
     id: "projects",
     label: "Projects",
     description: "Manage selected work.",
+    path: "/admin/control/projects",
     Component: ProjectManager,
   },
 ];
 
 function ControlManager({ initialTab = "slots" }) {
-  const [activeTab, setActiveTab] = useState(() =>
-    controlTabs.some((tab) => tab.id === initialTab)
-      ? initialTab
-      : controlTabs[0].id
-  );
+  const location = useLocation();
+  const routeTab =
+    controlTabs
+      .filter((tab) => location.pathname.startsWith(tab.path))
+      .sort((a, b) => b.path.length - a.path.length)[0] ||
+    controlTabs.find((tab) => tab.id === initialTab) ||
+    controlTabs[0];
 
-  const activeControl =
-    controlTabs.find((tab) => tab.id === activeTab) || controlTabs[0];
+  const activeTab = routeTab.id;
+  const activeControl = routeTab;
   const ActiveComponent = activeControl.Component;
 
   return (
@@ -67,11 +73,10 @@ function ControlManager({ initialTab = "slots" }) {
           aria-label="Control sections"
         >
           {controlTabs.map((tab) => (
-            <button
+            <NavLink
               key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              aria-pressed={activeTab === tab.id}
+              to={tab.path}
+              aria-current={activeTab === tab.id ? "page" : undefined}
               className={`rounded-2xl border p-4 text-left transition ${
                 activeTab === tab.id
                   ? "border-[#C4A77D]/45 bg-[#C4A77D]/12 text-[#F8F7F4]"
@@ -82,7 +87,7 @@ function ControlManager({ initialTab = "slots" }) {
               <span className="mt-1 block text-xs text-[#D9D4CC]">
                 {tab.description}
               </span>
-            </button>
+            </NavLink>
           ))}
         </div>
       </Card>

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
+import ErrorState from "../../components/common/ErrorState";
 import AppointmentList from "../../components/dashboard/AppointmentList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
@@ -11,19 +12,21 @@ import useInitialLoad from "../../hooks/useInitialLoad";
 function ClientAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const { getErrorMessage, t } = useLanguage();
 
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const { data } = await api.get("/appointments/my");
 
       setAppointments(data.appointments || []);
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "client.appointments.loadError")
-      );
+      const message = getErrorMessage(error, "client.appointments.loadError");
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +58,8 @@ function ClientAppointments() {
 
       {isLoading ? (
         <Loader text={t("client.appointments.loading")} />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchAppointments} />
       ) : (
         <AppointmentList appointments={appointments} />
       )}

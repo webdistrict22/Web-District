@@ -63,7 +63,7 @@ function Navbar() {
           <BrandLogo />
         </Link>
 
-        <div className="hidden min-w-0 items-center gap-7 xl:flex">
+        <div className="hidden min-w-0 items-center gap-7 min-[1366px]:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
@@ -89,7 +89,7 @@ function Navbar() {
           ))}
         </div>
 
-        <div className="hidden shrink-0 items-center gap-3 xl:flex">
+        <div className="hidden shrink-0 items-center gap-3 min-[1366px]:flex">
           <button
             type="button"
             onClick={toggleLanguage}
@@ -133,7 +133,7 @@ function Navbar() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 xl:hidden">
+        <div className="flex items-center gap-2 min-[1366px]:hidden">
           <button
             type="button"
             onClick={toggleLanguage}

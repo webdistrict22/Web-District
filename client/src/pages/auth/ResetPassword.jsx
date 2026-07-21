@@ -11,6 +11,7 @@ import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 
 const initialForm = {
   password: "",
@@ -39,6 +40,7 @@ function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     if (!form.password || !form.confirmPassword) {
       const message = t("auth.reset.validation");
@@ -47,7 +49,10 @@ function ResetPassword() {
         confirmPassword: form.confirmPassword ? "" : message,
       });
       setFormError(message);
-      toast.error(message);
+      focusFirstInvalidControl(
+        formElement,
+        ["password", "confirmPassword"].filter((field) => !form[field])
+      );
       return;
     }
 
@@ -55,7 +60,7 @@ function ResetPassword() {
       const message = t("auth.reset.noMatch");
       setFieldErrors({ confirmPassword: message });
       setFormError(message);
-      toast.error(message);
+      focusFirstInvalidControl(formElement, ["confirmPassword"]);
       return;
     }
 
@@ -63,7 +68,7 @@ function ResetPassword() {
       const message = t("auth.reset.passwordLength");
       setFieldErrors({ password: message });
       setFormError(message);
-      toast.error(message);
+      focusFirstInvalidControl(formElement, ["password"]);
       return;
     }
 
@@ -92,10 +97,10 @@ function ResetPassword() {
   };
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Reset Password"
-        description="Set a new password for your Web District account."
+        title={t("auth.reset.eyebrow")}
+        description={t("auth.reset.description")}
         robots="noindex,nofollow"
       />
 
@@ -103,6 +108,7 @@ function ResetPassword() {
         <Container>
           <div className="mx-auto max-w-xl">
             <SectionHeader
+              as="h1"
               eyebrow={t("auth.reset.eyebrow")}
               title={t("auth.reset.title")}
               description={t("auth.reset.description")}
@@ -175,7 +181,7 @@ function ResetPassword() {
           </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

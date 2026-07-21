@@ -19,8 +19,15 @@ function canUseSessionStorage() {
   }
 }
 
+function hasReducedMotionPreference() {
+  if (typeof window === "undefined") return false;
+
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+}
+
 function shouldShowWelcome() {
   if (typeof window === "undefined") return false;
+  if (hasReducedMotionPreference()) return false;
 
   if (!canUseSessionStorage()) {
     if (runtimeWelcomeSeen) return false;
@@ -48,8 +55,7 @@ function WelcomeIntro() {
   const { t } = useLanguage();
 
   const prefersReducedMotion = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    return hasReducedMotionPreference();
   }, []);
 
   useEffect(() => {
@@ -57,17 +63,10 @@ function WelcomeIntro() {
 
     if (!isVisible || !appContent) return undefined;
 
-    const previousOverflow = document.body.style.overflow;
+    appContent.removeAttribute("inert");
+    appContent.removeAttribute("aria-hidden");
 
-    appContent.setAttribute("inert", "");
-    appContent.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      appContent.removeAttribute("inert");
-      appContent.removeAttribute("aria-hidden");
-      document.body.style.overflow = previousOverflow;
-    };
+    return undefined;
   }, [isVisible]);
 
   useEffect(() => {
@@ -131,8 +130,8 @@ function WelcomeIntro() {
   useEffect(() => {
     if (!isVisible || brandMode === "pending") return undefined;
 
-    const leaveDelay = prefersReducedMotion ? 300 : 1120;
-    const unmountDelay = prefersReducedMotion ? 420 : 1380;
+    const leaveDelay = prefersReducedMotion ? 0 : 220;
+    const unmountDelay = prefersReducedMotion ? 0 : 420;
 
     const leaveTimer = window.setTimeout(() => {
       markWelcomeSeen();
@@ -163,6 +162,7 @@ function WelcomeIntro() {
             inset: 0;
             z-index: 2147483647;
             display: flex;
+            pointer-events: none;
             align-items: center;
             justify-content: center;
             overflow: hidden;

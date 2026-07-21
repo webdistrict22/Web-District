@@ -2,6 +2,7 @@ function SectionHeader({
   eyebrow,
   title,
   description,
+  as: Heading = "h2",
   center = false,
   className = "",
 }) {
@@ -17,9 +18,9 @@ function SectionHeader({
         </div>
       )}
 
-      <h2 className="font-display text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4] md:text-5xl">
+      <Heading className="font-display text-2xl font-bold tracking-[-0.05em] text-[#F8F7F4] sm:text-3xl md:text-5xl">
         {title}
-      </h2>
+      </Heading>
 
       {description && (
         <p className="mt-5 text-base leading-8 text-[#D9D4CC] md:text-lg">

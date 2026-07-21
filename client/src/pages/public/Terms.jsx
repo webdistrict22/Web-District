@@ -9,7 +9,7 @@ function Terms() {
   const termsSections = t("legal.terms.sections", []);
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
         title={t("legal.terms.metaTitle")}
         description={t("legal.terms.metaDescription")}
@@ -18,13 +18,13 @@ function Terms() {
 
       <section className="wd-section-black pt-32 pb-8 md:pb-10">
         <Container>
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_0.55fr] lg:items-end">
+          <div className="max-w-3xl">
             <SectionHeader
+              as="h1"
               eyebrow={t("legal.terms.eyebrow")}
               title={t("legal.terms.title")}
               description={t("legal.terms.description")}
             />
-
           </div>
         </Container>
       </section>
@@ -82,7 +82,7 @@ function Terms() {
           </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

@@ -35,7 +35,7 @@ function Textarea({
         aria-required={required || undefined}
         aria-invalid={error ? true : ariaInvalid}
         aria-describedby={describedBy || undefined}
-        className={`min-h-32 w-full resize-y rounded-2xl border border-[rgba(243,238,228,0.14)] bg-[#1B1B19] px-4 py-3 text-[#F3EEE4] outline-none transition placeholder:text-[rgba(214,207,194,0.55)] focus:border-[#C4A77D] ${className}`}
+        className={`min-h-32 w-full resize-y rounded-2xl border border-[rgba(243,238,228,0.24)] bg-[#1B1B19] px-4 py-3 text-[#F3EEE4] outline-none transition placeholder:text-[#D6CFC2] focus:border-[#C4A77D] ${className}`}
         style={{ colorScheme: "dark", ...style }}
         {...props}
       />

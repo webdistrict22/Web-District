@@ -69,7 +69,7 @@ function HeroSection() {
         <div className="relative z-10 flex min-h-[440px] items-center py-8 md:min-h-[500px]">
           <div className="max-w-4xl">
             <h1
-              className="font-display text-5xl font-extrabold leading-[0.98] tracking-[-0.07em] text-[#F3EEE4] md:text-7xl"
+              className="font-display text-4xl font-extrabold leading-[0.98] tracking-[-0.07em] text-[#F3EEE4] md:text-7xl"
               style={{
                 color: "#F3EEE4",
                 WebkitTextFillColor: "#F3EEE4",

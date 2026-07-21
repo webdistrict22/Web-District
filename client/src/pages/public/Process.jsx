@@ -14,10 +14,10 @@ function Process() {
   const processQuestions = t("process.questions", []);
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Process"
-        description="See how Web District plans, builds, and launches professional websites."
+        title={t("process.hero.eyebrow")}
+        description={t("process.hero.description")}
         canonical="/process"
       />
 
@@ -25,6 +25,7 @@ function Process() {
         <Container>
           <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <SectionHeader
+              as="h1"
               eyebrow={t("process.hero.eyebrow")}
               title={t("process.hero.title")}
               description={t("process.hero.description")}
@@ -129,7 +130,7 @@ function Process() {
           </section>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

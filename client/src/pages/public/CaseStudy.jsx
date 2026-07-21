@@ -47,10 +47,17 @@ function CaseStudy() {
   }, [fetchProject]);
 
   const projectName = project?.title || project?.name;
-  const metaTitle = projectName ? `${projectName} Case Study` : "Case Study";
+  const rawOverview = project
+    ? project._id
+      ? project.fullDescription || project.shortDescription
+      : project.overview
+    : "";
+  const metaTitle = projectName
+    ? `${projectName} ${t("work.caseStudy.eyebrow")}`
+    : t("work.caseStudy.eyebrow");
   const metaDescription = projectName
-    ? `A closer look at ${projectName}, including website structure, features, and project direction.`
-    : "A closer look at a Web District website project.";
+    ? t(`work.projects.${project.slug}.overview`, rawOverview)
+    : t("work.caseStudy.notFoundDescription");
   const pageMeta = (
     <PageMeta
       title={metaTitle}
@@ -66,11 +73,11 @@ function CaseStudy() {
     return (
       <>
         {pageMeta}
-        <main className="wd-section-black pb-20 pt-32">
+        <section className="wd-section-black pb-20 pt-32">
           <Container>
             <Loader text={t("work.caseStudy.loading")} />
           </Container>
-        </main>
+        </section>
       </>
     );
   }
@@ -79,7 +86,7 @@ function CaseStudy() {
     return (
       <>
         {pageMeta}
-        <main className="wd-section-black pb-20 pt-32">
+        <section className="wd-section-black pb-20 pt-32">
           <Container>
             <div className="wd-card-on-black rounded-[2rem] p-8 md:p-12">
               <p className="text-sm font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
@@ -97,7 +104,7 @@ function CaseStudy() {
               </div>
             </div>
           </Container>
-        </main>
+        </section>
       </>
     );
   }
@@ -105,11 +112,11 @@ function CaseStudy() {
   return (
     <>
       {pageMeta}
-      <main className="wd-section-black pb-12 pt-32">
+      <section className="wd-section-black pb-12 pt-32">
         <Container>
           <CaseStudySection project={project} />
         </Container>
-      </main>
+      </section>
 
       <FinalCTA liveUrl={project.liveUrl} />
     </>

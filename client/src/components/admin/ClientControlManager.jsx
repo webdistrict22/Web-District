@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import Card from "../common/Card";
 import ClientManager from "./ClientManager";
 import ReviewManager from "./ReviewManager";
@@ -8,25 +8,33 @@ const clientTabs = [
     id: "accounts",
     label: "Accounts",
     description: "Client profiles and activity.",
+    path: "/admin/clients",
     Component: ClientManager,
   },
   {
     id: "reviews",
     label: "Reviews",
     description: "Approve and add testimonials.",
+    path: "/admin/clients/reviews",
     Component: ReviewManager,
   },
 ];
 
 function ClientControlManager({ initialTab = "accounts" }) {
-  const [activeTab, setActiveTab] = useState(() =>
-    clientTabs.some((tab) => tab.id === initialTab)
-      ? initialTab
-      : clientTabs[0].id
-  );
+  const location = useLocation();
+  const routeTab =
+    clientTabs
+      .filter((tab) =>
+        tab.id === "accounts"
+          ? location.pathname === tab.path
+          : location.pathname.startsWith(tab.path)
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0] ||
+    clientTabs.find((tab) => tab.id === initialTab) ||
+    clientTabs[0];
 
-  const activeClientTab =
-    clientTabs.find((tab) => tab.id === activeTab) || clientTabs[0];
+  const activeTab = routeTab.id;
+  const activeClientTab = routeTab;
   const ActiveComponent = activeClientTab.Component;
 
   return (
@@ -52,11 +60,11 @@ function ClientControlManager({ initialTab = "accounts" }) {
           aria-label="Client sections"
         >
           {clientTabs.map((tab) => (
-            <button
+            <NavLink
               key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              aria-pressed={activeTab === tab.id}
+              to={tab.path}
+              end={tab.id === "accounts"}
+              aria-current={activeTab === tab.id ? "page" : undefined}
               className={`rounded-2xl border p-4 text-left transition ${
                 activeTab === tab.id
                   ? "border-[#C4A77D]/45 bg-[#C4A77D]/12 text-[#F8F7F4]"
@@ -67,7 +75,7 @@ function ClientControlManager({ initialTab = "accounts" }) {
               <span className="mt-1 block text-xs text-[#D9D4CC]">
                 {tab.description}
               </span>
-            </button>
+            </NavLink>
           ))}
         </div>
       </Card>

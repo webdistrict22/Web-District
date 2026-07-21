@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
+import ErrorState from "../../components/common/ErrorState";
 import RequestList from "../../components/dashboard/RequestList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
@@ -11,19 +12,21 @@ import useInitialLoad from "../../hooks/useInitialLoad";
 function ClientRequests() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const { getErrorMessage, t } = useLanguage();
 
   const fetchRequests = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const { data } = await api.get("/requests/my");
 
       setRequests(data.requests || []);
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "client.requests.loadError")
-      );
+      const message = getErrorMessage(error, "client.requests.loadError");
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +58,8 @@ function ClientRequests() {
 
       {isLoading ? (
         <Loader text={t("client.requests.loading")} />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchRequests} />
       ) : (
         <RequestList requests={requests} />
       )}

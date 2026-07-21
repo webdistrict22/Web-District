@@ -29,6 +29,14 @@ function DashboardLayout() {
   const { user, logout } = useAuth();
   const { t, toggleLanguage } = useLanguage();
   const location = useLocation();
+  const activeMeta =
+    clientLinks
+      .filter((link) =>
+        link.path === "/account"
+          ? location.pathname === link.path
+          : location.pathname.startsWith(link.path)
+      )
+      .sort((a, b) => b.path.length - a.path.length)[0] || clientLinks[0];
 
   return (
     <main
@@ -36,7 +44,11 @@ function DashboardLayout() {
       tabIndex="-1"
       className="min-h-screen scroll-mt-28 bg-[#080808] pb-20 pt-28"
     >
-      <PageMeta title="Client Account" robots="noindex,nofollow" />
+      <PageMeta
+        title={t(`client.layout.links.${activeMeta.key}`, activeMeta.label)}
+        description={t("client.dashboard.description")}
+        robots="noindex,nofollow"
+      />
 
       <Container>
         <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">

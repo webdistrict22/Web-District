@@ -49,7 +49,7 @@ function StartOptions({ activeOption, setActiveOption, cardClassName = "", class
         {t("start.options.eyebrow")}
       </p>
 
-      <h2 className="font-display mt-4 text-4xl font-bold leading-[0.95] tracking-[-0.06em] text-[#F8F7F4]">
+      <h2 className="font-display mt-4 text-3xl font-bold leading-[0.95] tracking-[-0.06em] text-[#F8F7F4] sm:text-4xl">
         {t("start.options.title")}
       </h2>
 

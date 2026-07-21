@@ -10,18 +10,18 @@ function Contact() {
   const { effectiveLanguage, t } = useLanguage();
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Contact"
-        description="Contact Web District through WhatsApp, Instagram, email, or phone."
+        title={t("contact.hero.eyebrow")}
+        description={t("contact.hero.description")}
         canonical="/contact"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
+        <div className="max-w-3xl">
             <SectionHeader
+              as="h1"
               eyebrow={t("contact.hero.eyebrow")}
               title={t("contact.hero.title")}
               description={t("contact.hero.description")}
@@ -44,8 +44,6 @@ function Contact() {
                 {t("common.buttons.answerQuestions")}
               </Button>
             </div>
-          </div>
-
         </div>
         </Container>
       </section>
@@ -55,7 +53,7 @@ function Contact() {
           <ContactCards cardClassName="wd-card-on-black" />
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

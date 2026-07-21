@@ -16,16 +16,17 @@ function Start() {
   const { t } = useLanguage();
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
-        title="Start Your Project"
-        description="Tell Web District about your website project and start with a clear direction."
+        title={t("start.hero.eyebrow")}
+        description={t("start.hero.description")}
         canonical="/start"
       />
 
       <section className="wd-section-black pt-32 pb-6 md:pb-8">
         <Container>
         <SectionHeader
+          as="h1"
           eyebrow={t("start.hero.eyebrow")}
           title={t("start.hero.title")}
           description={t("start.hero.description")}
@@ -71,7 +72,7 @@ function Start() {
         </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

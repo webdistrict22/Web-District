@@ -17,6 +17,7 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
@@ -43,6 +44,7 @@ const websiteTypes = [
 function RequestManager() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
 
@@ -57,6 +59,7 @@ function RequestManager() {
   const fetchRequests = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const params = {};
 
@@ -88,9 +91,10 @@ function RequestManager() {
 
       setDrafts(nextDrafts);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to load website requests."
-      );
+      const message =
+        error.response?.data?.message || "Failed to load website requests.";
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -276,6 +280,8 @@ function RequestManager() {
 
       {isLoading ? (
         <Loader text="Loading website requests..." />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchRequests} />
       ) : requests.length ? (
         <div className="grid gap-5">
           {requests.map((request) => (

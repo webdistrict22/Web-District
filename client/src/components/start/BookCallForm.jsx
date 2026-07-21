@@ -10,6 +10,7 @@ import Textarea from "../common/Textarea";
 import AvailableSlots from "./AvailableSlots";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 import {
   trackCustomEvent,
   trackLead,
@@ -70,6 +71,7 @@ function BookCallForm({ className = "" }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     const detailsMessage = t("start.callForm.validationDetails");
     const nextErrors = {
@@ -88,9 +90,12 @@ function BookCallForm({ className = "" }) {
       nextErrors.topic
     ) {
       const message = nextErrors.slot || detailsMessage;
+      const invalidFields = Object.keys(nextErrors).filter(
+        (field) => nextErrors[field]
+      );
       setFieldErrors(nextErrors);
       setFormError(message);
-      toast.error(message);
+      focusFirstInvalidControl(formElement, invalidFields);
       return;
     }
 

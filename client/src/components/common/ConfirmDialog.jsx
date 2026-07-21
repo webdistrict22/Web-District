@@ -136,7 +136,7 @@ function ConfirmDialog({
           <button
             type="button"
             onClick={() => onClose(true)}
-            className="inline-flex items-center justify-center rounded-2xl border border-[#A8874F]/45 bg-[#A8874F] px-4 py-3 text-sm font-semibold text-[#F8F7F4] shadow-[0_14px_34px_rgba(168,135,79,0.20)] transition hover:border-[#C4A77D]/65 hover:bg-[#B89458]"
+            className="inline-flex items-center justify-center rounded-2xl border border-[#A8874F]/45 bg-[#A8874F] px-4 py-3 text-sm font-semibold text-[#080808] shadow-[0_14px_34px_rgba(168,135,79,0.20)] transition hover:border-[#C4A77D]/65 hover:bg-[#B89458]"
           >
             {confirmText}
           </button>

@@ -6,6 +6,7 @@ import Input from "../../components/common/Input";
 import Select from "../../components/common/Select";
 import Textarea from "../../components/common/Textarea";
 import Loader from "../../components/common/Loader";
+import ErrorState from "../../components/common/ErrorState";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
@@ -40,18 +41,20 @@ function ClientReviews() {
   const [formError, setFormError] = useState("");
   const [contracts, setContracts] = useState([]);
   const [isCheckingContracts, setIsCheckingContracts] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const fetchContracts = async () => {
     try {
       setIsCheckingContracts(true);
+      setLoadError("");
 
       const { data } = await api.get("/contracts/my");
 
       setContracts(data.contracts || []);
     } catch (error) {
-      toast.error(
-        getErrorMessage(error, "client.reviews.loadError")
-      );
+      const message = getErrorMessage(error, "client.reviews.loadError");
+      setLoadError(message);
+      toast.error(message);
       setContracts([]);
     } finally {
       setIsCheckingContracts(false);
@@ -131,6 +134,8 @@ function ClientReviews() {
 
       {isCheckingContracts ? (
         <Loader text={t("client.reviews.checking")} />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : !contracts.length ? (
         <Card className="p-6 md:p-8">
           <h3 className="font-display text-2xl font-bold tracking-[-0.04em]">

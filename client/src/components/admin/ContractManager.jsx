@@ -10,6 +10,7 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import ContractList from "../dashboard/ContractList";
 import { confirmAction } from "../../lib/alerts";
@@ -70,6 +71,7 @@ function ContractManager() {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
 
@@ -94,6 +96,7 @@ function ContractManager() {
   const fetchContracts = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const params = {};
 
@@ -104,7 +107,9 @@ function ContractManager() {
 
       setContracts(data.contracts || []);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load contracts.");
+      const message = error.response?.data?.message || "Failed to load contracts.";
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -673,6 +678,8 @@ function ContractManager() {
 
       {isLoading ? (
         <Loader text="Loading contracts..." />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : contracts.length ? (
         <div className="grid gap-5">
           {contracts.map((contract) => (

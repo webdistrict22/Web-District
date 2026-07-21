@@ -9,6 +9,7 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import useLanguage from "../../hooks/useLanguage";
+import { focusFirstInvalidControl } from "../../lib/a11y";
 import {
   trackCustomEvent,
   trackLead,
@@ -61,6 +62,7 @@ function WebsiteRequestForm({ className = "" }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formElement = e.currentTarget;
 
     const validationMessage = t("start.requestForm.validation");
     const nextErrors = {
@@ -76,9 +78,12 @@ function WebsiteRequestForm({ className = "" }) {
       nextErrors.email ||
       nextErrors.projectDetails
     ) {
+      const invalidFields = Object.keys(nextErrors).filter(
+        (field) => nextErrors[field]
+      );
       setFieldErrors(nextErrors);
       setFormError(validationMessage);
-      toast.error(validationMessage);
+      focusFirstInvalidControl(formElement, invalidFields);
       return;
     }
 
@@ -284,7 +289,7 @@ function WebsiteRequestForm({ className = "" }) {
         />
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button type="submit" disabled={isLoading} className="text-[#F8F7F4]">
+          <Button type="submit" disabled={isLoading}>
             {isLoading
               ? t("start.requestForm.submitting")
               : t("start.requestForm.submit")}

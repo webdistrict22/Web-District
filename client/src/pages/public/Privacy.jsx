@@ -9,7 +9,7 @@ function Privacy() {
   const privacySections = t("legal.privacy.sections", []);
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
         title={t("legal.privacy.metaTitle")}
         description={t("legal.privacy.metaDescription")}
@@ -18,13 +18,13 @@ function Privacy() {
 
       <section className="wd-section-black pt-32 pb-8 md:pb-10">
         <Container>
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_0.55fr] lg:items-end">
+          <div className="max-w-3xl">
             <SectionHeader
+              as="h1"
               eyebrow={t("legal.privacy.eyebrow")}
               title={t("legal.privacy.title")}
               description={t("legal.privacy.description")}
             />
-
           </div>
         </Container>
       </section>
@@ -79,7 +79,7 @@ function Privacy() {
           </div>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

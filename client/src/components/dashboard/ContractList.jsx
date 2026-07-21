@@ -14,7 +14,7 @@ import Button from "../common/Button";
 import StatusBadge from "../common/StatusBadge";
 import EmptyState from "../common/EmptyState";
 import Textarea from "../common/Textarea";
-import { formatDate } from "../../lib/helpers";
+import { formatDate, formatMoney } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -155,7 +155,7 @@ function ContractList({
                 label={t("common.labels.totalPrice")}
                 value={
                   contract.totalPrice
-                    ? `${contract.totalPrice.toLocaleString()} EGP`
+                    ? formatMoney(contract.totalPrice, "EGP", effectiveLanguage)
                     : t("common.labels.notSet")
                 }
               />
@@ -165,7 +165,7 @@ function ContractList({
                 label={`${t("common.labels.deposit")} (${contract.depositPercent || 70}%)`}
                 value={
                   contract.depositAmount
-                    ? `${contract.depositAmount.toLocaleString()} EGP`
+                    ? formatMoney(contract.depositAmount, "EGP", effectiveLanguage)
                     : t("common.labels.notSet")
                 }
               />
@@ -175,7 +175,7 @@ function ContractList({
                 label={t("common.labels.remaining")}
                 value={
                   contract.remainingAmount
-                    ? `${contract.remainingAmount.toLocaleString()} EGP`
+                    ? formatMoney(contract.remainingAmount, "EGP", effectiveLanguage)
                     : t("common.labels.notSet")
                 }
               />

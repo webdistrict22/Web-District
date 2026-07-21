@@ -104,7 +104,7 @@ function Services() {
   const websiteCarePlans = t("services.care.plans", []);
 
   return (
-    <main className="bg-[#080808]">
+    <>
       <PageMeta
         title={t("services.metaTitle")}
         description={t("services.metaDescription")}
@@ -115,6 +115,7 @@ function Services() {
         <Container>
         <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <SectionHeader
+            as="h1"
             eyebrow={t("services.hero.eyebrow")}
             title={t("services.hero.title")}
             description={t("services.hero.description")}
@@ -328,7 +329,7 @@ function Services() {
         </section>
         </Container>
       </section>
-    </main>
+    </>
   );
 }
 

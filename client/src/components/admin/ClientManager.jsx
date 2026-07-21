@@ -16,6 +16,7 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
+import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import useInitialLoad from "../../hooks/useInitialLoad";
@@ -25,6 +26,7 @@ function ClientManager() {
   const [selectedClientData, setSelectedClientData] = useState(null);
   const [expandedClientId, setExpandedClientId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState("");
 
@@ -43,6 +45,7 @@ function ClientManager() {
   const fetchClients = async () => {
     try {
       setIsLoading(true);
+      setLoadError("");
 
       const params = {};
 
@@ -58,7 +61,9 @@ function ClientManager() {
 
       setClients(data.clients || []);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load clients.");
+      const message = error.response?.data?.message || "Failed to load clients.";
+      setLoadError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -210,6 +215,8 @@ function ClientManager() {
 
       {isLoading ? (
         <Loader text="Loading client accounts..." />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={fetchClients} />
       ) : clients.length ? (
         <div className="grid gap-5 xl:grid-cols-[1fr_0.9fr]">
           <div className="grid gap-5">

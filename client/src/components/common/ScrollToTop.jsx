@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+const prefersReducedMotion = () =>
+  window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
@@ -14,7 +17,7 @@ function ScrollToTop() {
 
         if (target) {
           target.scrollIntoView({
-            behavior: "smooth",
+            behavior: prefersReducedMotion() ? "auto" : "smooth",
             block: "start",
           });
           return;
@@ -34,7 +37,7 @@ function ScrollToTop() {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: "smooth",
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
     });
   }, [pathname, hash]);
 

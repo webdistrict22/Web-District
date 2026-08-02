@@ -1,0 +1,126 @@
+.wd-pill-nav-container,
+.wd-pill-nav {
+  width: max-content;
+}
+
+.wd-pill-nav {
+  --nav-h: 40px;
+  --pill-pad-x: 14px;
+  --pill-gap: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.wd-pill-nav .pill-nav-items {
+  position: relative;
+  display: flex;
+  height: var(--nav-h);
+  align-items: center;
+  border: 1px solid rgb(214 167 93 / 0.34);
+  border-radius: 13px;
+  background: #0c0b0a;
+}
+
+.wd-pill-nav .pill-list {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+  gap: var(--pill-gap);
+  margin: 0;
+  padding: 3px;
+  list-style: none;
+}
+
+.wd-pill-nav .pill-list > li {
+  display: flex;
+  height: 100%;
+}
+
+.wd-pill-nav .pill {
+  position: relative;
+  display: inline-flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 9px;
+  background: transparent;
+  color: #f7f2ec;
+  cursor: pointer;
+  font-size: 0.79rem;
+  font-weight: 650;
+  line-height: 0;
+  padding-inline: var(--pill-pad-x);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wd-pill-nav .pill .hover-circle {
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: 50%;
+  display: block;
+  border-radius: 50%;
+  background: #d6a75d;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.wd-pill-nav .pill .label-stack {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  line-height: 1;
+}
+
+.wd-pill-nav .pill .pill-label {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  line-height: 1;
+  will-change: transform;
+}
+
+.wd-pill-nav .pill .pill-label-hover {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  color: var(--hover-text, #fff);
+  will-change: transform, opacity;
+}
+
+.wd-pill-nav .pill.is-active::after {
+  content: none;
+}
+
+.wd-pill-nav .pill.is-active {
+  background: #d6a75d;
+  color: #171411;
+}
+
+.wd-pill-nav .pill:focus-visible {
+  outline: 2px solid #e7c87a;
+  outline-offset: 2px;
+}
+
+[dir="rtl"] .wd-pill-nav .pill {
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-pill-nav .pill .hover-circle,
+  .wd-pill-nav .pill .pill-label-hover {
+    display: none;
+  }
+
+  .wd-pill-nav .pill:hover,
+  .wd-pill-nav .pill:focus-visible {
+    background: #d6a75d;
+    color: #171411;
+  }
+}

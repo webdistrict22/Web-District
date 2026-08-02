@@ -14,4 +14,6 @@ server/.env
 .env
 .env.*
 !.env.example
-!**/.env.example
+!**/.env.exampleowner-assets/
+
+/owner-assets/

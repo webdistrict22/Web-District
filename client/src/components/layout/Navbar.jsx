@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, UserRound } from "lucide-react";
-import Button from "../common/Button";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import BrandLogo from "./BrandLogo";
-import MobileMenu from "./MobileMenu";
 import NavbarTicker from "./NavbarTicker";
+import PillNav from "../reactbits/PillNav/PillNav";
+import StaggeredMenu from "../reactbits/StaggeredMenu/StaggeredMenu";
 import { navLinks } from "../../data/siteData";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
+import useMediaQuery from "../../hooks/useMediaQuery";
 import { trackCustomEvent } from "../../lib/metaPixel";
 
 const navigationEvents = {
@@ -17,153 +17,204 @@ const navigationEvents = {
   "/contact": "ContactClick",
 };
 
+const routeLinks = navLinks.filter((link) => link.key !== "start");
+
+const isRouteActive = (pathname, path) => {
+  if (path === "/") return pathname === "/";
+  if (path === "/work") return pathname === "/work" || pathname.startsWith("/work/");
+  return pathname === path;
+};
+
 function Navbar() {
   const { isAuthenticated, isAdmin } = useAuth();
-  const { effectiveLanguage, t, toggleLanguage } = useLanguage();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuButtonRef = useRef(null);
+  const { effectiveLanguage, isArabic, t } = useLanguage();
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const location = useLocation();
-  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-  const trackNavigation = (path, buttonName) => {
-    const eventName = navigationEvents[path];
+  const navigate = useNavigate();
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const accountPath = isAdmin ? "/admin" : "/account";
+  const clientPath = isAuthenticated ? accountPath : "/login";
+  const clientLabel = isAuthenticated
+    ? isAdmin
+      ? t("nav.adminDashboard")
+      : t("nav.account")
+    : t("nav.login");
 
-    if (!eventName) return;
-
-    trackCustomEvent(eventName, {
-      button_name: buttonName,
-      language: effectiveLanguage,
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      setIsHeaderHidden(false);
+      setIsMobileMenuOpen(false);
+      lastScrollYRef.current = Math.max(window.scrollY || 0, 0);
     });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [effectiveLanguage, location.pathname]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = Math.max(window.scrollY || 0, 0);
+      const lastScrollY = lastScrollYRef.current;
+
+      if (isMobileMenuOpen || currentScrollY < 8) {
+        setIsHeaderHidden(false);
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      const delta = currentScrollY - lastScrollY;
+      if (Math.abs(delta) < 8) return;
+
+      setIsHeaderHidden(delta > 0 && currentScrollY > 96);
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobileMenuOpen]);
+
+  const trackNavigation = useCallback(
+    (path, buttonName) => {
+      const eventName = navigationEvents[path];
+      if (!eventName) return;
+      trackCustomEvent(eventName, {
+        button_name: buttonName,
+        language: effectiveLanguage,
+      });
+    },
+    [effectiveLanguage],
+  );
+
+  const selectRoute = (path, buttonName) => (event) => {
+    event.preventDefault();
+    trackNavigation(path, buttonName);
+    navigate(path);
   };
 
-  useEffect(() => {
-    const timerId = window.setTimeout(closeMenu, 0);
+  const pillItems = useMemo(
+    () =>
+      routeLinks.map((link) => ({
+        label: t(`nav.links.${link.key}`, link.label),
+        ariaLabel: t(`nav.links.${link.key}`, link.label),
+        href: link.path,
+        onSelect: () =>
+          trackNavigation(link.path, `Desktop Navigation ${link.key}`),
+      })),
+    [t, trackNavigation],
+  );
 
-    return () => window.clearTimeout(timerId);
-  }, [closeMenu, location.pathname]);
-
-  useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
+  const compactRouteItems = routeLinks.map((link) => ({
+    label: t(`nav.links.${link.key}`, link.label),
+    ariaLabel: t(`nav.links.${link.key}`, link.label),
+    link: link.path,
+    active: isRouteActive(location.pathname, link.path),
+    onSelect: selectRoute(link.path, `Mobile Navigation ${link.key}`),
+  }));
+  const compactItems = [
+    ...compactRouteItems,
+    {
+      label: t("nav.startProject"),
+      ariaLabel: t("nav.startProject"),
+      link: "/start",
+      active: location.pathname === "/start",
+      variant: "primary",
+      onSelect: selectRoute("/start", "Mobile Navigation CTA"),
+    },
+    {
+      label: clientLabel,
+      ariaLabel: clientLabel,
+      link: clientPath,
+      active:
+        location.pathname === clientPath ||
+        (clientPath === "/account" && location.pathname.startsWith("/account")),
+      variant: "utility",
+      onSelect: selectRoute(clientPath, "Mobile Navigation Client Action"),
+    },
+  ];
 
   return (
-    <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#080808]/96 shadow-[0_12px_38px_rgba(0,0,0,0.24)] backdrop-blur-sm md:backdrop-blur-xl">
-      <nav
-        className="wd-container flex h-20 items-center justify-between"
-        aria-label={t("nav.primaryNavigation")}
-      >
-        <Link
-          to="/"
-          className="flex shrink-0 items-center gap-3"
-          aria-label="Web District"
-        >
-          <BrandLogo />
-        </Link>
-
-        <div className="hidden min-w-0 items-center gap-7 min-[1366px]:flex">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              onClick={() =>
-                trackNavigation(link.path, `Desktop Navigation ${link.key}`)
-              }
-              className={({ isActive }) =>
-                `inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "border-[#C4A77D]/35 bg-[#C4A77D]/14 text-[#F8F7F4] shadow-[0_0_24px_rgba(196,167,125,0.10)]"
-                    : "border-transparent text-[#D9D4CC] hover:border-[#C4A77D]/25 hover:bg-white/[0.03] hover:text-[#C4A77D]"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {isActive && <span className="h-1.5 w-1.5 rounded-full bg-[#C4A77D]" />}
-                  <span>{t(`nav.links.${link.key}`, link.label)}</span>
-                </>
-              )}
-            </NavLink>
-          ))}
-        </div>
-
-        <div className="hidden shrink-0 items-center gap-3 min-[1366px]:flex">
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            className="inline-flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-            aria-label={t("nav.languageSwitchLabel")}
-          >
-            {t("nav.languageToggle")}
-          </button>
-
-          {isAuthenticated && (
-            <Link
-              to={isAdmin ? "/admin" : "/account"}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-              title={isAdmin ? t("nav.adminDashboard") : t("nav.account")}
-              aria-label={
-                isAdmin ? t("nav.adminDashboard") : t("nav.clientAccount")
-              }
-            >
-              <UserRound size={18} />
-            </Link>
-          )}
-
-          {!isAuthenticated && (
-            <Link
-              to="/login"
-              className="rounded-2xl px-4 py-3 text-sm font-semibold text-[#D9D4CC] transition hover:text-[#C4A77D]"
-            >
-              {t("nav.login")}
-            </Link>
-          )}
-
-          <Button
-            to="/start"
-            icon={false}
-            className="shrink-0 whitespace-nowrap"
-            onClick={() =>
-              trackNavigation("/start", "Desktop Navigation CTA")
-            }
-          >
-            {t("nav.startProject")}
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2 min-[1366px]:hidden">
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            aria-label={t("nav.languageSwitchLabel")}
-            className="inline-flex h-11 min-w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-xs font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-          >
-            {t("nav.languageToggle")}
-          </button>
-
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={() => setIsMenuOpen(true)}
-            aria-label={t("nav.openMenu")}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu-panel"
-            aria-haspopup="dialog"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#F8F7F4] transition hover:border-[#C4A77D]/40 hover:text-[#C4A77D]"
-          >
-            <Menu size={20} />
-          </button>
-        </div>
-      </nav>
-
+    <header
+      className={`wd-public-header-stack pointer-events-none fixed inset-x-0 top-0 z-50 transition-transform duration-300 ease-out will-change-transform ${
+          isHeaderHidden ? "-translate-y-full" : "translate-y-0"
+        }`}
+      onFocusCapture={() => setIsHeaderHidden(false)}
+    >
       <NavbarTicker />
-      <MobileMenu
-        isOpen={isMenuOpen}
-        onClose={closeMenu}
-        triggerRef={menuButtonRef}
-      />
+
+      <div className="pointer-events-auto hidden h-20 border-b border-[#D6A75D]/15 bg-[#050505]/96 backdrop-blur-xl min-[1366px]:block">
+        <nav
+          className="mx-auto flex h-full w-[min(1280px,calc(100%-48px))] items-center justify-between gap-5"
+          aria-label={t("nav.primaryNavigation")}
+        >
+          <Link to="/" className="shrink-0" aria-label="Web District">
+            <BrandLogo showText={false} />
+          </Link>
+
+          <div className="min-w-0">
+            <PillNav
+              items={pillItems}
+              activeHref={location.pathname}
+              baseColor="#D6A75D"
+              pillColor="transparent"
+              hoveredPillTextColor="#171411"
+              pillTextColor="#F7F2EC"
+              ease="power2.easeOut"
+              initialLoadAnimation={false}
+            />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3">
+            <Link
+              to={clientPath}
+              className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-[9px] border border-[#F7F2EC]/14 bg-[#0C0B0A]/72 px-4 py-2 text-sm font-semibold text-[#F7F2EC] transition hover:border-[#D6A75D]/65 hover:bg-[#D6A75D]/10 hover:text-[#E7C87A] focus-visible:border-[#D6A75D] focus-visible:text-[#E7C87A] active:translate-y-px"
+            >
+              {clientLabel}
+            </Link>
+            <Link
+              to="/start"
+              onClick={() =>
+                trackNavigation("/start", "Desktop Navigation CTA")
+              }
+              className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] bg-[#D6A75D] px-5 py-3 text-sm font-bold text-[#171411] transition hover:bg-[#E7C87A] active:translate-y-px"
+            >
+              {t("nav.startProject")}
+            </Link>
+          </div>
+        </nav>
+      </div>
+
+      <div
+        className="h-[calc(100dvh-28px)] min-[1366px]:hidden"
+      >
+        <StaggeredMenu
+          key={`${effectiveLanguage}-${location.pathname}`}
+          position={isArabic ? "left" : "right"}
+          colors={["#B88A45", "#D6A75D"]}
+          items={compactItems}
+          displaySocials={false}
+          displayItemNumbering={false}
+          logoUrl="/images/logo/web-district-logo.webp"
+          logoAlt="Web District"
+          logoLink="/"
+          menuButtonColor="#F7F2EC"
+          openMenuButtonColor="#F7F2EC"
+          accentColor="#D6A75D"
+          openMenuLabel={t("nav.openMenu")}
+          closeMenuLabel={t("nav.closeMenu")}
+          headerAriaLabel={t("nav.primaryNavigation")}
+          panelAriaLabel={t("nav.mobileMenuTitle")}
+          reducedMotion={reducedMotion}
+          onLogoClick={selectRoute("/", "Mobile Navigation Logo")}
+          onMenuOpen={() => {
+            setIsMobileMenuOpen(true);
+            setIsHeaderHidden(false);
+          }}
+          onMenuClose={() => setIsMobileMenuOpen(false)}
+        />
+      </div>
     </header>
   );
 }

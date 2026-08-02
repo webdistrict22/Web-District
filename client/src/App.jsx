@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -10,9 +11,105 @@ import useLanguage from "./hooks/useLanguage";
 
 function SkipLink() {
   const { t } = useLanguage();
+  const skipLinkRef = useRef(null);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    let viewportWidth = window.innerWidth;
+    let viewportFrame = 0;
+
+    const disableKeyboardNavigation = () => {
+      root.classList.remove("wd-keyboard-navigation");
+      if (viewportFrame) {
+        window.cancelAnimationFrame(viewportFrame);
+        viewportFrame = 0;
+      }
+    };
+
+    const handleResize = () => {
+      const nextViewportWidth = window.innerWidth;
+      if (nextViewportWidth === viewportWidth) return;
+
+      viewportWidth = nextViewportWidth;
+      disableKeyboardNavigation();
+      if (document.activeElement === skipLinkRef.current) {
+        skipLinkRef.current.blur();
+      }
+    };
+
+    const monitorViewportWidth = () => {
+      viewportFrame = 0;
+      handleResize();
+      if (root.classList.contains("wd-keyboard-navigation")) {
+        viewportFrame = window.requestAnimationFrame(monitorViewportWidth);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key !== "Tab") return;
+
+      root.classList.add("wd-keyboard-navigation");
+      if (!viewportFrame) {
+        viewportFrame = window.requestAnimationFrame(monitorViewportWidth);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("pointerdown", disableKeyboardNavigation, true);
+    document.addEventListener("mousedown", disableKeyboardNavigation, true);
+    document.addEventListener("touchstart", disableKeyboardNavigation, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+      document.removeEventListener("pointerdown", disableKeyboardNavigation, true);
+      document.removeEventListener("mousedown", disableKeyboardNavigation, true);
+      document.removeEventListener("touchstart", disableKeyboardNavigation, true);
+      window.removeEventListener("resize", handleResize);
+      disableKeyboardNavigation();
+    };
+  }, []);
+
+  const focusMainContent = (event) => {
+    event.preventDefault();
+    document.documentElement.classList.remove("wd-keyboard-navigation");
+    event.currentTarget.blur();
+
+    const mainContent = document.getElementById("main-content");
+    if (!mainContent) return;
+
+    const addedTabIndex = !mainContent.hasAttribute("tabindex");
+    if (addedTabIndex) {
+      mainContent.setAttribute("tabindex", "-1");
+      mainContent.addEventListener(
+        "blur",
+        () => mainContent.removeAttribute("tabindex"),
+        { once: true },
+      );
+    }
+
+    mainContent.focus({ preventScroll: true });
+    mainContent.scrollIntoView({ block: "start" });
+
+    const cleanUrl = new URL(window.location.href);
+    if (cleanUrl.hash === "#main-content") cleanUrl.hash = "";
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`,
+    );
+  };
 
   return (
-    <a className="wd-skip-link" href="#main-content">
+    <a
+      ref={skipLinkRef}
+      className="wd-skip-link"
+      href="#main-content"
+      onClick={focusMainContent}
+    >
       {t("accessibility.skipToMain")}
     </a>
   );
@@ -79,4 +176,3 @@ function App() {
 }
 
 export default App;
-

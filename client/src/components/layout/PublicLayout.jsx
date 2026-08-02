@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import LanguageToggle from "./LanguageToggle";
 
 function PublicLayout() {
   return (
@@ -10,6 +11,7 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <LanguageToggle />
     </div>
   );
 }

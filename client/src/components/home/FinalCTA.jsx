@@ -18,6 +18,33 @@ function FinalCTA({ liveUrl = "" }) {
       language: effectiveLanguage,
     });
 
+  if (!hasLiveUrl) {
+    return (
+      <section className="wd-final-cta" aria-labelledby="home-final-cta-title">
+        <Container>
+          <p className="wd-home-eyebrow">{t("home.finalCta.eyebrow")}</p>
+          <h2 id="home-final-cta-title" className="font-display">
+            {t("home.finalCta.title")}
+          </h2>
+          <p>{t("home.finalCta.description")}</p>
+          <div className="wd-final-cta__actions">
+            <Button to="/start" icon={false} onClick={trackStartProject} className="wd-final-cta__primary">
+              {t("common.buttons.startProject")}
+            </Button>
+            <Button
+              to="/work"
+              variant="secondary"
+              onClick={trackSeeWork}
+              className="wd-final-cta__secondary"
+            >
+              {t("common.buttons.viewWorkShort")}
+            </Button>
+          </div>
+        </Container>
+      </section>
+    );
+  }
+
   return (
     <section className="wd-section-black py-16 md:py-20">
       <Container>
@@ -38,49 +65,21 @@ function FinalCTA({ liveUrl = "" }) {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              {hasLiveUrl ? (
-                <>
-                  <Button
-                    href={liveUrl}
-                    icon={false}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ExternalLink size={17} />
-                    {t("home.finalCta.tryIt")}
-                  </Button>
-                  <Button
-                    to="/work"
-                    variant="secondary"
-                    onClick={trackSeeWork}
-                  >
-                    {t("common.buttons.viewWorkShort")}
-                  </Button>
-                  <Button
-                    to="/start"
-                    variant="secondary"
-                    onClick={trackStartProject}
-                  >
-                    {t("common.buttons.startProject")}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button to="/start" onClick={trackStartProject}>
-                    {t("common.buttons.startProject")}
-                  </Button>
-                  <Button
-                    to="/work"
-                    variant="secondary"
-                    onClick={trackSeeWork}
-                  >
-                    {t("common.buttons.viewWorkShort")}
-                  </Button>
-                  <Button to="/process#process-questions" variant="secondary">
-                    {t("common.buttons.answerQuestions")}
-                  </Button>
-                </>
-              )}
+              <Button href={liveUrl} icon={false} target="_blank" rel="noreferrer">
+                <ExternalLink size={17} />
+                {t("home.finalCta.tryIt")}
+              </Button>
+              <Button
+                to="/work"
+                variant="secondary"
+                onClick={trackSeeWork}
+                className="wd-final-cta__secondary"
+              >
+                {t("common.buttons.viewWorkShort")}
+              </Button>
+              <Button to="/start" variant="secondary" onClick={trackStartProject}>
+                {t("common.buttons.startProject")}
+              </Button>
             </div>
           </div>
         </div>

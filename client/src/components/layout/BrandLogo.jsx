@@ -12,7 +12,7 @@ function BrandLogo({ size = "md", showText = true }) {
   return (
     <span className="flex items-center gap-3">
       <span
-        className={`relative flex ${imageSize} shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#C4A77D]/25 bg-[#080808]/88`}
+        className={`relative flex ${imageSize} shrink-0 items-center justify-center overflow-hidden`}
       >
         {!isFailed ? (
           <img

@@ -5,6 +5,8 @@ import SeamlessLoop from "../common/SeamlessLoop";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
 
+const byJojoLogo = "/images/brands-logos/byjojo-logo.webp";
+
 const brandLogos = [
   ["zohour", "/images/brands-logos/zohour-logo.webp"],
   ["s8", "/images/brands-logos/s8-logo.webp"],
@@ -20,6 +22,9 @@ const brandLogos = [
 
 const getLogo = (brand = "") => {
   const normalized = brand.toLowerCase().trim();
+  if (normalized.replace(/\s+/g, "") === "byjojo") {
+    return byJojoLogo;
+  }
   return brandLogos.find(([key]) => normalized.includes(key))?.[1] || "";
 };
 

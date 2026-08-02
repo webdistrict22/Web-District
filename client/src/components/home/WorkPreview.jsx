@@ -122,7 +122,8 @@ function WorkPreview() {
         >
           {displayProjects.map((project) => {
             const isDatabaseProject = Boolean(project._id);
-            const name = isDatabaseProject ? project.title : project.name;
+            const rawName = isDatabaseProject ? project.title : project.name;
+            const name = t(`work.projects.${project.slug}.name`, rawName);
             const rawType = isDatabaseProject ? project.websiteType : project.type;
             const type = t(`work.projects.${project.slug}.type`, translateValue("websiteTypes", rawType));
             const image = isDatabaseProject ? project.images?.[0] : project.coverImage || project.image;

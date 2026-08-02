@@ -235,6 +235,66 @@ export const workProjects = [
     liveUrl: "https://akm-brand.com",
     isComingSoon: false,
   },
+  {
+    name: "Davinto",
+    slug: "davinto",
+    type: "Online Store",
+    description:
+      "A refined fashion store with a polished shopping experience, responsive product browsing, and smooth checkout.",
+    coverImage: "/images/projects/davinto-cover.webp",
+    liveUrl: "https://davinto-store.com",
+    isComingSoon: true,
+  },
+  {
+    name: "Salah Frame",
+    slug: "salah-frame",
+    type: "Online Store",
+    description:
+      "A creative frame store with clear collections, customization options, and a simple ordering journey.",
+    coverImage: "/images/projects/salahframe-cover.webp",
+    liveUrl: "https://salah-frame.myshopify.com",
+    isComingSoon: true,
+  },
+  {
+    name: "Fresh Cart",
+    slug: "fresh-cart",
+    type: "Online Store",
+    description:
+      "A modern online store designed to make browsing categories and finding products feel fast and simple.",
+    coverImage: "/images/projects/freshcart-cover.webp",
+    liveUrl: null,
+    isComingSoon: true,
+  },
+  {
+    name: "Travco",
+    slug: "travco",
+    type: "Business Website",
+    description:
+      "A professional business website presenting the company, its services, and its work with clarity and trust.",
+    coverImage: "/images/projects/travco-cover.webp",
+    liveUrl: null,
+    isComingSoon: true,
+  },
+  {
+    name: "ByJojo",
+    slug: "byjojo",
+    type: "Online Store",
+    description:
+      "An elegant personalized-gifts store with clear product discovery and a warm, polished visual direction.",
+    coverImage: "/images/projects/byjojo-cover.webp",
+    liveUrl: null,
+    isComingSoon: true,
+  },
+  {
+    name: "MS Store",
+    slug: "ms-store",
+    type: "Online Store",
+    description:
+      "A clean online store that organizes products clearly and gives customers a simple shopping experience.",
+    coverImage: "/images/projects/ms-cover.webp",
+    liveUrl: null,
+    isComingSoon: true,
+  },
 ];
 
 export const mergeProjectsWithFallback = (projects = []) => {

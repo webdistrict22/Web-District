@@ -564,6 +564,42 @@ export const translations = {
             "Admin Dashboard",
           ],
         },
+        davinto: {
+          name: "Davinto",
+          type: "Online Store",
+          description:
+            "A refined fashion store with a polished shopping experience, responsive product browsing, and smooth checkout.",
+        },
+        "salah-frame": {
+          name: "Salah Frame",
+          type: "Online Store",
+          description:
+            "A creative frame store with clear collections, customization options, and a simple ordering journey.",
+        },
+        "fresh-cart": {
+          name: "Fresh Cart",
+          type: "Online Store",
+          description:
+            "A modern online store designed to make browsing categories and finding products feel fast and simple.",
+        },
+        travco: {
+          name: "Travco",
+          type: "Business Website",
+          description:
+            "A professional business website presenting the company, its services, and its work with clarity and trust.",
+        },
+        byjojo: {
+          name: "ByJojo",
+          type: "Online Store",
+          description:
+            "An elegant personalized-gifts store with clear product discovery and a warm, polished visual direction.",
+        },
+        "ms-store": {
+          name: "MS Store",
+          type: "Online Store",
+          description:
+            "A clean online store that organizes products clearly and gives customers a simple shopping experience.",
+        },
       },
     },
     process: {
@@ -1790,6 +1826,42 @@ export const translations = {
             "تجربة التسوق",
             "لوحة الإدارة",
           ],
+        },
+        davinto: {
+          name: "دافينتو",
+          type: "متجر إلكتروني",
+          description:
+            "متجر أزياء راقٍ يقدم تجربة تسوق متقنة، وتصفحًا سلسًا للمنتجات على مختلف الشاشات، وخطوات دفع مريحة.",
+        },
+        "salah-frame": {
+          name: "صلاح فريم",
+          type: "متجر إلكتروني",
+          description:
+            "متجر إطارات مبتكر بمجموعات واضحة وخيارات للتخصيص ومسار بسيط لإتمام الطلب.",
+        },
+        "fresh-cart": {
+          name: "فريش كارت",
+          type: "متجر إلكتروني",
+          description:
+            "متجر إلكتروني عصري يجعل تصفح الأقسام والعثور على المنتجات سريعًا وبسيطًا.",
+        },
+        travco: {
+          name: "ترافكو",
+          type: "موقع تعريفي للأعمال",
+          description:
+            "موقع أعمال احترافي يعرض الشركة وخدماتها ومشاريعها بوضوح ويعزز الثقة بها.",
+        },
+        byjojo: {
+          name: "باي جوجو",
+          type: "متجر إلكتروني",
+          description:
+            "متجر أنيق للهدايا المخصصة، يسهّل اكتشاف المنتجات ويقدم طابعًا بصريًا دافئًا ومتقنًا.",
+        },
+        "ms-store": {
+          name: "إم إس ستور",
+          type: "متجر إلكتروني",
+          description:
+            "متجر إلكتروني نظيف ينظم المنتجات بوضوح ويمنح العملاء تجربة تسوق بسيطة.",
         },
       },
     },

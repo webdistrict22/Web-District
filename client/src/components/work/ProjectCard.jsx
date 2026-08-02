@@ -7,8 +7,9 @@ function ProjectCard({ project, className = "", duplicate = false }) {
   const DirectionalArrow = isRtl ? ArrowUpLeft : ArrowUpRight;
   const isDatabaseProject = Boolean(project._id);
 
-  const name = isDatabaseProject ? project.title : project.name;
   const slug = project.slug;
+  const rawName = isDatabaseProject ? project.title : project.name;
+  const name = t(`work.projects.${slug}.name`, rawName);
   const rawType = isDatabaseProject ? project.websiteType : project.type;
   const rawDescription = isDatabaseProject
     ? project.shortDescription

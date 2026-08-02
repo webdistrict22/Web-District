@@ -1,17 +1,19 @@
 import { useMemo, useState } from "react";
 import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import Container from "../../components/common/Container";
-import SectionHeader from "../../components/common/SectionHeader";
-import ReviewsPreview from "../../components/home/ReviewsPreview";
+import Button from "../../components/common/Button";
 import ProjectCard from "../../components/work/ProjectCard";
+import WorkCollection from "../../components/work/WorkCollection";
+import WorkReviews from "../../components/work/WorkReviews";
 import PageMeta from "../../components/common/PageMeta";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import "./Work.css";
 
 function Work() {
   const [projects, setProjects] = useState([]);
-  const { t } = useLanguage();
+  const { isRtl, t } = useLanguage();
 
   const fetchProjects = async () => {
     try {
@@ -33,40 +35,51 @@ function Work() {
   );
 
   return (
-    <>
+    <div className="wd-work-page">
       <PageMeta
         title={t("work.hero.eyebrow")}
         description={t("work.hero.description")}
         canonical="/work"
       />
 
-      <section className="wd-section-black pt-36 pb-4 md:pt-40 md:pb-4">
+      <section className="wd-work-projects" aria-labelledby="work-page-title">
         <Container>
-          <SectionHeader
-            as="h1"
-            eyebrow={t("work.hero.eyebrow")}
-            title={t("work.hero.title")}
-            description={t("work.hero.description")}
+          <header className="wd-work-section-heading wd-work-section-heading--dark">
+            <p className="wd-work-eyebrow">{t("work.hero.eyebrow")}</p>
+            <h1 id="work-page-title" className="font-display">{t("work.hero.title")}</h1>
+            <p>{t("work.hero.description")}</p>
+          </header>
+
+          <WorkCollection
+            items={displayProjects}
+            getKey={(project) => project._id || project.slug}
+            renderItem={(project, options) => <ProjectCard project={project} {...options} />}
+            ariaLabel={t("work.hero.eyebrow")}
+            previousLabel={t("work.projectsPreviousAria")}
+            nextLabel={t("work.projectsNextAria")}
+            isRtl={isRtl}
           />
         </Container>
       </section>
 
-      <section className="wd-section-black pt-4 pb-10 md:pt-6 md:pb-12">
+      <WorkReviews />
+
+      <section className="wd-work-cta" aria-labelledby="work-cta-title">
         <Container>
-          <section className="grid gap-6 md:grid-cols-2">
-            {displayProjects.map((project) => (
-              <ProjectCard
-                key={project._id || project.slug}
-                project={project}
-                className="wd-card-on-black"
-              />
-            ))}
-          </section>
+          <p className="wd-work-eyebrow">{t("work.finalCta.eyebrow")}</p>
+          <h2 id="work-cta-title" className="font-display">{t("work.finalCta.title")}</h2>
+          <p>{t("work.finalCta.description")}</p>
+          <div className="wd-work-cta__actions">
+            <Button to="/start" icon={false} className="wd-work-cta__primary">
+              {t("common.buttons.startProject")}
+            </Button>
+            <Button to="/services" variant="secondary" icon={false} className="wd-work-cta__secondary">
+              {t("common.buttons.viewServices")}
+            </Button>
+          </div>
         </Container>
       </section>
-
-      <ReviewsPreview />
-    </>
+    </div>
   );
 }
 

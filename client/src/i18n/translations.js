@@ -360,6 +360,18 @@ export const translations = {
       openCaseStudy: "Open case study",
       comingSoon: "Case study coming soon",
       ariaOpen: "Open {name} case study",
+      projectsPreviousAria: "Previous project",
+      projectsNextAria: "Next project",
+      reviews: {
+        previousAria: "Previous review",
+        nextAria: "Next review",
+      },
+      finalCta: {
+        eyebrow: "START",
+        title: "Seen what we can build? Let’s create yours.",
+        description:
+          "Tell us what you need, and we’ll shape the right direction together.",
+      },
       caseStudy: {
         loading: "Loading case study...",
         eyebrow: "Case study",
@@ -1575,6 +1587,18 @@ export const translations = {
       openCaseStudy: "عرض المشروع",
       comingSoon: "تفاصيل المشروع قريبًا",
       ariaOpen: "عرض مشروع {name}",
+      projectsPreviousAria: "المشروع السابق",
+      projectsNextAria: "المشروع التالي",
+      reviews: {
+        previousAria: "الرأي السابق",
+        nextAria: "الرأي التالي",
+      },
+      finalCta: {
+        eyebrow: "ابدأ",
+        title: "شاهدت ما يمكننا بناؤه؟ لنصنع مشروعك.",
+        description:
+          "أخبرنا بما تحتاجه، وسنحدد معًا الاتجاه الأنسب لمشروعك.",
+      },
       caseStudy: {
         loading: "جارٍ تحميل تفاصيل المشروع...",
         eyebrow: "دراسة مشروع",

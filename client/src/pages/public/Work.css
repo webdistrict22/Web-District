@@ -158,15 +158,7 @@
 .wd-work-mobile-track {
   display: flex;
   gap: 0.9rem;
-  overflow-x: auto;
-  padding: 4px;
-  margin: -4px;
-  overscroll-behavior-inline: contain;
-  scroll-behavior: smooth;
-  scroll-padding-inline: 4px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  touch-action: pan-y;
+  overflow: visible;
 }
 
 .wd-work-mobile-track::-webkit-scrollbar { display: none; }
@@ -175,45 +167,11 @@
   width: 86%;
   min-width: 0;
   flex: 0 0 86%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .wd-work-mobile-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.85rem;
   margin-top: 1.65rem;
 }
-
-.wd-work-mobile-controls button {
-  display: inline-flex;
-  width: 2.75rem;
-  height: 2.75rem;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgb(247 242 236 / 0.24);
-  border-radius: 50%;
-  background: transparent;
-  color: #f7f2ec;
-  cursor: pointer;
-  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease,
-    transform 180ms ease;
-}
-
-.wd-work-mobile-controls button:hover {
-  border-color: #d6a75d;
-  background: #d6a75d;
-  color: #171411;
-}
-
-.wd-work-mobile-controls button:focus-visible {
-  outline: 3px solid #d6a75d;
-  outline-offset: 3px;
-}
-
-.wd-work-mobile-controls button:active { transform: translateY(1px); }
 
 .wd-work-reviews {
   padding: 5.5rem 0 6.25rem;
@@ -298,22 +256,6 @@
   text-align: start;
 }
 
-.wd-work-mobile-collection--light .wd-work-mobile-controls { color: #171411; }
-
-.wd-work-mobile-collection--light .wd-work-mobile-controls button {
-  border-color: rgb(23 20 17 / 0.34);
-  color: #171411;
-}
-
-.wd-work-mobile-collection--light .wd-work-mobile-controls button:hover {
-  border-color: #171411;
-  background: #171411;
-  color: #f7f2ec;
-}
-
-.wd-work-mobile-collection--light .wd-work-mobile-controls button:focus-visible {
-  outline-color: #171411;
-}
 
 .wd-work-cta {
   padding: 4.4rem 0 4.8rem;
@@ -447,8 +389,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wd-work-mobile-track { scroll-behavior: auto; }
-
   .wd-work-project-link:not(.is-disabled):hover .wd-work-project-card,
   .wd-work-project-link:focus-visible .wd-work-project-card,
   .wd-work-project-link:not(.is-disabled):hover .wd-work-project-card__image img,

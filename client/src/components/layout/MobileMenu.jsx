@@ -12,7 +12,6 @@ const navigationEvents = {
   "/services": "ServicesClick",
   "/work": "SeeWorkClick",
   "/start": "StartProjectClick",
-  "/contact": "ContactClick",
 };
 
 const focusableSelector = [

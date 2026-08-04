@@ -1,4 +1,6 @@
-export const workProjects = [
+import { caseStudyDetails } from "./caseStudyDetails";
+
+const baseWorkProjects = [
   {
     name: "Zohour",
     slug: "zohour",
@@ -38,23 +40,20 @@ export const workProjects = [
     ],
     tags: ["E-commerce", "Caps", "Admin"],
     showcaseImages: [
-      {
-        src: "/images/projects/showcases/zohour-showcase-01.webp",
-        title: "Premium Storefront",
-      },
-      {
-        src: "/images/projects/showcases/zohour-showcase-02.webp",
-        title: "Product Discovery",
-      },
-      {
-        src: "/images/projects/showcases/zohour-showcase-03.webp",
-        title: "Checkout Flow",
-      },
-      {
-        src: "/images/projects/showcases/zohour-showcase-04.webp",
-        title: "Admin Operations",
-      },
+      "/images/projects/showcases/zohour-showcase-01.webp",
+      "/images/projects/showcases/zohour-showcase-02.webp",
+      "/images/projects/showcases/zohour-showcase-03.webp",
     ],
+    qualities: {
+      userExperience:
+        "The floral storefront keeps product discovery, cart, checkout, and customer orders easy to follow across screen sizes.",
+      performance:
+        "A responsive product grid and focused commerce structure keep browsing direct as customers move from the shop to checkout.",
+      reliability:
+        "Protected customer and admin routes support private areas, while defined order and discount calculations keep commerce actions consistent.",
+      management:
+        "Product, order, shipping, offer, discount, and waitlist tools support daily store operations and future catalog growth.",
+    },
     liveUrl: "https://zohour-store.vercel.app",
     isComingSoon: false,
   },
@@ -97,23 +96,20 @@ export const workProjects = [
     ],
     tags: ["Business Website", "Factory", "Portal"],
     showcaseImages: [
-      {
-        src: "/images/projects/showcases/s8-factory-showcase-01.webp",
-        title: "Business Homepage",
-      },
-      {
-        src: "/images/projects/showcases/s8-factory-showcase-02.webp",
-        title: "Production Lines",
-      },
-      {
-        src: "/images/projects/showcases/s8-factory-showcase-03.webp",
-        title: "Request And Call Flow",
-      },
-      {
-        src: "/images/projects/showcases/s8-factory-showcase-04.webp",
-        title: "Admin Workspace",
-      },
+      "/images/projects/showcases/s8-factory-showcase-01.webp",
+      "/images/projects/showcases/s8-factory-showcase-02.webp",
+      "/images/projects/showcases/s8-factory-showcase-03.webp",
     ],
+    qualities: {
+      userExperience:
+        "Clear production paths connect visitors with factory services, partners, material lines, production requests, and call booking.",
+      performance:
+        "The responsive page structure keeps service information and request flows focused across desktop and mobile layouts.",
+      reliability:
+        "Protected account and admin routes support structured production requests, appointments, proposals, and contract tracking.",
+      management:
+        "Request, appointment, contract, review, and settings tools organize factory operations while leaving room for new service lines.",
+    },
     liveUrl: "https://s8-factory.com",
     isComingSoon: false,
   },
@@ -156,23 +152,20 @@ export const workProjects = [
     ],
     tags: ["E-commerce", "Perfume", "Admin"],
     showcaseImages: [
-      {
-        src: "/images/projects/showcases/atheer-showcase-01.webp",
-        title: "Luxury Storefront",
-      },
-      {
-        src: "/images/projects/showcases/atheer-showcase-02.webp",
-        title: "Fragrance Browsing",
-      },
-      {
-        src: "/images/projects/showcases/atheer-showcase-03.webp",
-        title: "Order Experience",
-      },
-      {
-        src: "/images/projects/showcases/atheer-showcase-04.webp",
-        title: "Store Management",
-      },
+      "/images/projects/showcases/atheer-showcase-01.webp",
+      "/images/projects/showcases/atheer-showcase-02.webp",
+      "/images/projects/showcases/atheer-showcase-03.webp",
     ],
+    qualities: {
+      userExperience:
+        "The dark storefront gives fragrance products a clear browsing path through product details, cart, checkout, and order tracking.",
+      performance:
+        "Focused product metadata and a responsive commerce layout keep the catalog organized without distracting from discovery.",
+      reliability:
+        "Structured order, payment-proof, and discount-code fields keep purchase information consistent from checkout through management.",
+      management:
+        "Order, product, upload, offer, discount, customer, and analytics tools support the practical work behind the storefront.",
+    },
     liveUrl: "https://atheer-otour.vercel.app",
     isComingSoon: false,
   },
@@ -215,23 +208,20 @@ export const workProjects = [
     ],
     tags: ["E-commerce", "Fashion", "Tracking"],
     showcaseImages: [
-      {
-        src: "/images/projects/showcases/akm-showcase-01.webp",
-        title: "Fashion Storefront",
-      },
-      {
-        src: "/images/projects/showcases/akm-showcase-02.webp",
-        title: "Product Variants",
-      },
-      {
-        src: "/images/projects/showcases/akm-showcase-03.webp",
-        title: "Shopping Flow",
-      },
-      {
-        src: "/images/projects/showcases/akm-showcase-04.webp",
-        title: "Admin Dashboard",
-      },
+      "/images/projects/showcases/akm-showcase-01.webp",
+      "/images/projects/showcases/akm-showcase-02.webp",
+      "/images/projects/showcases/akm-showcase-03.webp",
     ],
+    qualities: {
+      userExperience:
+        "Arabic support, clear product details, and color and size choices make the fashion catalog practical to browse and order from.",
+      performance:
+        "React Query data flows and a structured variant model keep product and stock information organized throughout the shopping flow.",
+      reliability:
+        "Defined stock, order, and payment states give customers and managers a consistent view of each purchase as it progresses.",
+      management:
+        "Products, orders, offers, bundles, coupons, reviews, campaigns, and site settings form a maintainable base for store growth.",
+    },
     liveUrl: "https://akm-brand.com",
     isComingSoon: false,
   },
@@ -239,9 +229,25 @@ export const workProjects = [
     name: "Davinto",
     slug: "davinto",
     type: "Online Store",
+    businessType: "Fashion store",
     description:
       "A refined fashion store with a polished shopping experience, responsive product browsing, and smooth checkout.",
     coverImage: "/images/projects/davinto-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/davinto-showcase-01.webp",
+      "/images/projects/showcases/davinto-showcase-02.webp",
+      "/images/projects/showcases/davinto-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "Responsive product browsing and a clear checkout journey keep the fashion store polished and easy to use on desktop and mobile.",
+      performance:
+        "A focused storefront structure keeps attention on products and supports efficient browsing across screen sizes.",
+      reliability:
+        "The shopping journey uses clear product and checkout steps so customers can move through the store with confidence.",
+      management:
+        "A reusable storefront structure gives fashion collections and supporting content room to expand without changing the core experience.",
+    },
     liveUrl: "https://davinto-store.com",
     isComingSoon: true,
   },
@@ -249,9 +255,25 @@ export const workProjects = [
     name: "Salah Frame",
     slug: "salah-frame",
     type: "Online Store",
+    businessType: "Custom frame store",
     description:
       "A creative frame store with clear collections, customization options, and a simple ordering journey.",
     coverImage: "/images/projects/salahframe-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/salah-frame-showcase-01.webp",
+      "/images/projects/showcases/salah-frame-showcase-02.webp",
+      "/images/projects/showcases/salah-frame-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "Clear collections, customization choices, and a simple ordering journey help customers find and shape the right frame.",
+      performance:
+        "A responsive, focused storefront keeps collections and product choices readable across desktop and mobile screens.",
+      reliability:
+        "The ordering flow presents customization choices in a clear sequence, reducing ambiguity as customers prepare their selection.",
+      management:
+        "The collection-led structure can accommodate new frame styles, customization options, and supporting content over time.",
+    },
     liveUrl: "https://salah-frame.myshopify.com",
     isComingSoon: true,
   },
@@ -259,9 +281,25 @@ export const workProjects = [
     name: "Fresh Cart",
     slug: "fresh-cart",
     type: "Online Store",
+    businessType: "Product discovery store",
     description:
       "A modern online store designed to make browsing categories and finding products feel fast and simple.",
     coverImage: "/images/projects/freshcart-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/fresh-cart-showcase-01.webp",
+      "/images/projects/showcases/fresh-cart-showcase-02.webp",
+      "/images/projects/showcases/fresh-cart-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "Clear categories and product discovery give shoppers a direct way to browse the catalog on desktop and mobile.",
+      performance:
+        "The responsive page structure keeps category and product browsing focused, with a simple path between key store views.",
+      reliability:
+        "A consistent catalog structure keeps product information and navigation predictable throughout the browsing experience.",
+      management:
+        "Reusable category and product patterns provide a maintainable base for adding more catalog content in the future.",
+    },
     liveUrl: null,
     isComingSoon: true,
   },
@@ -269,9 +307,25 @@ export const workProjects = [
     name: "Travco",
     slug: "travco",
     type: "Business Website",
+    businessType: "Company profile",
     description:
       "A professional business website presenting the company, its services, and its work with clarity and trust.",
     coverImage: "/images/projects/travco-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/travco-showcase-01.webp",
+      "/images/projects/showcases/travco-showcase-02.webp",
+      "/images/projects/showcases/travco-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "Clear navigation presents the company, its services, and its work in a direct format that supports trust and understanding.",
+      performance:
+        "A focused responsive structure keeps business content readable and easy to scan across screen sizes.",
+      reliability:
+        "A consistent public-content layout gives visitors a dependable path through company and service information.",
+      management:
+        "The maintainable content structure leaves room to expand services, company information, and selected work without changing the core layout.",
+    },
     liveUrl: null,
     isComingSoon: true,
   },
@@ -279,9 +333,25 @@ export const workProjects = [
     name: "ByJojo",
     slug: "byjojo",
     type: "Online Store",
+    businessType: "Personalized gifts store",
     description:
       "An elegant personalized-gifts store with clear product discovery and a warm, polished visual direction.",
     coverImage: "/images/projects/byjojo-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/byjojo-showcase-01.webp",
+      "/images/projects/showcases/byjojo-showcase-02.webp",
+      "/images/projects/showcases/byjojo-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "A warm visual direction and clear product discovery help shoppers explore personalized gifts comfortably on any screen.",
+      performance:
+        "The responsive storefront structure keeps product browsing focused while preserving the brand-led presentation.",
+      reliability:
+        "Consistent product and navigation patterns make the browsing journey predictable as customers compare gift options.",
+      management:
+        "Reusable product and content patterns allow the gift range and brand storytelling to grow within a maintainable structure.",
+    },
     liveUrl: null,
     isComingSoon: true,
   },
@@ -289,13 +359,34 @@ export const workProjects = [
     name: "MS Store",
     slug: "ms-store",
     type: "Online Store",
+    businessType: "Product catalog store",
     description:
       "A clean online store that organizes products clearly and gives customers a simple shopping experience.",
     coverImage: "/images/projects/ms-cover.webp",
+    showcaseImages: [
+      "/images/projects/showcases/ms-store-showcase-01.webp",
+      "/images/projects/showcases/ms-store-showcase-02.webp",
+      "/images/projects/showcases/ms-store-showcase-03.webp",
+    ],
+    qualities: {
+      userExperience:
+        "Clear product organization gives customers a simple shopping experience with straightforward browsing across devices.",
+      performance:
+        "A responsive, efficient page structure keeps the catalog readable and the shopping path focused.",
+      reliability:
+        "Consistent product presentation and navigation help customers understand where they are throughout the store.",
+      management:
+        "The reusable catalog structure supports future product and content expansion while keeping the project easy to maintain.",
+    },
     liveUrl: null,
     isComingSoon: true,
   },
 ];
+
+export const workProjects = baseWorkProjects.map((project) => ({
+  ...project,
+  ...caseStudyDetails[project.slug],
+}));
 
 export const mergeProjectsWithFallback = (projects = []) => {
   if (!projects.length) return workProjects;
@@ -310,6 +401,7 @@ export const mergeProjectsWithFallback = (projects = []) => {
         ...merged[index],
         ...project,
         showcaseImages: project.showcaseImages || merged[index].showcaseImages,
+        qualities: project.qualities || merged[index].qualities,
         liveUrl: project.liveUrl || merged[index].liveUrl,
       };
       return;

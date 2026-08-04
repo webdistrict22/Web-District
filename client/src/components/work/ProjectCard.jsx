@@ -19,7 +19,6 @@ function ProjectCard({ project, className = "", duplicate = false }) {
     translateValue("websiteTypes", rawType)
   );
   const description = t(`work.projects.${slug}.description`, rawDescription);
-  const isComingSoon = project.isComingSoon;
   const image = isDatabaseProject
     ? project.images?.[0]
     : project.coverImage || project.image;
@@ -41,14 +40,6 @@ function ProjectCard({ project, className = "", duplicate = false }) {
       </div>
     </article>
   );
-
-  if (isComingSoon) {
-    return (
-      <div className={`wd-work-project-link is-disabled ${className}`} aria-disabled="true">
-        {card}
-      </div>
-    );
-  }
 
   return (
     <Link

@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
 import Container from "../common/Container";
+import ManualCarouselControls from "../common/ManualCarousel";
+import useManualCarousel from "../common/useManualCarousel";
 import useLanguage from "../../hooks/useLanguage";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { trackCustomEvent } from "../../lib/metaPixel";
@@ -19,9 +21,6 @@ const scheduleAfterPaint = (callback) => {
 
 function WorkPreview() {
   const [projects, setProjects] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const trackRef = useRef(null);
-  const dragRef = useRef({ active: false, startX: 0, scrollLeft: 0 });
   const { effectiveLanguage, isRtl, t, translateValue } = useLanguage();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -44,60 +43,29 @@ function WorkPreview() {
     };
   }, []);
 
-  const displayProjects = useMemo(() => mergeProjectsWithFallback(projects), [projects]);
-  const maxIndex = Math.max(0, displayProjects.length - (isDesktop ? 4 : 1));
-  const currentIndex = Math.min(activeIndex, maxIndex);
-  const itemCount = maxIndex + 1;
-
-  const getStep = () => {
-    const track = trackRef.current;
-    const card = track?.querySelector("article");
-    if (!track || !card) return 0;
-    return card.offsetWidth + (Number.parseFloat(getComputedStyle(track).columnGap) || 0);
-  };
-
-  const updateProgress = () => {
-    const track = trackRef.current;
-    const step = getStep();
-    if (!track || !step) return;
-    setActiveIndex(
-      Math.min(maxIndex, Math.max(0, Math.round(Math.abs(track.scrollLeft) / step))),
-    );
-  };
-
-  const moveTo = (nextIndex) => {
-    const wrappedIndex = ((nextIndex % itemCount) + itemCount) % itemCount;
-    setActiveIndex(wrappedIndex);
-    trackRef.current?.scrollTo({
-      left: (isRtl ? -1 : 1) * wrappedIndex * getStep(),
-      behavior: "smooth",
-    });
-  };
-
-  const goToPrevious = () => moveTo((currentIndex - 1 + itemCount) % itemCount);
-  const goToNext = () => moveTo((currentIndex + 1) % itemCount);
-
-  const startDrag = (event) => {
-    if (event.pointerType === "touch") return;
-    dragRef.current = {
-      active: true,
-      startX: event.clientX,
-      scrollLeft: trackRef.current.scrollLeft,
-    };
-    trackRef.current.dataset.dragged = "false";
-    trackRef.current.setPointerCapture(event.pointerId);
-  };
-
-  const drag = (event) => {
-    if (!dragRef.current.active) return;
-    const distance = event.clientX - dragRef.current.startX;
-    if (Math.abs(distance) > 5) trackRef.current.dataset.dragged = "true";
-    trackRef.current.scrollLeft = dragRef.current.scrollLeft - distance;
-  };
-
-  const stopDrag = () => {
-    dragRef.current.active = false;
-  };
+  const displayProjects = useMemo(
+    () => mergeProjectsWithFallback(projects),
+    [projects],
+  );
+  const {
+    activeIndex,
+    goTo,
+    handleClickCapture,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerUp,
+    handleTransitionEnd,
+    next,
+    pageCount,
+    previous,
+    slides,
+    trackRef,
+    viewportRef,
+  } = useManualCarousel({
+    items: displayProjects,
+    visibleCount: isDesktop ? 4 : 1,
+    resetKey: effectiveLanguage,
+  });
 
   return (
     <section className="wd-work-preview" aria-labelledby="work-preview-title">
@@ -105,90 +73,118 @@ function WorkPreview() {
         <div className="wd-home-section-heading">
           <div>
             <p className="wd-home-eyebrow">{t("home.work.eyebrow")}</p>
-            <h2 id="work-preview-title" className="font-display">{t("home.work.title")}</h2>
+            <h2 id="work-preview-title" className="font-display">
+              {t("home.work.title")}
+            </h2>
             <p>{t("home.work.description")}</p>
           </div>
         </div>
 
         <div
-          ref={trackRef}
-          className="wd-work-track wd-snap-track"
-          onScroll={updateProgress}
-          onPointerDown={startDrag}
-          onPointerMove={drag}
-          onPointerUp={stopDrag}
-          onPointerCancel={stopDrag}
+          ref={viewportRef}
+          className="wd-work-viewport wd-manual-carousel-viewport"
           aria-label={t("home.work.eyebrow")}
+          onClickCapture={handleClickCapture}
+          onPointerCancel={handlePointerCancel}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
         >
-          {displayProjects.map((project) => {
-            const isDatabaseProject = Boolean(project._id);
-            const rawName = isDatabaseProject ? project.title : project.name;
-            const name = t(`work.projects.${project.slug}.name`, rawName);
-            const rawType = isDatabaseProject ? project.websiteType : project.type;
-            const type = t(`work.projects.${project.slug}.type`, translateValue("websiteTypes", rawType));
-            const image = isDatabaseProject ? project.images?.[0] : project.coverImage || project.image;
-            const destination = project.isComingSoon ? "" : `/work/${project.slug}`;
+          <div
+            ref={trackRef}
+            className="wd-work-track wd-manual-carousel-track"
+            dir="ltr"
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {slides.map(
+              ({ item: project, duplicate }, index) => {
+                const isDatabaseProject = Boolean(project._id);
+                const rawName = isDatabaseProject ? project.title : project.name;
+                const name = t(`work.projects.${project.slug}.name`, rawName);
+                const rawType = isDatabaseProject
+                  ? project.websiteType
+                  : project.type;
+                const type = t(
+                  `work.projects.${project.slug}.type`,
+                  translateValue("websiteTypes", rawType),
+                );
+                const image = isDatabaseProject
+                  ? project.images?.[0]
+                  : project.coverImage || project.image;
+                const destination = project.isComingSoon
+                  ? ""
+                  : `/work/${project.slug}`;
 
-            const content = (
-              <article className="wd-work-card">
-                <div className="wd-work-card__image">
-                  {image ? <img src={image} alt={name} loading="lazy" decoding="async" /> : null}
-                </div>
-                <div className="wd-work-card__meta">
-                  <div>
-                    <h3 className="font-display">{name}</h3>
-                    <p>{type}</p>
+                const content = (
+                  <article className="wd-work-card" dir={isRtl ? "rtl" : "ltr"}>
+                    <div className="wd-work-card__image">
+                      {image ? (
+                        <img src={image} alt={name} loading="lazy" decoding="async" />
+                      ) : null}
+                    </div>
+                    <div className="wd-work-card__meta">
+                      <div>
+                        <h3 className="font-display">{name}</h3>
+                        <p>{type}</p>
+                      </div>
+                      <ArrowUpRight size={18} aria-hidden="true" />
+                    </div>
+                  </article>
+                );
+
+                return destination ? (
+                  <Link
+                    key={`${project._id || project.slug}-${index}`}
+                    to={destination}
+                    className="wd-work-card-link"
+                    aria-label={t("home.work.ariaOpen", undefined, { name })}
+                    aria-hidden={duplicate || undefined}
+                    tabIndex={duplicate ? -1 : undefined}
+                    draggable="false"
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div
+                    key={`${project._id || project.slug}-${index}`}
+                    className="wd-work-card-link"
+                    aria-disabled="true"
+                    aria-hidden={duplicate || undefined}
+                  >
+                    {content}
                   </div>
-                  <ArrowUpRight size={18} aria-hidden="true" />
-                </div>
-              </article>
-            );
-
-            return destination ? (
-              <Link
-                key={project._id || project.slug}
-                to={destination}
-                className="wd-work-card-link"
-                aria-label={t("home.work.ariaOpen", undefined, { name })}
-                draggable="false"
-                onClick={(event) => {
-                  if (trackRef.current?.dataset.dragged === "true") event.preventDefault();
-                }}
-              >
-                {content}
-              </Link>
-            ) : (
-              <div key={project._id || project.slug} className="wd-work-card-link" aria-disabled="true">
-                {content}
-              </div>
-            );
-          })}
+                );
+              },
+            )}
+          </div>
         </div>
 
-        {(!isDesktop || displayProjects.length > 4) ? (
-          <div className="wd-carousel-controls wd-work-carousel-controls">
-            <button
-              type="button"
-              onClick={goToPrevious}
-              aria-label="Previous project"
-            >
-              {isRtl ? <ArrowRight /> : <ArrowLeft />}
-            </button>
-            <button
-              type="button"
-              onClick={goToNext}
-              aria-label="Next project"
-            >
-              {isRtl ? <ArrowLeft /> : <ArrowRight />}
-            </button>
-          </div>
-        ) : null}
+        <ManualCarouselControls
+          activeIndex={activeIndex}
+          className="wd-work-carousel-controls"
+          count={pageCount}
+          dotLabel={(index) =>
+            t("work.caseStudy.slideLabel", undefined, {
+              current: index + 1,
+              total: pageCount,
+            })
+          }
+          nextLabel={t("work.projectsNextAria")}
+          onNext={next}
+          onPrevious={previous}
+          onSelect={goTo}
+          previousLabel={t("work.projectsPreviousAria")}
+        />
 
         <div className="wd-home-centered-action">
           <Link
             to="/work"
             className="wd-home-button wd-home-button--gold"
-            onClick={() => trackCustomEvent("SeeWorkClick", { button_name: "Work Preview", language: effectiveLanguage })}
+            onClick={() =>
+              trackCustomEvent("SeeWorkClick", {
+                button_name: "Work Preview",
+                language: effectiveLanguage,
+              })
+            }
           >
             {t("common.buttons.viewWork")} <ArrowUpRight size={18} aria-hidden="true" />
           </Link>

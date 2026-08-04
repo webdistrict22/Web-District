@@ -3,34 +3,44 @@ export const navLinks = [
   { key: "services", label: "Services", path: "/services" },
   { key: "work", label: "Work", path: "/work" },
   { key: "process", label: "Process", path: "/process" },
-  { key: "start", label: "Start", path: "/start" },
-  { key: "contact", label: "Contact", path: "/contact" },
 ];
 
 export const services = [
   {
     title: "Online Stores",
     description:
-      "Product websites built to make browsing and buying feel clear.",
-    points: ["Product pages", "Cart direction", "Mobile checkout"],
+      "Websites designed to make discovering products, ordering, and managing sales feel simple.",
+    points: ["Product discovery", "Ordering", "Sales management"],
   },
   {
     title: "Business Websites",
     description:
-      "Professional websites that explain the business fast.",
-    points: ["Clear pages", "Lead forms", "Trust sections"],
+      "Professional websites that explain the business clearly, build trust, and generate enquiries.",
+    points: ["Clear structure", "Trust building", "Enquiry paths"],
+  },
+  {
+    title: "Portfolio & Personal Brand Websites",
+    description:
+      "Personal websites that present your work, experience, and identity with a memorable direction.",
+    points: ["Selected work", "Experience", "Personal identity"],
   },
   {
     title: "Landing Pages",
     description:
-      "Focused pages for launches, offers, ads, and lead capture.",
-    points: ["Sharp message", "Strong CTA", "Fast mobile flow"],
+      "Focused pages built around one campaign, one offer, and one clear action.",
+    points: ["One campaign", "One offer", "One clear action"],
   },
   {
-    title: "Custom Websites",
+    title: "Booking & Reservation Websites",
     description:
-      "Tailored web builds for workflows that need more than pages.",
-    points: ["Custom logic", "Dashboards", "Booking flows"],
+      "Websites that let customers choose a service, reserve a time, and receive confirmation easily.",
+    points: ["Service selection", "Reservations", "Confirmations"],
+  },
+  {
+    title: "Custom Platforms & Dashboards",
+    description:
+      "Custom portals, dashboards, and workflows designed around how the business actually operates.",
+    points: ["Custom portals", "Dashboards", "Business workflows"],
   },
 ];
 

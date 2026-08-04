@@ -13,7 +13,7 @@ import "./Work.css";
 
 function Work() {
   const [projects, setProjects] = useState([]);
-  const { isRtl, t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
 
   const fetchProjects = async () => {
     try {
@@ -57,7 +57,7 @@ function Work() {
             ariaLabel={t("work.hero.eyebrow")}
             previousLabel={t("work.projectsPreviousAria")}
             nextLabel={t("work.projectsNextAria")}
-            isRtl={isRtl}
+            resetKey={effectiveLanguage}
           />
         </Container>
       </section>

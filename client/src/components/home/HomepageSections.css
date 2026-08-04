@@ -93,31 +93,38 @@
 
 .wd-services-track {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
   overflow: hidden;
   border: 1px solid rgb(23 20 17 / 0.5);
   border-radius: 14px;
-  background: #f7f2ec;
+  background: rgb(23 20 17 / 0.38);
 }
 
+.wd-services-mobile-action { display: none; }
+
 .wd-service-panel-link {
+  display: block;
+  height: 100%;
   min-width: 0;
-  border-inline-end: 1px solid rgb(23 20 17 / 0.38);
   background: #f7f2ec;
   color: #171411;
   outline: none;
 }
 
-.wd-service-panel-link:last-child { border-inline-end: 0; }
-
 .wd-service-panel {
-  display: flex;
-  min-height: 300px;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 26px 24px 24px;
+  display: grid;
+  height: 100%;
+  min-height: 255px;
+  box-sizing: border-box;
+  grid-template-rows: auto 1fr auto;
+  padding: 21px 22px 20px;
   color: #171411;
   transition: background-color 200ms ease;
+}
+
+@media (min-width: 1024px) {
+  .wd-services-track { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .wd-service-panel-link:hover .wd-service-panel { background: #eee8df; }
@@ -138,7 +145,7 @@
 }
 
 .wd-service-panel h3 {
-  margin: 0;
+  margin: 16px 0 0;
   font-size: clamp(1.25rem, 1.7vw, 1.75rem);
   font-weight: 750;
   letter-spacing: -0.045em;
@@ -146,7 +153,7 @@
 }
 
 .wd-service-panel div p {
-  margin: 14px 0 0;
+  margin: 9px 0 0;
   color: rgb(23 20 17 / 0.7);
   font-size: 0.9rem;
   line-height: 1.55;
@@ -162,7 +169,7 @@
   align-self: end;
   border: 1px solid rgb(23 20 17 / 0.4);
   border-radius: 50%;
-  padding: 8px;
+  padding: 9.5px;
   transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
@@ -175,20 +182,11 @@
 .wd-work-track {
   display: flex;
   gap: 16px;
-  overflow-x: auto;
-  padding: 3px;
-  margin: -3px;
-  cursor: grab;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  touch-action: pan-y;
-  user-select: none;
+  overflow: visible;
 }
 
 .wd-work-track::-webkit-scrollbar,
 .wd-snap-track::-webkit-scrollbar { display: none; }
-.wd-work-track:active { cursor: grabbing; }
 
 .wd-work-card-link {
   width: calc((100% - 48px) / 4);
@@ -269,8 +267,7 @@
 .wd-carousel-controls > div:last-child { display: flex; gap: 8px; }
 
 .wd-work-carousel-controls {
-  justify-content: center;
-  gap: 18px;
+  margin-top: 24px;
 }
 
 .wd-carousel-controls button {
@@ -572,14 +569,10 @@
   .wd-services-track {
     display: flex;
     gap: 12px;
-    overflow-x: auto;
+    overflow: visible;
     border: 0;
     border-radius: 0;
     background: transparent;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    overscroll-behavior-inline: contain;
   }
 
   .wd-service-panel-link {
@@ -588,7 +581,6 @@
     border: 1px solid rgb(23 20 17 / 0.5);
     border-radius: 12px;
     background: #f7f2ec;
-    scroll-snap-align: start;
     overflow: hidden;
   }
 
@@ -599,32 +591,63 @@
     background: #f7f2ec;
   }
 
+  .wd-service-panel > svg {
+    width: 33px;
+    height: 33px;
+    padding: 8.5px;
+  }
+
   .wd-service-panel-link:last-child { border-inline-end: 1px solid rgb(23 20 17 / 0.5); }
   .wd-service-panel h3 { font-size: 1.5rem; }
-  .wd-carousel-controls--ink {
-    display: grid;
-    grid-template-columns: minmax(36px, 1fr) auto minmax(84px, 1fr);
-    gap: 8px;
-    align-items: center;
-    direction: ltr;
+  .wd-services-controls {
     margin-top: 28px;
   }
-  .wd-carousel-controls--ink .wd-progress { justify-self: start; }
-  .wd-carousel-controls--ink > div:last-child { justify-self: end; }
-  .wd-services-controls {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    justify-items: center;
+  .wd-manual-carousel-controls--ink.wd-services-controls > button,
+  .wd-manual-carousel-controls--ink.wd-services-controls > button:hover {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    border: 0;
+    background: transparent;
   }
-  .wd-services-controls > div:last-child {
-    grid-row: 1;
-    justify-self: center;
-    gap: 12px;
+  .wd-services-controls > button::before {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgb(23 20 17 / 0.38);
+    border-radius: 50%;
+    background: transparent;
+    content: "";
+    pointer-events: none;
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+  .wd-services-controls > button svg {
+    position: relative;
+    z-index: 1;
+    width: 15px;
+    height: 15px;
+  }
+  .wd-services-controls > button:hover::before {
+    border-color: #050505;
+    background: #050505;
+  }
+  .wd-manual-carousel-controls--ink.wd-services-controls .wd-manual-carousel-controls__dots span {
+    background: rgb(247 242 236 / 0.8);
+  }
+  .wd-manual-carousel-controls--ink.wd-services-controls .wd-manual-carousel-controls__dots button.is-active span {
+    width: 0.76rem;
+    border-radius: 999px;
+    background: #050505;
+    transform: none;
+  }
+  .wd-services-mobile-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
   }
   .wd-services-action {
-    grid-row: 2;
     min-height: 44px;
-    justify-self: center;
     padding: 0.68rem 0.85rem;
     font-size: 0.76rem;
     white-space: nowrap;
@@ -651,8 +674,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wd-work-track,
-  .wd-services-track { scroll-behavior: auto; }
   .wd-reviews-marquee { overflow-x: auto; padding-inline: 20px; scrollbar-width: thin; }
   .wd-work-card-link:hover .wd-work-card,
   .wd-work-card-link:focus-visible .wd-work-card,

@@ -1,0 +1,112 @@
+.wd-manual-carousel-viewport {
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.wd-manual-carousel-track {
+  will-change: transform;
+}
+
+.wd-manual-carousel-controls {
+  display: flex;
+  width: min(100%, 38rem);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.35rem auto 0;
+  direction: ltr;
+}
+
+.wd-manual-carousel-controls > button {
+  display: inline-grid;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+  place-items: center;
+  border: 1px solid rgb(247 242 236 / 0.22);
+  border-radius: 50%;
+  background: transparent;
+  color: #f7f2ec;
+  cursor: pointer;
+  transition: border-color 180ms ease, background-color 180ms ease,
+    color 180ms ease, transform 180ms ease;
+}
+
+.wd-manual-carousel-controls > button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.wd-manual-carousel-controls > button:hover {
+  border-color: var(--wd-signature-gold);
+  background: var(--wd-signature-gold);
+  color: var(--wd-dark-ink);
+  transform: translateY(-1px);
+}
+
+.wd-manual-carousel-controls > button:active {
+  transform: translateY(1px);
+}
+
+.wd-manual-carousel-controls--light > button,
+.wd-manual-carousel-controls--ink > button {
+  border-color: rgb(23 20 17 / 0.34);
+  color: var(--wd-dark-ink);
+}
+
+.wd-manual-carousel-controls--light > button:hover,
+.wd-manual-carousel-controls--ink > button:hover {
+  border-color: var(--wd-dark-ink);
+  background: var(--wd-dark-ink);
+  color: var(--wd-primary-off-white);
+}
+
+.wd-manual-carousel-controls__dots {
+  display: flex;
+  min-width: 4rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+}
+
+.wd-manual-carousel-controls__dots button {
+  display: inline-grid;
+  width: 1.15rem;
+  height: 1.8rem;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wd-manual-carousel-controls__dots span {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: rgb(214 167 93 / 0.38);
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.wd-manual-carousel-controls__dots button.is-active span {
+  background: var(--wd-signature-gold);
+  transform: scale(1.42);
+}
+
+.wd-manual-carousel-controls--ink .wd-manual-carousel-controls__dots span,
+.wd-manual-carousel-controls--light .wd-manual-carousel-controls__dots span {
+  background: rgb(139 100 42 / 0.38);
+}
+
+.wd-manual-carousel-controls--ink .wd-manual-carousel-controls__dots button.is-active span,
+.wd-manual-carousel-controls--light .wd-manual-carousel-controls__dots button.is-active span {
+  background: var(--wd-signature-gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-manual-carousel-track,
+  .wd-manual-carousel-controls > button,
+  .wd-manual-carousel-controls__dots span {
+    transition: none !important;
+  }
+}

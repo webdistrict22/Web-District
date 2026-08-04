@@ -1,217 +1,767 @@
-import { CheckCircle2 } from "lucide-react";
-import Card from "../common/Card";
-import Badge from "../common/Badge";
-import ProjectCover from "./ProjectCover";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  ChevronDown,
+  ExternalLink,
+  Star,
+} from "lucide-react";
+import Container from "../common/Container";
+import Button from "../common/Button";
+import ManualCarouselControls from "../common/ManualCarousel";
+import useManualCarousel from "../common/useManualCarousel";
+import LogoLoop from "../reactbits/LogoLoop/LogoLoop";
+import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
+import { workProjects } from "../../data/demoProjects";
+import ProjectCard from "./ProjectCard";
+import useMediaQuery from "../../hooks/useMediaQuery";
+import "./CaseStudySection.css";
 
-function BulletList({ items = [], fallbackDetail }) {
-  const visibleItems = items.length ? items : [fallbackDetail];
+const QUALITY_KEYS = [
+  "experience",
+  "performance",
+  "security",
+  "operations",
+  "growth",
+];
 
+const MONTHLY_VOLUME_KEYS = new Set([
+  "monthlySessions",
+  "monthlyOrders",
+  "totalConversions",
+  "sampleOrders",
+  "qualifiedLeads",
+  "monthlyBookingLeads",
+]);
+
+const getImageSource = (image) =>
+  typeof image === "string" ? image : image?.src;
+
+function useDesktopShowcase() {
+  const [isDesktop, setIsDesktop] = useState(() =>
+    window.matchMedia("(min-width: 1024px)").matches,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (event) => setIsDesktop(event.matches);
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return isDesktop;
+}
+
+function ShowcaseGrid({ images, name, t }) {
   return (
-    <div className="grid gap-3">
-      {visibleItems.map((item) => (
-        <div
-          key={item}
-          className="flex gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-[#D9D4CC]"
-        >
-          <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-          <span>{item}</span>
-        </div>
+    <div className="wd-case-study-showcase-grid">
+      {images.map((image, index) => (
+        <figure className="wd-case-study-showcase-grid__surface" key={image}>
+          <img
+            src={image}
+            alt={t("work.caseStudy.showcaseImageAlt", undefined, {
+              name,
+              number: String(index + 1).padStart(2, "0"),
+            })}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+          />
+        </figure>
       ))}
     </div>
   );
 }
 
-function ShowcaseGallery({ images = [], name }) {
-  const { t } = useLanguage();
+function ShowcaseCarousel({ images, name, t }) {
+  const {
+    activeIndex,
+    goTo,
+    handleClickCapture,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerUp,
+    handleTransitionEnd,
+    next,
+    pageCount,
+    previous,
+    slides,
+    trackRef,
+    viewportRef,
+  } = useManualCarousel({
+    items: images,
+    visibleCount: 1,
+    resetKey: images.join("|"),
+  });
 
   if (!images.length) return null;
 
-  const [leadImage, ...supportingImages] = images.slice(0, 4);
-
-  const getImageMeta = (item, index) => {
-    const src = typeof item === "string" ? item : item.src;
-    const title =
-      typeof item === "string"
-        ? `${t("work.caseStudy.screen")} ${index + 1}`
-        : item.title;
-    const alt =
-      typeof item === "string"
-        ? `${name} showcase ${index + 1}`
-        : item.alt || `${name} ${title}`;
-
-    return { src, title, alt };
-  };
-
-  const lead = getImageMeta(leadImage, 0);
-
   return (
-    <section className="rounded-[2rem] bg-[linear-gradient(180deg,rgba(248,247,244,0.03),rgba(248,247,244,0.012)),#0B0B0B] p-4 md:p-6">
-      <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            {t("work.caseStudy.showcase")}
-          </p>
-          <h2 className="font-display mt-2 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-            {t("work.caseStudy.showcaseTitle")}
-          </h2>
+    <div
+      className="wd-case-study-carousel"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={t("work.caseStudy.carouselLabel", undefined, { name })}
+    >
+      <div
+        ref={viewportRef}
+        className="wd-case-study-carousel__viewport wd-manual-carousel-viewport"
+        onClickCapture={handleClickCapture}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
+        <div
+          ref={trackRef}
+          className="wd-case-study-carousel__track wd-manual-carousel-track"
+          dir="ltr"
+          onTransitionEnd={handleTransitionEnd}
+        >
+        {slides.map(({ item: image, duplicate, logicalIndex }, index) => {
+          const source = getImageSource(image);
+
+          return (
+            <div
+              className="wd-case-study-carousel__slide"
+              key={`${source}-${index}`}
+              aria-hidden={duplicate || undefined}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={t("work.caseStudy.slideLabel", undefined, {
+                current: logicalIndex + 1,
+                total: images.length,
+              })}
+            >
+              <div className="wd-case-study-carousel__surface">
+                <img
+                  src={source}
+                  alt={t("work.caseStudy.showcaseImageAlt", undefined, {
+                    name,
+                    number: String(logicalIndex + 1).padStart(2, "0"),
+                  })}
+                  className="wd-case-study-carousel__image"
+                  loading={logicalIndex === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              </div>
+            </div>
+          );
+        })}
         </div>
       </div>
 
-      <div className="grid gap-5">
-        <Card className="wd-card-on-black overflow-hidden border-[#C4A77D]/24">
-          <div className="relative aspect-[16/10] overflow-hidden bg-[radial-gradient(circle_at_80%_20%,rgba(196,167,125,0.16),transparent_32%),linear-gradient(135deg,#080808,#0B0B0B)] p-2 md:p-3">
-            <img
-              src={lead.src}
-              alt={lead.alt}
-              className="h-full w-full rounded-[1.2rem] object-contain"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          {lead.title && (
-            <p className="border-t border-white/10 px-5 py-4 text-sm font-semibold text-[#F8F7F4]">
-              {lead.title}
-            </p>
-          )}
-        </Card>
+      <ManualCarouselControls
+        activeIndex={activeIndex}
+        className="wd-case-study-carousel-controls"
+        count={pageCount}
+        dotLabel={(index) => t("work.caseStudy.slideLabel", undefined, {
+          current: index + 1,
+          total: pageCount,
+        })}
+        nextLabel={t("work.caseStudy.nextImage")}
+        onNext={next}
+        onPrevious={previous}
+        onSelect={goTo}
+        previousLabel={t("work.caseStudy.previousImage")}
+      />
+    </div>
+  );
+}
 
-        {supportingImages.length > 0 && (
-          <div className="grid gap-5 md:grid-cols-3">
-            {supportingImages.map((item, index) => {
-              const image = getImageMeta(item, index + 1);
+function OtherProjectsCarousel({ currentSlug, t, isRtl }) {
+  const items = useMemo(
+    () => workProjects.filter((item) => item.slug !== currentSlug),
+    [currentSlug],
+  );
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const {
+    activeIndex,
+    goTo,
+    handleClickCapture,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerUp,
+    handleTransitionEnd,
+    next,
+    pageCount,
+    previous,
+    slides,
+    trackRef,
+    viewportRef,
+  } = useManualCarousel({
+    items,
+    visibleCount: isDesktop ? 4 : 1,
+    resetKey: currentSlug,
+  });
 
-              return (
-                <Card key={image.src} className="wd-card-on-black overflow-hidden">
-                  <div className="aspect-[16/10] overflow-hidden border-b border-white/10 bg-[radial-gradient(circle_at_80%_20%,rgba(196,167,125,0.12),transparent_32%),linear-gradient(135deg,#080808,#0B0B0B)] p-2">
-                    <img
-                      src={image.src}
-                      alt={image.alt}
-                      className="h-full w-full rounded-[1rem] object-contain"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  {image.title && (
-                    <p className="px-4 py-3 text-xs font-semibold text-[#F8F7F4]">
-                      {image.title}
-                    </p>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
-        )}
+  return (
+    <div
+      className="wd-case-study-other-projects__carousel"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={t("work.caseStudy.moreWorkEyebrow")}
+    >
+      <div
+        ref={viewportRef}
+        className="wd-case-study-other-projects__viewport wd-manual-carousel-viewport"
+        onClickCapture={handleClickCapture}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
+        <div
+          ref={trackRef}
+          className="wd-case-study-other-projects__track wd-manual-carousel-track"
+          dir="ltr"
+          onTransitionEnd={handleTransitionEnd}
+        >
+        {slides.map(({ item, duplicate }, index) => {
+          return (
+            <div
+              className="wd-case-study-other-projects__slide"
+              key={`${item.slug}-${index}`}
+              aria-hidden={duplicate || undefined}
+              dir={isRtl ? "rtl" : "ltr"}
+            >
+              <ProjectCard project={item} duplicate={duplicate} />
+            </div>
+          );
+        })}
+        </div>
       </div>
+
+      <ManualCarouselControls
+        activeIndex={activeIndex}
+        className="wd-case-study-other-projects-controls"
+        count={pageCount}
+        dotLabel={(index) => t("work.caseStudy.slideLabel", undefined, {
+          current: index + 1,
+          total: pageCount,
+        })}
+        nextLabel={t("work.caseStudy.nextProject")}
+        onNext={next}
+        onPrevious={previous}
+        onSelect={goTo}
+        previousLabel={t("work.caseStudy.previousProject")}
+      />
+    </div>
+  );
+}
+
+function DetailGroup({ title, items, isRtl }) {
+  if (!items?.length) return null;
+
+  return (
+    <div className="wd-case-study-detail-group">
+      <h4>{title}</h4>
+      <p className="wd-case-study-detail-group__items" dir={isRtl ? "rtl" : "ltr"}>
+        {items.join(isRtl ? "، " : ", ")}.
+      </p>
+    </div>
+  );
+}
+
+function PerformanceSnapshot({ metrics, strongResults, t, isRtl }) {
+  const localizedResults = strongResults?.[isRtl ? "ar" : "en"] || [];
+
+  if (!metrics?.length) return null;
+
+  return (
+    <div className="wd-case-study-performance">
+      <h4>{t("work.caseStudy.performanceSnapshot")}</h4>
+      <div className="wd-case-study-metrics">
+        {metrics.map(([labelKey, value]) => {
+          const isMonthlyVolume = MONTHLY_VOLUME_KEYS.has(labelKey);
+
+          return (
+            <div className="wd-case-study-metric" key={labelKey}>
+              <span>{t(`work.caseStudy.metricLabels.${labelKey}`)}</span>
+              <bdi dir={isMonthlyVolume && isRtl ? "rtl" : "ltr"}>
+                {isMonthlyVolume ? (
+                  <>{t("work.caseStudy.metricAround")} <span dir="ltr">{value}</span></>
+                ) : value}
+              </bdi>
+            </div>
+          );
+        })}
+      </div>
+      {localizedResults.length ? (
+        <div className="wd-case-study-results">
+          <h4>{t("work.caseStudy.strongResults")}</h4>
+          <ul dir={isRtl ? "rtl" : "ltr"}>
+            {localizedResults.map((result) => <li key={result}>{result}</li>)}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SecurityProtections({ security, t, isRtl }) {
+  const groups = security?.groups || security?.verified;
+  if (!groups?.length) return null;
+
+  const locale = isRtl ? "ar" : "en";
+
+  return (
+    <div className="wd-case-study-security wd-case-study-safeguards">
+      {groups.map((group) => (
+        <section className="wd-case-study-safeguards__group" key={group.key || group.title.en}>
+          <h4>
+            {group.key
+              ? t(`work.caseStudy.securityLabels.${group.key}`)
+              : group.title[locale]}
+          </h4>
+          <ul dir={isRtl ? "rtl" : "ltr"}>
+            {group.items[locale].map((item) => <li key={item}>{item}</li>)}
+          </ul>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function QualitiesAccordion({ project, qualities, t, isRtl }) {
+  const accordionId = useId().replaceAll(":", "");
+  const [openKey, setOpenKey] = useState(null);
+  const panelPointerRef = useRef(null);
+  const openingScrollPositionsRef = useRef(new Map());
+  const pendingRestoreRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (openKey !== null || pendingRestoreRef.current === null) return;
+
+    const restoreTop = pendingRestoreRef.current;
+    pendingRestoreRef.current = null;
+    const maxScroll = Math.max(
+      0,
+      document.documentElement.scrollHeight - window.innerHeight,
+    );
+    window.scrollTo({
+      top: Math.min(Math.max(restoreTop, 0), maxScroll),
+      left: 0,
+      behavior: "auto",
+    });
+  }, [openKey]);
+
+  const toggleTopic = (key) => {
+    if (openKey === key) {
+      pendingRestoreRef.current =
+        openingScrollPositionsRef.current.get(key) ?? window.scrollY;
+      setOpenKey(null);
+      return;
+    }
+
+    pendingRestoreRef.current = null;
+    openingScrollPositionsRef.current.set(key, window.scrollY);
+    setOpenKey(key);
+  };
+
+  const handlePanelClick = (event, key) => {
+    if (event.target.closest("a, button, input, textarea, select, summary, [role='button'], [contenteditable='true']")) {
+      return;
+    }
+
+    const pointer = panelPointerRef.current;
+    const moved = pointer && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 5;
+    const selection = window.getSelection();
+
+    if (moved || (selection && !selection.isCollapsed && selection.toString().trim())) return;
+    if (openKey === key) toggleTopic(key);
+  };
+
+  return (
+    <div className="wd-case-study-accordion">
+      {QUALITY_KEYS.map((key, index) => {
+        const isOpen = openKey === key;
+        const buttonId = `${accordionId}-${key}-button`;
+        const panelId = `${accordionId}-${key}-panel`;
+        const content = qualities[key]?.[isRtl ? "ar" : "en"];
+        const paragraph = key === "security"
+          ? project.security?.summary?.[isRtl ? "ar" : "en"] || content?.paragraph
+          : content?.paragraph;
+
+        if (!content) return null;
+
+        return (
+          <div
+            className={`wd-case-study-accordion__item${isOpen ? " is-open" : ""}`}
+            key={key}
+          >
+            <h3>
+              <button
+                id={buttonId}
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                onClick={() => toggleTopic(key)}
+              >
+                <span className="wd-case-study-accordion__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span>{t(`work.caseStudy.qualityTopics.${key}`)}</span>
+                <ChevronDown
+                  className="wd-case-study-accordion__icon"
+                  aria-hidden="true"
+                />
+              </button>
+            </h3>
+            <div
+              id={panelId}
+              className="wd-case-study-accordion__panel"
+              role="region"
+              aria-labelledby={buttonId}
+              aria-hidden={!isOpen}
+              onPointerDown={(event) => {
+                panelPointerRef.current = { x: event.clientX, y: event.clientY };
+              }}
+              onClick={(event) => handlePanelClick(event, key)}
+            >
+              <div>
+                <p dir={isRtl ? "rtl" : "ltr"}>{paragraph}</p>
+                {key === "experience" && content.points?.length ? (
+                  <ul dir={isRtl ? "rtl" : "ltr"}>
+                    {content.points.slice(0, 3).map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                {key === "experience" ? (
+                  <DetailGroup
+                    title={t("work.caseStudy.publicPages")}
+                    items={project.publicPages?.[isRtl ? "ar" : "en"]}
+                    isRtl={isRtl}
+                  />
+                ) : null}
+                {key === "performance" ? (
+                  <PerformanceSnapshot
+                    metrics={project.metrics}
+                    strongResults={project.strongResults}
+                    t={t}
+                    isRtl={isRtl}
+                  />
+                ) : null}
+                {key === "security" ? (
+                  <SecurityProtections
+                    security={project.security}
+                    t={t}
+                    isRtl={isRtl}
+                  />
+                ) : null}
+                {key === "operations" ? (
+                  <div className="wd-case-study-management-groups">
+                    {(project.managementGroups || []).map((group, groupIndex) => (
+                      <DetailGroup
+                        key={group.title.en}
+                        title={project.slug === "s8-factory"
+                          ? group.title[isRtl ? "ar" : "en"]
+                          : t(groupIndex === 0
+                            ? "work.caseStudy.ownerControls"
+                            : "work.caseStudy.customerOperations")}
+                        items={group.items[isRtl ? "ar" : "en"]}
+                        isRtl={isRtl}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+                {key === "growth" && project.launchInventory ? (
+                  <DetailGroup
+                    title={t("work.caseStudy.launchScope")}
+                    items={[project.launchInventory[isRtl ? "ar" : "en"]]}
+                    isRtl={isRtl}
+                  />
+                ) : null}
+                {key === "growth" && content.points?.length ? (
+                  <DetailGroup
+                    title={t("work.caseStudy.builtToExpand")}
+                    items={content.points.slice(0, 3)}
+                    isRtl={isRtl}
+                  />
+                ) : null}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const normalizeReviewValue = (value = "") =>
+  value.toLocaleLowerCase().normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "");
+
+function ProjectReview({ project, name, logoImage, t }) {
+  const [review, setReview] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timerId = window.setTimeout(async () => {
+      try {
+        const { data } = await api.get("/reviews/public", {
+          timeout: PUBLIC_CONTENT_TIMEOUT,
+          signal: controller.signal,
+        });
+        const aliases = (project.reviewAliases || [name]).map(
+          normalizeReviewValue,
+        );
+        const match = (data.reviews || []).find((item) => {
+          const businessName = normalizeReviewValue(item.businessName);
+          return aliases.some(
+            (alias) =>
+              alias &&
+              (businessName === alias || businessName.includes(alias)),
+          );
+        });
+
+        setReview(match || null);
+      } catch {
+        if (!controller.signal.aborted) setReview(null);
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timerId);
+      controller.abort();
+    };
+  }, [name, project.reviewAliases]);
+
+  if (!review) return null;
+
+  const rating = Math.max(1, Math.min(5, review.rating || 5));
+  const quoteIsArabic = /[\u0600-\u06ff]/.test(review.message || "");
+  const reviewImage = review.image || review.logoImage || review.avatar || logoImage;
+
+  return (
+    <section className="wd-case-study-review" aria-labelledby="project-review-title">
+      <Container>
+        <header className="wd-case-study-review__heading">
+          <p>{t("work.caseStudy.reviewEyebrow")}</p>
+          <h2 id="project-review-title" className="font-display">
+            {t("work.caseStudy.reviewTitle")}
+          </h2>
+          <span>{t("work.caseStudy.reviewDescription")}</span>
+        </header>
+        <article className="wd-case-study-review__card">
+          <div className="wd-case-study-review__meta" dir="ltr">
+            <div className="wd-case-study-review__owner">
+              <span className="wd-case-study-review__avatar" aria-hidden="true">
+                <img
+                  src={reviewImage}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = logoImage;
+                  }}
+                />
+              </span>
+              <span className="wd-case-study-review__identity">
+                <strong>{review.name}</strong>
+                <small dir="ltr">{review.role || "Client"}</small>
+                <small>{review.businessName || name}</small>
+              </span>
+            </div>
+            <div
+              className="wd-case-study-review__stars"
+              aria-label={t("work.caseStudy.reviewRating", undefined, { rating })}
+            >
+              {Array.from({ length: 5 }, (_, index) => (
+                <Star
+                  key={index}
+                  aria-hidden="true"
+                  className={index < rating ? "is-filled" : ""}
+                />
+              ))}
+            </div>
+          </div>
+          <blockquote dir={quoteIsArabic ? "rtl" : "ltr"}>{review.message}</blockquote>
+        </article>
+      </Container>
     </section>
   );
 }
 
 function CaseStudySection({ project }) {
-  const { t, translateValue } = useLanguage();
+  const { isRtl, t, translateValue } = useLanguage();
+  const isDesktopShowcase = useDesktopShowcase();
   const isDatabaseProject = Boolean(project._id);
-
-  const name = isDatabaseProject ? project.title : project.name;
-  const slug = project.slug;
+  const rawName = isDatabaseProject ? project.title : project.name;
+  const name = t(`work.projects.${project.slug}.name`, rawName);
   const rawType = isDatabaseProject ? project.websiteType : project.type;
-  const rawBusinessType = project.businessType || "";
-  const rawOverview = isDatabaseProject
-    ? project.fullDescription || project.shortDescription
-    : project.overview;
-  const rawPublicFeatures = isDatabaseProject
-    ? project.keyFeatures || []
-    : project.publicFeatures || project.features || [];
-  const rawAdminFeatures = project.adminFeatures || [];
-  const type = t(
-    `work.projects.${slug}.type`,
-    translateValue("websiteTypes", rawType)
+  const rawSubtitle = project.businessType || rawType;
+  const subtitle = t(
+    `work.projects.${project.slug}.businessType`,
+    translateValue("websiteTypes", rawSubtitle),
   );
-  const businessType = t(`work.projects.${slug}.businessType`, rawBusinessType);
-  const overview = t(`work.projects.${slug}.overview`, rawOverview);
-  const publicFeatures = t(
-    `work.projects.${slug}.publicFeatures`,
-    rawPublicFeatures
-  );
-  const adminFeatures = t(`work.projects.${slug}.adminFeatures`, rawAdminFeatures);
-  const showcaseTitles = t(`work.projects.${slug}.showcaseTitles`, []);
+  const rawSummary = isDatabaseProject
+    ? project.shortDescription || project.fullDescription
+    : project.description || project.overview;
+  const summary = t(`work.projects.${project.slug}.description`, rawSummary);
+  const logoImage = project.logoImage || project.coverImage || project.image;
   const showcaseImages = (
     project.showcaseImages ||
-    (isDatabaseProject ? project.images?.slice(1) || [] : [])
-  ).map((item, index) =>
-    typeof item === "string"
-      ? { src: item, title: showcaseTitles[index] }
-      : { ...item, title: showcaseTitles[index] || item.title }
-  );
-  const image = isDatabaseProject
-    ? project.images?.[0]
-    : project.coverImage || project.image;
+    (isDatabaseProject ? project.images?.slice(1, 4) || [] : [])
+  )
+    .map(getImageSource)
+    .filter(Boolean)
+    .slice(0, 3);
+  const qualities = project.qualities || {};
+  const hasLiveUrl = /^https?:\/\//i.test(project.liveUrl || "");
+  const logoStyle = {
+    "--case-study-logo-scale": project.logoScale || 1,
+    "--case-study-logo-position": project.logoPosition || "center",
+  };
 
   return (
-    <div className="grid gap-8">
-      <section className="grid gap-8 lg:grid-cols-[0.86fr_1.14fr] lg:items-stretch">
-        <div className="flex flex-col justify-center">
-          <Badge>{type}</Badge>
-
-          <h1 className="font-display mt-5 text-5xl font-extrabold leading-[1] tracking-[-0.07em] text-[#F8F7F4] md:text-7xl">
-            {name}
-          </h1>
-
-          {businessType && (
-            <p className="mt-4 text-xs font-bold uppercase tracking-[0.32em] text-[#C4A77D]">
-              {businessType}
-            </p>
-          )}
-
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-[#D9D4CC]">
-            {overview}
-          </p>
-
-        </div>
-
-        <Card className="wd-card-on-black group overflow-hidden">
-          <ProjectCover
-            image={image}
-            name={name}
-            className="min-h-[360px] lg:min-h-[520px]"
-            imageLoading="eager"
-            fetchPriority="high"
-          >
-            <div className="absolute bottom-6 left-6 right-6">
-              <h2 className="font-display text-3xl font-bold tracking-[-0.05em]">
-                {name} - {type}
-              </h2>
+    <article className="wd-case-study-page">
+      <section className="wd-case-study-intro" aria-labelledby="case-study-title">
+        <Container>
+          <div className="wd-case-study-intro__row">
+            <div className="wd-case-study-intro__identity">
+              <figure className="wd-case-study-intro__logo" style={logoStyle}>
+                <img
+                  src={logoImage}
+                  alt={t("work.caseStudy.logoImageAlt", undefined, { name })}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                />
+              </figure>
+              <div className="wd-case-study-intro__heading">
+                <h1 id="case-study-title" className="font-display" dir="auto">
+                  {name}
+                </h1>
+                <p className="wd-case-study-intro__subtitle">{subtitle}</p>
+              </div>
             </div>
-          </ProjectCover>
-        </Card>
+            <div className="wd-case-study-intro__body">
+              <p className="wd-case-study-intro__summary">{summary}</p>
+              {hasLiveUrl ? (
+                <Button
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  icon={false}
+                  className="wd-case-study-intro__live"
+                  aria-label={t("work.caseStudy.liveProjectAria", undefined, { name })}
+                >
+                  {t("work.caseStudy.liveProject")}
+                  <ExternalLink size={16} aria-hidden="true" />
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </Container>
       </section>
 
-      <ShowcaseGallery images={showcaseImages} name={name} />
-
-      <section className="rounded-[2rem] bg-[#0B0B0B] p-4 md:p-6">
-        <div className="grid gap-5 lg:grid-cols-2">
-        <Card className="wd-card-on-black p-6 md:p-8">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            {t("work.caseStudy.publicFeatures")}
-          </p>
-          <BulletList
-            items={publicFeatures}
-            fallbackDetail={t("work.caseStudy.fallbackDetail")}
-          />
-        </Card>
-
-        <Card className="wd-card-on-black p-6 md:p-8">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-            {t("work.caseStudy.adminFeatures")}
-          </p>
-          <BulletList
-            items={adminFeatures}
-            fallbackDetail={t("work.caseStudy.fallbackDetail")}
-          />
-        </Card>
-        </div>
+      <section className="wd-case-study-logo-loop">
+        <LogoLoop
+          items={project.logoLoop}
+          ariaLabel={t("work.caseStudy.logoLoopLabel", undefined, { name })}
+        />
       </section>
 
-    </div>
+      <section className="wd-case-study-showcase" aria-labelledby="showcase-title">
+        <Container>
+          <header className="wd-case-study-heading">
+            <p>{t("work.caseStudy.showcase")}</p>
+            <h2 id="showcase-title" className="font-display">
+              {t("work.caseStudy.showcaseTitle")}
+            </h2>
+          </header>
+          {isDesktopShowcase ? (
+            <ShowcaseGrid images={showcaseImages} name={name} t={t} />
+          ) : (
+            <ShowcaseCarousel images={showcaseImages} name={name} t={t} />
+          )}
+        </Container>
+      </section>
+
+      <section className="wd-case-study-qualities" aria-labelledby="qualities-title">
+        <Container>
+          <header className="wd-case-study-heading wd-case-study-heading--light">
+            <p>{t("work.caseStudy.qualitiesEyebrow")}</p>
+            <h2 id="qualities-title" className="font-display">
+              {t("work.caseStudy.qualitiesTitle")}
+            </h2>
+          </header>
+          <QualitiesAccordion
+            key={project.slug}
+            project={project}
+            qualities={qualities}
+            t={t}
+            isRtl={isRtl}
+          />
+        </Container>
+      </section>
+
+      <ProjectReview
+        key={project.slug}
+        project={project}
+        name={name}
+        logoImage={logoImage}
+        t={t}
+      />
+
+      <section
+        className="wd-case-study-other-projects"
+        aria-labelledby="other-projects-title"
+      >
+        <Container>
+          <header className="wd-case-study-other-projects__heading">
+            <p>{t("work.caseStudy.moreWorkEyebrow")}</p>
+            <h2 id="other-projects-title" className="font-display">
+              {t("work.caseStudy.moreWorkTitle")}
+            </h2>
+            <span>{t("work.caseStudy.moreWorkDescription")}</span>
+          </header>
+          <OtherProjectsCarousel
+            key={project.slug}
+            currentSlug={project.slug}
+            t={t}
+            isRtl={isRtl}
+          />
+        </Container>
+      </section>
+
+      <section className="wd-case-study-cta" aria-labelledby="case-study-cta-title">
+        <Container>
+          <p className="wd-case-study-cta__eyebrow">
+            {t("work.caseStudy.ctaEyebrow")}
+          </p>
+          <h2 id="case-study-cta-title" className="font-display">
+            {t("work.caseStudy.ctaTitle")}
+          </h2>
+          <p className="wd-case-study-cta__description">
+            {t("work.caseStudy.ctaDescription")}
+          </p>
+          <div className="wd-case-study-cta__actions">
+            <Button
+              to="/start"
+              icon={false}
+              className="wd-case-study-cta__light-button"
+            >
+              {t("common.buttons.startProject")}
+            </Button>
+            <Button
+              to="/process#faq"
+              variant="secondary"
+              icon={false}
+              className="wd-case-study-cta__dark-button"
+            >
+              {t("work.caseStudy.haveQuestions")}
+            </Button>
+          </div>
+        </Container>
+      </section>
+    </article>
   );
 }
 

@@ -175,10 +175,10 @@
   height: 48px;
   width: 100%;
   overflow: hidden;
-  border-top: 1px solid rgb(23 20 17 / 0.25);
-  border-bottom: 1px solid rgb(23 20 17 / 0.25);
-  background: var(--wd-signature-gold);
-  color: var(--wd-dark-ink);
+  border-top: 1px solid rgb(214 167 93 / 0.34);
+  border-bottom: 1px solid rgb(214 167 93 / 0.34);
+  background: var(--wd-main-black);
+  color: var(--wd-signature-gold);
 }
 
 .wd-gold-marquee__loop,
@@ -208,24 +208,6 @@
   font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   letter-spacing: 0;
   text-transform: none;
-}
-
-.wd-responsive-video {
-  position: relative;
-  width: 100%;
-  height: clamp(360px, 39vw, 500px);
-  overflow: hidden;
-  background: var(--wd-main-black);
-}
-
-.wd-responsive-video video,
-.wd-responsive-video img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  pointer-events: none;
 }
 
 @media (max-width: 767px) {
@@ -283,9 +265,6 @@
     font-size: 0.71875rem;
   }
 
-  .wd-responsive-video {
-    height: clamp(330px, 55svh, 470px);
-  }
 }
 
 @media (max-width: 350px) {

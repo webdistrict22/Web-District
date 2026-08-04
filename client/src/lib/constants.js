@@ -13,7 +13,6 @@ export const ROUTES = {
   work: "/work",
   process: "/process",
   start: "/start",
-  contact: "/contact",
   success: "/success",
   login: "/login",
   signup: "/signup",
@@ -24,8 +23,10 @@ export const ROUTES = {
 export const WEBSITE_TYPES = [
   "Online Store",
   "Business Website",
+  "Portfolio & Personal Brand Website",
   "Landing Page",
-  "Custom Website",
+  "Booking & Reservation Website",
+  "Custom Platform & Dashboard",
 ];
 
 export const REQUEST_STATUSES = [

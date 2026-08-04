@@ -14,10 +14,9 @@ const navigationEvents = {
   "/services": "ServicesClick",
   "/work": "SeeWorkClick",
   "/start": "StartProjectClick",
-  "/contact": "ContactClick",
 };
 
-const routeLinks = navLinks.filter((link) => link.key !== "start");
+const routeLinks = navLinks;
 
 const isRouteActive = (pathname, path) => {
   if (path === "/") return pathname === "/";

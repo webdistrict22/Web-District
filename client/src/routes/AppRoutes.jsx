@@ -17,7 +17,6 @@ import Work from "../pages/public/Work";
 import CaseStudy from "../pages/public/CaseStudy";
 import Process from "../pages/public/Process";
 import Start from "../pages/public/Start";
-import Contact from "../pages/public/Contact";
 import Success from "../pages/public/Success";
 import Terms from "../pages/public/Terms";
 import Privacy from "../pages/public/Privacy";
@@ -88,7 +87,10 @@ function AppRoutes() {
           <Route path="work/:slug" element={<CaseStudy />} />
           <Route path="process" element={<Process />} />
           <Route path="start" element={<Start />} />
-          <Route path="contact" element={<Contact />} />
+          <Route
+            path="contact"
+            element={<Navigate to="/process#faq" replace />}
+          />
           <Route path="success" element={<Success />} />
           <Route path="terms" element={<Terms />} />
           <Route path="privacy" element={<Privacy />} />

@@ -17,8 +17,6 @@ export const translations = {
         services: "Services",
         work: "Work",
         process: "Process",
-        start: "Start",
-        contact: "Contact",
       },
       login: "Login",
       clientLogin: "Login",
@@ -53,7 +51,6 @@ export const translations = {
         viewServices: "View services",
         answerQuestions: "Answer Your Questions",
         viewQuestions: "View Questions & Answers",
-        contactWebDistrict: "Contact Web District",
         websiteCare: "Website Care",
         backHome: "Back home",
         backToWork: "Back to work",
@@ -128,8 +125,10 @@ export const translations = {
       websiteTypes: {
         "Online Store": "Online Store",
         "Business Website": "Business Website",
+        "Portfolio & Personal Brand Website": "Portfolio & Personal Brand Website",
         "Landing Page": "Landing Page",
-        "Custom Website": "Custom Website",
+        "Booking & Reservation Website": "Booking & Reservation Website",
+        "Custom Platform & Dashboard": "Custom Platform & Dashboard",
       },
       contactMethods: {
         WhatsApp: "WhatsApp",
@@ -171,16 +170,18 @@ export const translations = {
       },
       services: {
         eyebrow: "What we build",
-        title: "Four clear website directions.",
+        title: "Six clear website directions.",
         description:
-          "Pick the direction that matches the goal. We keep the structure clean from there.",
+          "Choose the direction that matches your goal. We keep the structure clear from the start.",
         previousAria: "Previous service",
         nextAria: "Next service",
         titles: [
           "Online Stores",
           "Business Websites",
+          "Portfolio & Personal Brand Websites",
           "Landing Pages",
-          "Custom Websites",
+          "Booking & Reservation Websites",
+          "Custom Platforms & Dashboards",
         ],
       },
       work: {
@@ -214,7 +215,7 @@ export const translations = {
     services: {
       metaTitle: "Services",
       metaDescription:
-        "Explore Web District website services, including online stores, business websites, landing pages, custom websites, and website care.",
+        "Explore six Web District website services: online stores, business websites, portfolios, landing pages, booking websites, and custom platforms.",
       hero: {
         eyebrow: "Services",
         title: "Websites built around the business goal.",
@@ -227,7 +228,7 @@ export const translations = {
           title: "Online Stores",
           label: "E-commerce",
           description:
-            "Websites built to make browsing and buying products feel clear.",
+            "Websites designed to make discovering products, ordering, and managing sales feel simple.",
           longDescription:
             "For brands that need a polished product flow and a serious buying experience.",
           includes: [
@@ -241,30 +242,50 @@ export const translations = {
           title: "Business Websites",
           label: "Companies",
           description:
-            "Professional websites that explain the business fast and earn trust.",
+            "Professional websites that explain the business clearly, build trust, and generate enquiries.",
           longDescription:
             "For companies, service providers, and teams that need trust and leads.",
           includes: ["Clear pages", "Lead forms", "Trust sections"],
           bestFor: ["Companies", "Service providers", "Consultants"],
         },
         {
+          title: "Portfolio & Personal Brand Websites",
+          label: "Personal brands",
+          description:
+            "Personal websites that present your work, experience, and identity with a memorable direction.",
+          longDescription:
+            "For professionals and creators who need a polished home for their work and identity.",
+          includes: ["Work and case studies", "Experience and services", "Personal brand direction"],
+          bestFor: ["Professionals", "Creators", "Personal brands"],
+        },
+        {
           title: "Landing Pages",
           label: "Campaigns",
-          description: "Focused pages for launches, offers, ads, and lead capture.",
+          description: "Focused pages built around one campaign, one offer, and one clear action.",
           longDescription:
             "For campaigns that need one clear message and one clear action.",
           includes: ["Sharp message", "Strong CTA", "Great visuals"],
           bestFor: ["Ads", "Launches", "Lead generation"],
         },
         {
-          title: "Custom Websites",
-          label: "Systems",
+          title: "Booking & Reservation Websites",
+          label: "Bookings",
           description:
-            "Tailored web builds for workflows that need more than pages.",
+            "Websites that let customers choose a service, reserve a time, and receive confirmation easily.",
           longDescription:
-            "For projects that need dashboards, booking, portals, or custom logic.",
-          includes: ["Custom builds", "Dashboards", "Booking flows"],
-          bestFor: ["Client portals", "Booking systems", "Custom workflows"],
+            "For businesses that need a clear reservation journey and practical management tools.",
+          includes: ["Service selection", "Availability and reservations", "Confirmation and management"],
+          bestFor: ["Clinics", "Hospitality", "Service businesses"],
+        },
+        {
+          title: "Custom Platforms & Dashboards",
+          label: "Custom systems",
+          description:
+            "Custom portals, dashboards, and workflows designed around how the business actually operates.",
+          longDescription:
+            "For projects that need tailored portals, operational tools, integrations, or custom logic.",
+          includes: ["Custom portals", "Dashboards and roles", "Business workflows"],
+          bestFor: ["Operations teams", "Customer portals", "Custom workflows"],
         },
       ],
       care: {
@@ -379,7 +400,74 @@ export const translations = {
         notFoundDescription:
           "This project may be coming soon, hidden, or the link may be incorrect.",
         showcase: "Showcase",
-        showcaseTitle: "Case study views.",
+        showcaseTitle: "Project views.",
+        carouselLabel: "{name} project views",
+        previousImage: "Previous project view",
+        nextImage: "Next project view",
+        slideLabel: "View {current} of {total}",
+        showcaseImageAlt: "{name} project view {number}",
+        coverImageAlt: "{name} project cover",
+        logoImageAlt: "{name} logo",
+        liveProject: "View live project",
+        liveProjectAria: "View the live {name} project (opens in a new tab)",
+        logoLoopLabel: "Web District and {name} project symbols",
+        qualitiesEyebrow: "Project qualities",
+        qualitiesTitle: "Built with purpose.",
+        qualityTopics: {
+          experience: "Experience & Conversion",
+          performance: "Performance & Speed",
+          security: "Security & Reliability",
+          operations: "Management & Operations",
+          growth: "Growth & Scalability",
+        },
+        performanceSnapshot: "Measured project results",
+        strongResults: "Project result",
+        publicPages: "Public experience",
+        ownerControls: "Owner controls",
+        customerOperations: "Customer operations",
+        launchScope: "Launch scope",
+        builtToExpand: "Built to expand",
+        securityLabels: {
+          accessAuthorization: "Access and authorization",
+          requestAbuse: "Request and abuse protection",
+          browserTransport: "Browser and transport protection",
+          dataBusiness: "Data and business rules",
+          stabilityRecovery: "Stability and recovery",
+          uploadSecurity: "Image upload protection",
+        },
+        moreWorkEyebrow: "MORE OF OUR WORK",
+        moreWorkTitle: "Explore another project.",
+        moreWorkDescription:
+          "A closer look at the stores, business websites and custom platforms built by Web District.",
+        previousProject: "Previous project",
+        nextProject: "Next project",
+        metricAround: "Around",
+        metricLabels: {
+          monthlySessions: "Average monthly sessions",
+          monthlyOrders: "Average monthly orders",
+          totalConversions: "Average monthly conversions",
+          sampleOrders: "Sample and product orders",
+          qualifiedLeads: "Qualified manufacturing leads",
+          monthlyBookingLeads: "Average monthly booking leads",
+          conversionRate: "Conversion rate",
+          mobileTraffic: "Mobile traffic",
+          lighthouseMobile: "Mobile Lighthouse",
+          lighthouseDesktop: "Desktop Lighthouse",
+          lcp: "LCP",
+          uptime90: "90-day uptime",
+          p95Api: "p95 API response",
+          p95Response: "p95 response",
+        },
+        reviewEyebrow: "CLIENT REVIEW",
+        reviewTitle: "What the owner says.",
+        reviewDescription:
+          "A direct reflection on the project, process, and final result.",
+        reviewRating: "{rating} out of 5 stars",
+        ctaEyebrow: "Start your project",
+        ctaTitle: "Ready to build something serious?",
+        ctaDescription:
+          "Tell us what you need. We'll help shape the right website direction.",
+        haveQuestions: "Have Questions?",
         screen: "Screen",
         publicWebsite: "Public Website",
         publicFeatures: "Public website features",
@@ -431,6 +519,16 @@ export const translations = {
             "Checkout Flow",
             "Admin Operations",
           ],
+          qualities: {
+            userExperience:
+              "The floral storefront keeps product discovery, cart, checkout, and customer orders easy to follow across screen sizes.",
+            performance:
+              "A responsive product grid and focused commerce structure keep browsing direct as customers move from the shop to checkout.",
+            reliability:
+              "Protected customer and admin routes support private areas, while defined order and discount calculations keep commerce actions consistent.",
+            management:
+              "Product, order, shipping, offer, discount, and waitlist tools support daily store operations and future catalog growth.",
+          },
         },
         "s8-factory": {
           type: "Business Website",
@@ -475,6 +573,16 @@ export const translations = {
             "Request And Call Flow",
             "Admin Workspace",
           ],
+          qualities: {
+            userExperience:
+              "Clear production paths connect visitors with factory services, partners, material lines, production requests, and call booking.",
+            performance:
+              "The responsive page structure keeps service information and request flows focused across desktop and mobile layouts.",
+            reliability:
+              "Protected account and admin routes support structured production requests, appointments, proposals, and contract tracking.",
+            management:
+              "Request, appointment, contract, review, and settings tools organize factory operations while leaving room for new service lines.",
+          },
         },
         atheer: {
           type: "Online Store",
@@ -519,6 +627,16 @@ export const translations = {
             "Order Experience",
             "Store Management",
           ],
+          qualities: {
+            userExperience:
+              "The dark storefront gives fragrance products a clear browsing path through product details, cart, checkout, and order tracking.",
+            performance:
+              "Focused product metadata and a responsive commerce layout keep the catalog organized without distracting from discovery.",
+            reliability:
+              "Structured order, payment-proof, and discount-code fields keep purchase information consistent from checkout through management.",
+            management:
+              "Order, product, upload, offer, discount, customer, and analytics tools support the practical work behind the storefront.",
+          },
         },
         akm: {
           type: "Online Store",
@@ -563,56 +681,132 @@ export const translations = {
             "Shopping Flow",
             "Admin Dashboard",
           ],
+          qualities: {
+            userExperience:
+              "Arabic support, clear product details, and color and size choices make the fashion catalog practical to browse and order from.",
+            performance:
+              "React Query data flows and a structured variant model keep product and stock information organized throughout the shopping flow.",
+            reliability:
+              "Defined stock, order, and payment states give customers and managers a consistent view of each purchase as it progresses.",
+            management:
+              "Products, orders, offers, bundles, coupons, reviews, campaigns, and site settings form a maintainable base for store growth.",
+          },
         },
         davinto: {
           name: "Davinto",
           type: "Online Store",
+          businessType: "Fashion store",
           description:
             "A refined fashion store with a polished shopping experience, responsive product browsing, and smooth checkout.",
+          qualities: {
+            userExperience:
+              "Responsive product browsing and a clear checkout journey keep the fashion store polished and easy to use on desktop and mobile.",
+            performance:
+              "A focused storefront structure keeps attention on products and supports efficient browsing across screen sizes.",
+            reliability:
+              "The shopping journey uses clear product and checkout steps so customers can move through the store with confidence.",
+            management:
+              "A reusable storefront structure gives fashion collections and supporting content room to expand without changing the core experience.",
+          },
         },
         "salah-frame": {
           name: "Salah Frame",
           type: "Online Store",
+          businessType: "Custom frame store",
           description:
             "A creative frame store with clear collections, customization options, and a simple ordering journey.",
+          qualities: {
+            userExperience:
+              "Clear collections, customization choices, and a simple ordering journey help customers find and shape the right frame.",
+            performance:
+              "A responsive, focused storefront keeps collections and product choices readable across desktop and mobile screens.",
+            reliability:
+              "The ordering flow presents customization choices in a clear sequence, reducing ambiguity as customers prepare their selection.",
+            management:
+              "The collection-led structure can accommodate new frame styles, customization options, and supporting content over time.",
+          },
         },
         "fresh-cart": {
           name: "Fresh Cart",
           type: "Online Store",
+          businessType: "Product discovery store",
           description:
             "A modern online store designed to make browsing categories and finding products feel fast and simple.",
+          qualities: {
+            userExperience:
+              "Clear categories and product discovery give shoppers a direct way to browse the catalog on desktop and mobile.",
+            performance:
+              "The responsive page structure keeps category and product browsing focused, with a simple path between key store views.",
+            reliability:
+              "A consistent catalog structure keeps product information and navigation predictable throughout the browsing experience.",
+            management:
+              "Reusable category and product patterns provide a maintainable base for adding more catalog content in the future.",
+          },
         },
         travco: {
           name: "Travco",
           type: "Business Website",
+          businessType: "Company profile",
           description:
             "A professional business website presenting the company, its services, and its work with clarity and trust.",
+          qualities: {
+            userExperience:
+              "Clear navigation presents the company, its services, and its work in a direct format that supports trust and understanding.",
+            performance:
+              "A focused responsive structure keeps business content readable and easy to scan across screen sizes.",
+            reliability:
+              "A consistent public-content layout gives visitors a dependable path through company and service information.",
+            management:
+              "The maintainable content structure leaves room to expand services, company information, and selected work without changing the core layout.",
+          },
         },
         byjojo: {
           name: "ByJojo",
           type: "Online Store",
+          businessType: "Personalized gifts store",
           description:
             "An elegant personalized-gifts store with clear product discovery and a warm, polished visual direction.",
+          qualities: {
+            userExperience:
+              "A warm visual direction and clear product discovery help shoppers explore personalized gifts comfortably on any screen.",
+            performance:
+              "The responsive storefront structure keeps product browsing focused while preserving the brand-led presentation.",
+            reliability:
+              "Consistent product and navigation patterns make the browsing journey predictable as customers compare gift options.",
+            management:
+              "Reusable product and content patterns allow the gift range and brand storytelling to grow within a maintainable structure.",
+          },
         },
         "ms-store": {
           name: "MS Store",
           type: "Online Store",
+          businessType: "Product catalog store",
           description:
             "A clean online store that organizes products clearly and gives customers a simple shopping experience.",
+          qualities: {
+            userExperience:
+              "Clear product organization gives customers a simple shopping experience with straightforward browsing across devices.",
+            performance:
+              "A responsive, efficient page structure keeps the catalog readable and the shopping path focused.",
+            reliability:
+              "Consistent product presentation and navigation help customers understand where they are throughout the store.",
+            management:
+              "The reusable catalog structure supports future product and content expansion while keeping the project easy to maintain.",
+          },
         },
       },
     },
     process: {
       hero: {
-        eyebrow: "Process",
+        eyebrow: "PROCESS",
         title: "A clear path from request to launch.",
         description:
-          "Simple steps, clear process, and a website direction everyone understands.",
+          "Five focused stages keep the project clear from the first request through post-launch support.",
       },
       questionsHeader: {
-        eyebrow: "Questions",
-        title: "Before we start.",
-        description: "Quick answers about how the project moves.",
+        eyebrow: "FREQUENTLY ASKED QUESTIONS",
+        title: "Questions before we begin.",
+        description: "Clear answers about planning, building, launching, and supporting your website.",
       },
       cta: {
         eyebrow: "Start with clarity",
@@ -620,65 +814,217 @@ export const translations = {
         description:
           "We'll help shape the right website direction from there.",
       },
+      controls: {
+        stepperLabel: "Website project stages",
+        stepLabel: "Step {current} of {total}: {title}",
+        keyPoints: "Key points",
+        previous: "Previous",
+        next: "Next",
+        previousAria: "Go to the previous process step",
+        nextAria: "Go to the next process step",
+      },
       steps: [
         {
           number: "01",
           title: "Request",
-          subtitle: "Start with the basics.",
+          subtitle: "START WITH THE GOAL.",
           description:
-            "Send the business goal, website type, and anything you already know.",
-          points: ["Website type", "Business goal", "Timeline"],
+            "Tell us what the business needs, who the website is for, and what visitors should be able to do. Existing links, references, required pages, features, and an expected timeline help us understand the starting point.",
+          points: [
+            "Business goal and target audience",
+            "Website direction, pages, and features",
+            "References and preferred timeline",
+          ],
         },
         {
           number: "02",
           title: "Direction",
-          subtitle: "Shape the plan.",
+          subtitle: "TURN THE IDEA INTO A PLAN.",
           description:
-            "We define the pages, features, content needs, and visual direction.",
-          points: ["Page structure", "Main CTA", "Feature scope"],
+            "We organize the request into a clear website structure. The direction covers the sitemap, user journeys, visual identity, technical requirements, delivery stages, and confirmed project scope.",
+          points: [
+            "Sitemap and key user journeys",
+            "Visual and content direction",
+            "Scope, quotation, and delivery plan",
+          ],
         },
         {
           number: "03",
           title: "Build",
-          subtitle: "Design and develop.",
+          subtitle: "DESIGN. DEVELOP. CONNECT.",
           description:
-            "The website is built with a clean interface, responsive layouts, and working flows.",
-          points: ["Responsive frontend", "Forms or flows", "Admin tools if needed"],
+            "The approved direction becomes a responsive working website. We build the public experience and the required accounts, dashboards, commerce tools, booking flows, integrations, or custom business operations.",
+          points: [
+            "Responsive frontend experience",
+            "Backend, accounts, and admin tools",
+            "Required forms, payments, or workflows",
+          ],
         },
         {
           number: "04",
           title: "Launch",
-          subtitle: "Test and go live.",
+          subtitle: "TEST BEFORE GOING LIVE.",
           description:
-            "We check mobile, forms, links, and launch details before the website goes public.",
-          points: ["Mobile testing", "Form checks", "Launch support"],
+            "The completed website is reviewed across important screen sizes and user journeys. We verify forms, transactions, integrations, links, content, performance, security controls, and deployment settings before launch.",
+          points: [
+            "Responsive and functional testing",
+            "Performance and security review",
+            "Deployment and owner handover",
+          ],
+        },
+        {
+          number: "05",
+          title: "After Launch",
+          subtitle: "SUPPORT THE WEBSITE AFTER RELEASE.",
+          description:
+            "Every completed website includes two months of post-launch support. We help resolve issues connected to the delivered scope, assist with technical questions, and make appropriate corrections to the existing implementation.",
+          points: [
+            "Two months of included support",
+            "Delivered-scope issue resolution",
+            "Optional future maintenance and additions",
+          ],
         },
       ],
-      questions: [
+      faqCategories: [
         {
-          question: "What happens after I send a request?",
-          answer:
-            "We review the goal, website type, and details you send. Then we suggest the best direction and next step.",
+          id: "process",
+          label: "Process",
+          groupLabel: "FAQ categories",
+          items: [
+            {
+              question: "What happens after I send a request?",
+              answer: "We review the business goal, website type, required pages, features, references, and expected timeline. We then contact you to clarify anything missing and prepare the recommended direction, scope, quotation, and next steps.",
+            },
+            {
+              question: "How long does a website project take?",
+              answer: "The timeline depends on the number of pages, features, content readiness, integrations, and feedback speed. A clear delivery timeline is confirmed before development begins.",
+            },
+            {
+              question: "What do you need from me before starting?",
+              answer: "A clear business goal is enough to begin the discussion. Existing branding, content, product information, references, domain access, and required features are helpful, but they do not all need to be ready before the first conversation.",
+            },
+            {
+              question: "How do revisions work?",
+              answer: "Feedback is collected at agreed project stages so changes remain organized. Revisions inside the confirmed direction and scope are handled before final approval and launch.",
+            },
+            {
+              question: "Can I book a call before starting?",
+              answer: "Yes. A call can be used to explain the business, compare website directions, discuss the required features, and decide whether the project is ready to begin.",
+            },
+            {
+              question: "Who will I communicate with during the project?",
+              answer: "Communication stays organized through the agreed contact method. Updates, questions, feedback, approvals, and required files are kept connected to the project’s current stage.",
+            },
+            {
+              question: "What happens if the project scope changes?",
+              answer: "Small clarifications inside the confirmed direction can be handled during the project. New pages, major features, integrations, or changes outside the approved scope are reviewed separately before work continues.",
+            },
+          ],
         },
         {
-          question: "Do I need everything ready before starting?",
-          answer:
-            "No. If you have the main idea, we can help shape the pages, structure, and content direction from there.",
+          id: "services",
+          label: "Services",
+          groupLabel: "FAQ categories",
+          items: [
+            {
+              question: "Which website type is right for my business?",
+              answer: "The best direction depends on what visitors need to do. A store focuses on purchasing, a business website focuses on trust and enquiries, a portfolio presents work and identity, and a custom platform supports a specific workflow.",
+            },
+            {
+              question: "Do you build online stores?",
+              answer: "Yes. Online stores can include product management, categories, variants, carts, checkout, offers, customer accounts, order tracking, payment integrations, shipping rules, and admin tools.",
+            },
+            {
+              question: "Do you build business websites?",
+              answer: "Yes. Business websites are structured to explain the company, present services and previous work, build credibility, and guide visitors toward contacting or booking with the business.",
+            },
+            {
+              question: "Do you build portfolios and personal-brand websites?",
+              answer: "Yes. These websites present experience, projects, services, achievements, and identity in a polished format for professionals, creators, athletes, freelancers, and personal brands.",
+            },
+            {
+              question: "Do you build booking and reservation websites?",
+              answer: "Yes. Booking websites can support service selection, date and time availability, reservation requests, confirmations, customer records, and management dashboards.",
+            },
+            {
+              question: "Can you build a custom platform or dashboard?",
+              answer: "Yes. Custom systems can be designed for internal operations, customer portals, requests, analytics, contracts, bookings, order management, or another business-specific workflow.",
+            },
+            {
+              question: "Can you redesign an existing website?",
+              answer: "Yes. The existing website can be audited and rebuilt while preserving useful content, branding, domains, and essential business functionality.",
+            },
+          ],
         },
         {
-          question: "Can I book a call first?",
-          answer:
-            "Yes. If you want to talk through the project before submitting details, you can start with a call.",
+          id: "planning-pricing",
+          label: "Pricing",
+          groupLabel: "FAQ categories",
+          items: [
+            {
+              question: "How is the project price calculated?",
+              answer: "Pricing depends on the number of pages, design depth, customer features, admin tools, integrations, content requirements, custom workflows, and the overall technical scope.",
+            },
+            {
+              question: "Do I need all content and branding ready?",
+              answer: "No. The project can begin with the business direction and required structure. Missing content, visual assets, and brand decisions can be identified during planning.",
+            },
+            {
+              question: "Can a large project be delivered in phases?",
+              answer: "Yes. Larger platforms can be divided into a focused launch version followed by later features, integrations, or operational improvements.",
+            },
+            {
+              question: "Are domain and hosting costs included?",
+              answer: "Domain, hosting, paid applications, payment providers, email services, and other third-party fees are explained clearly and handled according to the requirements of each project.",
+            },
+            {
+              question: "What can increase the final project cost?",
+              answer: "New pages, major design changes, additional integrations, custom dashboards, complex automation, or features added after the original scope may require a separate quotation.",
+            },
+            {
+              question: "Is a deposit required before work begins?",
+              answer: "The payment structure and required starting amount are confirmed clearly in the project quotation before development begins.",
+            },
+            {
+              question: "Can Web District help prepare the website content?",
+              answer: "We can help organize page structure, headings, calls to action, and content requirements. Larger copywriting, product-entry, or content-production work can be added to the project scope when needed.",
+            },
+          ],
         },
         {
-          question: "How do revisions work?",
-          answer:
-            "We share the work in clear stages, collect your notes, and adjust the website before launch.",
-        },
-        {
-          question: "What happens after launch?",
-          answer:
-            "We make sure the website is live, working properly, and ready for people to visit.",
+          id: "after-launch",
+          label: "Support",
+          groupLabel: "FAQ categories",
+          items: [
+            {
+              question: "What support is included after launch?",
+              answer: "Every completed website includes two months of support starting from the launch date.",
+            },
+            {
+              question: "What does the free two-month support cover?",
+              answer: "It covers fixing issues related to the delivered scope, technical assistance, deployment-related support, and small corrections to existing settings or content where appropriate.",
+            },
+            {
+              question: "What is not included in the free support period?",
+              answer: "New pages, new features, major redesigns, large content uploads, new integrations, and work outside the approved project scope are not included.",
+            },
+            {
+              question: "Can I request new features after launch?",
+              answer: "Yes. New features or larger additions can be planned and quoted separately without affecting the included support for the original project.",
+            },
+            {
+              question: "What happens after the two free months?",
+              answer: "The website can continue without a maintenance plan, or ongoing maintenance and support can be arranged depending on the project’s needs.",
+            },
+            {
+              question: "Will I be able to manage the website?",
+              answer: "Where the project includes customer or admin tools, the owner receives the relevant access and guidance for managing products, orders, bookings, content, or other supported operations.",
+            },
+            {
+              question: "What should I do if I find an issue after launch?",
+              answer: "Send us the page, action, and details of what happened. During the included support period, we review issues connected to the delivered project scope and help resolve them.",
+            },
+          ],
         },
       ],
     },
@@ -788,34 +1134,6 @@ export const translations = {
         nextDays: "Next 5 available days",
         available: "Available",
       },
-    },
-    contact: {
-      hero: {
-        eyebrow: "Contact",
-        title: "Tell us what you need.",
-        description:
-          "Message us directly, or use the Start page if you already know the website direction.",
-      },
-      whatsappMessage:
-        "Hi Web District, I want to ask about building a website.",
-      cards: [
-        {
-          title: "WhatsApp",
-          description: "Message us directly.",
-        },
-        {
-          title: "Phone",
-          description: "Call for a quick conversation.",
-        },
-        {
-          title: "Email",
-          description: "Send project details.",
-        },
-        {
-          title: "Instagram",
-          description: "Follow or send a DM.",
-        },
-      ],
     },
     auth: {
       login: {
@@ -1278,8 +1596,6 @@ export const translations = {
         services: "الخدمات",
         work: "أعمالنا",
         process: "الخطوات",
-        start: "ابدأ",
-        contact: "تواصل معنا",
       },
       login: "تسجيل الدخول",
       clientLogin: "تسجيل الدخول",
@@ -1314,7 +1630,6 @@ export const translations = {
         viewServices: "شاهد الخدمات",
         answerQuestions: "إجابات لأسئلتك",
         viewQuestions: "الأسئلة والإجابات",
-        contactWebDistrict: "تواصل مع Web District",
         websiteCare: "العناية بالموقع",
         backHome: "العودة للرئيسية",
         backToWork: "العودة للأعمال",
@@ -1389,8 +1704,10 @@ export const translations = {
       websiteTypes: {
         "Online Store": "متجر إلكتروني",
         "Business Website": "موقع تعريفي للأعمال",
+        "Portfolio & Personal Brand Website": "موقع بورتفوليو أو علامة شخصية",
         "Landing Page": "صفحة هبوط",
-        "Custom Website": "موقع مخصص",
+        "Booking & Reservation Website": "موقع حجز ومواعيد",
+        "Custom Platform & Dashboard": "منصة أو لوحة تحكم مخصصة",
       },
       contactMethods: {
         WhatsApp: "WhatsApp",
@@ -1432,16 +1749,18 @@ export const translations = {
       },
       services: {
         eyebrow: "ما الذي نصممه",
-        title: "أربعة مسارات واضحة لموقعك.",
+        title: "ستة مسارات واضحة لموقعك.",
         description:
-          "اختر المسار الأنسب لهدفك، ونحن نبني الهيكل والتجربة حوله بعناية.",
+          "اختر المسار الذي يناسب هدفك، وسنحافظ على وضوح الهيكل منذ البداية.",
         previousAria: "الخدمة السابقة",
         nextAria: "الخدمة التالية",
         titles: [
           "متاجر إلكترونية",
-          "مواقع تعريفية للأعمال",
+          "مواقع الشركات والأعمال",
+          "مواقع البورتفوليو والعلامات الشخصية",
           "صفحات هبوط",
-          "مواقع مخصصة",
+          "مواقع الحجز والمواعيد",
+          "منصات ولوحات تحكم مخصصة",
         ],
       },
       work: {
@@ -1475,7 +1794,7 @@ export const translations = {
     services: {
       metaTitle: "الخدمات",
       metaDescription:
-        "تعرّف على خدمات Web District في تصميم المتاجر الإلكترونية والمواقع التعريفية وصفحات الهبوط والمواقع المخصصة والعناية بالمواقع.",
+        "تعرّف على مسارات Web District الستة: المتاجر الإلكترونية، مواقع الأعمال، البورتفوليو، صفحات الهبوط، مواقع الحجز، والمنصات المخصصة.",
       hero: {
         eyebrow: "الخدمات",
         title: "مواقع مصممة لتحقيق أهداف عملك.",
@@ -1485,10 +1804,10 @@ export const translations = {
       loading: "جارٍ تحميل خيارات المواقع...",
       cards: [
         {
-          title: "متاجر إلكترونية",
+          title: "المتاجر الإلكترونية",
           label: "متجر إلكتروني",
           description:
-            "مواقع تجعل تصفح المنتجات والشراء تجربة واضحة وسهلة.",
+            "مواقع تجعل اكتشاف المنتجات والطلب وإدارة المبيعات تجربة بسيطة وواضحة.",
           longDescription:
             "للعلامات التجارية التي تحتاج تجربة تصفح وشراء واضحة واحترافية.",
           includes: [
@@ -1499,34 +1818,54 @@ export const translations = {
           bestFor: ["وسوم المنتجات", "المتاجر المحلية", "المتاجر الأونلاين"],
         },
         {
-          title: "مواقع تعريفية للأعمال",
+          title: "مواقع الشركات والأعمال",
           label: "شركات",
           description:
-            "مواقع احترافية تشرح النشاط بسرعة وتبني الثقة.",
+            "مواقع احترافية تشرح نشاط الشركة بوضوح، وتبني الثقة، وتولّد طلبات التواصل.",
           longDescription:
             "للشركات ومقدمي الخدمات والفرق التي تحتاج حضورًا واضحًا وموثوقًا.",
           includes: ["صفحات واضحة", "نماذج تواصل", "أقسام لبناء الثقة"],
           bestFor: ["الشركات", "مقدمو الخدمات", "الاستشاريون"],
         },
         {
+          title: "مواقع البورتفوليو والعلامات الشخصية",
+          label: "علامات شخصية",
+          description:
+            "مواقع شخصية تعرض أعمالك وخبراتك وهويتك بأسلوب مميز يسهل تذكره.",
+          longDescription:
+            "للمحترفين والمبدعين الذين يحتاجون مساحة أنيقة تجمع أعمالهم وخبراتهم وهويتهم.",
+          includes: ["الأعمال ودراسات الحالة", "الخبرات والخدمات", "توجّه العلامة الشخصية"],
+          bestFor: ["المحترفون", "صنّاع المحتوى", "العلامات الشخصية"],
+        },
+        {
           title: "صفحات هبوط",
           label: "حملات",
           description:
-            "صفحات مركزة للإطلاقات والعروض والإعلانات وجمع العملاء المحتملين.",
+            "صفحات مركزة حول حملة واحدة وعرض واحد وإجراء واضح.",
           longDescription:
             "للحملات التي تحتاج رسالة واحدة واضحة وإجراء واحد واضح.",
           includes: ["رسالة قوية", "دعوة واضحة لاتخاذ إجراء", "عناصر بصرية أنيقة"],
           bestFor: ["الإعلانات", "الإطلاقات", "جمع العملاء المحتملين"],
         },
         {
-          title: "مواقع مخصصة",
-          label: "أنظمة",
+          title: "مواقع الحجز والمواعيد",
+          label: "حجوزات",
           description:
-            "حلول ويب مصممة للعمليات التي تحتاج أكثر من مجرد صفحات.",
+            "مواقع تتيح للعملاء اختيار الخدمة وحجز الموعد واستلام التأكيد بسهولة.",
           longDescription:
-            "للمشاريع التي تحتاج لوحات تحكم أو حجوزات أو بوابات أو منطق مخصص.",
-          includes: ["بناء مخصص", "لوحات تحكم", "مسارات حجز"],
-          bestFor: ["بوابات العملاء", "أنظمة الحجز", "تدفقات عمل مخصصة"],
+            "للأعمال التي تحتاج مسار حجز واضحًا وأدوات عملية لإدارة المواعيد.",
+          includes: ["اختيار الخدمة", "المواعيد والحجوزات", "التأكيد والإدارة"],
+          bestFor: ["العيادات", "الضيافة", "مقدمو الخدمات"],
+        },
+        {
+          title: "المنصات ولوحات التحكم المخصصة",
+          label: "أنظمة مخصصة",
+          description:
+            "بوابات ولوحات تحكم ومسارات عمل مصممة وفق الطريقة الفعلية التي يعمل بها النشاط.",
+          longDescription:
+            "للمشاريع التي تحتاج بوابات وأدوات تشغيل وربطًا تقنيًا أو منطق عمل مخصصًا.",
+          includes: ["بوابات مخصصة", "لوحات تحكم وصلاحيات", "مسارات عمل للنشاط"],
+          bestFor: ["فرق التشغيل", "بوابات العملاء", "مسارات العمل المخصصة"],
         },
       ],
       care: {
@@ -1642,7 +1981,74 @@ export const translations = {
         notFoundDescription:
           "قد يكون هذا المشروع قادمًا قريبًا أو مخفيًا أو أن الرابط غير صحيح.",
         showcase: "العرض",
-        showcaseTitle: "لقطات من المشروع.",
+        showcaseTitle: "مشاهد من المشروع.",
+        carouselLabel: "مشاهد مشروع {name}",
+        previousImage: "مشهد المشروع السابق",
+        nextImage: "مشهد المشروع التالي",
+        slideLabel: "المشهد {current} من {total}",
+        showcaseImageAlt: "مشهد {number} من مشروع {name}",
+        coverImageAlt: "غلاف مشروع {name}",
+        logoImageAlt: "شعار {name}",
+        liveProject: "عرض المشروع مباشرة",
+        liveProjectAria: "عرض مشروع {name} مباشرة (يفتح في علامة تبويب جديدة)",
+        logoLoopLabel: "رموز Web District ومشروع {name}",
+        qualitiesEyebrow: "خصائص المشروع",
+        qualitiesTitle: "بُني لهدف واضح.",
+        qualityTopics: {
+          experience: "التجربة والتحويل",
+          performance: "الأداء والسرعة",
+          security: "الأمان والموثوقية",
+          operations: "الإدارة والعمليات",
+          growth: "النمو وقابلية التوسع",
+        },
+        performanceSnapshot: "نتائج المشروع المقاسة",
+        strongResults: "نتيجة المشروع",
+        publicPages: "تجربة الموقع العامة",
+        ownerControls: "أدوات المالك",
+        customerOperations: "عمليات العملاء",
+        launchScope: "نطاق الإطلاق",
+        builtToExpand: "مصمم للتوسع",
+        securityLabels: {
+          accessAuthorization: "الوصول والصلاحيات",
+          requestAbuse: "حماية الطلبات والحد من إساءة الاستخدام",
+          browserTransport: "حماية المتصفح والاتصال",
+          dataBusiness: "البيانات وقواعد العمل",
+          stabilityRecovery: "الاستقرار والتعافي",
+          uploadSecurity: "حماية رفع الصور",
+        },
+        moreWorkEyebrow: "المزيد من أعمالنا",
+        moreWorkTitle: "استكشف مشروعًا آخر.",
+        moreWorkDescription:
+          "نظرة أقرب على المتاجر ومواقع الأعمال والمنصات المخصصة التي بنتها Web District.",
+        previousProject: "المشروع السابق",
+        nextProject: "المشروع التالي",
+        metricAround: "حوالي",
+        metricLabels: {
+          monthlySessions: "متوسط الجلسات الشهرية",
+          monthlyOrders: "متوسط الطلبات الشهرية",
+          totalConversions: "متوسط التحويلات الشهرية",
+          sampleOrders: "طلبات العينات والمنتجات",
+          qualifiedLeads: "فرص التصنيع المؤهلة",
+          monthlyBookingLeads: "متوسط طلبات الحجز الشهرية",
+          conversionRate: "معدل التحويل",
+          mobileTraffic: "زيارات الهاتف",
+          lighthouseMobile: "Lighthouse للهاتف",
+          lighthouseDesktop: "Lighthouse للحاسوب",
+          lcp: "LCP",
+          uptime90: "التوافر خلال 90 يومًا",
+          p95Api: "استجابة API عند p95",
+          p95Response: "الاستجابة عند p95",
+        },
+        reviewEyebrow: "رأي العميل",
+        reviewTitle: "ماذا يقول المالك.",
+        reviewDescription:
+          "رأي مباشر في المشروع، وطريقة العمل، والنتيجة النهائية.",
+        reviewRating: "{rating} من 5 نجوم",
+        ctaEyebrow: "ابدأ مشروعك",
+        ctaTitle: "هل أنت مستعد لبناء مشروع جاد؟",
+        ctaDescription:
+          "أخبرنا بما تحتاجه. سنساعدك في تحديد الاتجاه الصحيح لموقعك.",
+        haveQuestions: "لديك أسئلة؟",
         screen: "لقطة",
         publicWebsite: "الموقع العام",
         publicFeatures: "مميزات الموقع للزوار",
@@ -1694,6 +2100,16 @@ export const translations = {
             "مسار الدفع",
             "إدارة العمليات",
           ],
+          qualities: {
+            userExperience:
+              "تجعل واجهة المتجر ذات الطابع الزهري استكشاف المنتجات والسلة والدفع وطلبات العملاء واضحة على مختلف الشاشات.",
+            performance:
+              "تحافظ شبكة المنتجات المتجاوبة وهيكل التجارة المركّز على تصفح مباشر من المتجر حتى إتمام الطلب.",
+            reliability:
+              "تدعم المسارات المحمية مناطق العملاء والإدارة، بينما تحافظ حسابات الطلبات والخصومات المحددة على اتساق العمليات.",
+            management:
+              "تدعم أدوات المنتجات والطلبات والشحن والعروض والخصومات وقوائم الانتظار تشغيل المتجر ونمو الكتالوج مستقبلًا.",
+          },
         },
         "s8-factory": {
           type: "موقع تعريفي للأعمال",
@@ -1738,6 +2154,16 @@ export const translations = {
             "تدفق الطلب والمكالمة",
             "مساحة الإدارة",
           ],
+          qualities: {
+            userExperience:
+              "تربط مسارات الإنتاج الواضحة الزوار بخدمات المصنع والشركاء وخطوط الخامات وطلبات الإنتاج وحجز المكالمات.",
+            performance:
+              "يحافظ هيكل الصفحات المتجاوب على وضوح معلومات الخدمات ومسارات الطلب في الحاسوب والهاتف.",
+            reliability:
+              "تدعم مسارات الحساب والإدارة المحمية تنظيم طلبات الإنتاج والمواعيد والعروض وتتبع العقود.",
+            management:
+              "تنظم أدوات الطلبات والمواعيد والعقود والآراء والإعدادات عمليات المصنع وتتيح إضافة خطوط خدمات جديدة.",
+          },
         },
         atheer: {
           type: "متجر إلكتروني",
@@ -1782,6 +2208,16 @@ export const translations = {
             "تجربة الطلب",
             "إدارة المتجر",
           ],
+          qualities: {
+            userExperience:
+              "تمنح الواجهة الداكنة منتجات العطور مسارًا واضحًا عبر التفاصيل والسلة والدفع وتتبع الطلبات.",
+            performance:
+              "تحافظ بيانات المنتجات المركزة وتخطيط التجارة المتجاوب على تنظيم الكتالوج دون تشتيت تجربة الاستكشاف.",
+            reliability:
+              "تحافظ حقول الطلب وإثبات الدفع وأكواد الخصم المنظمة على اتساق معلومات الشراء من الدفع إلى الإدارة.",
+            management:
+              "تدعم أدوات الطلبات والمنتجات والرفع والعروض والخصومات والعملاء والتحليلات العمل اليومي خلف المتجر.",
+          },
         },
         akm: {
           type: "متجر إلكتروني",
@@ -1826,56 +2262,132 @@ export const translations = {
             "تجربة التسوق",
             "لوحة الإدارة",
           ],
+          qualities: {
+            userExperience:
+              "يجعل دعم العربية وتفاصيل المنتجات وخيارات الألوان والمقاسات تصفح متجر الأزياء والطلب منه عمليًا.",
+            performance:
+              "تحافظ تدفقات React Query ونموذج التنويعات المنظم على ترتيب معلومات المنتجات والمخزون خلال رحلة التسوق.",
+            reliability:
+              "تمنح حالات المخزون والطلبات والدفع المحددة العملاء والمديرين رؤية متسقة لكل عملية شراء.",
+            management:
+              "توفر المنتجات والطلبات والعروض والباقات والكوبونات والآراء والحملات والإعدادات قاعدة قابلة لصيانة نمو المتجر.",
+          },
         },
         davinto: {
           name: "دافينتو",
           type: "متجر إلكتروني",
+          businessType: "متجر أزياء",
           description:
             "متجر أزياء راقٍ يقدم تجربة تسوق متقنة، وتصفحًا سلسًا للمنتجات على مختلف الشاشات، وخطوات دفع مريحة.",
+          qualities: {
+            userExperience:
+              "يحافظ تصفح المنتجات المتجاوب ومسار الدفع الواضح على تجربة متجر أزياء متقنة وسهلة في الحاسوب والهاتف.",
+            performance:
+              "يبقي هيكل المتجر المركز الاهتمام على المنتجات ويدعم تصفحًا فعالًا على مختلف أحجام الشاشات.",
+            reliability:
+              "تستخدم رحلة التسوق خطوات واضحة للمنتجات والدفع كي يتحرك العملاء داخل المتجر بثقة.",
+            management:
+              "يمنح هيكل المتجر القابل لإعادة الاستخدام مجموعات الأزياء والمحتوى مساحة للتوسع دون تغيير التجربة الأساسية.",
+          },
         },
         "salah-frame": {
           name: "صلاح فريم",
           type: "متجر إلكتروني",
+          businessType: "متجر إطارات مخصصة",
           description:
             "متجر إطارات مبتكر بمجموعات واضحة وخيارات للتخصيص ومسار بسيط لإتمام الطلب.",
+          qualities: {
+            userExperience:
+              "تساعد المجموعات الواضحة وخيارات التخصيص ومسار الطلب البسيط العملاء على إيجاد الإطار المناسب وتشكيله.",
+            performance:
+              "يحافظ المتجر المتجاوب والمركز على وضوح المجموعات وخيارات المنتجات في الحاسوب والهاتف.",
+            reliability:
+              "يعرض مسار الطلب خيارات التخصيص بتسلسل واضح يقلل الالتباس أثناء إعداد العميل لاختياره.",
+            management:
+              "يستوعب الهيكل القائم على المجموعات أنماط إطارات وخيارات تخصيص ومحتوى إضافيًا بمرور الوقت.",
+          },
         },
         "fresh-cart": {
           name: "فريش كارت",
           type: "متجر إلكتروني",
+          businessType: "متجر لاكتشاف المنتجات",
           description:
             "متجر إلكتروني عصري يجعل تصفح الأقسام والعثور على المنتجات سريعًا وبسيطًا.",
+          qualities: {
+            userExperience:
+              "تمنح الأقسام الواضحة واكتشاف المنتجات المتسوقين طريقة مباشرة لتصفح الكتالوج في الحاسوب والهاتف.",
+            performance:
+              "يحافظ هيكل الصفحات المتجاوب على تركيز تصفح الأقسام والمنتجات مع مسار بسيط بين واجهات المتجر.",
+            reliability:
+              "يبقي هيكل الكتالوج المتسق معلومات المنتجات والتنقل قابلين للتوقع خلال تجربة التصفح.",
+            management:
+              "توفر أنماط الأقسام والمنتجات القابلة لإعادة الاستخدام قاعدة سهلة الصيانة لإضافة محتوى جديد مستقبلًا.",
+          },
         },
         travco: {
           name: "ترافكو",
           type: "موقع تعريفي للأعمال",
+          businessType: "ملف تعريفي للشركة",
           description:
             "موقع أعمال احترافي يعرض الشركة وخدماتها ومشاريعها بوضوح ويعزز الثقة بها.",
+          qualities: {
+            userExperience:
+              "يعرض التنقل الواضح الشركة وخدماتها وأعمالها بصيغة مباشرة تدعم الفهم والثقة.",
+            performance:
+              "يحافظ الهيكل المتجاوب والمركز على وضوح محتوى الأعمال وسهولة قراءته على مختلف الشاشات.",
+            reliability:
+              "يمنح تخطيط المحتوى العام المتسق الزوار مسارًا ثابتًا عبر معلومات الشركة والخدمات.",
+            management:
+              "يتيح هيكل المحتوى سهل الصيانة توسيع الخدمات ومعلومات الشركة والأعمال المختارة دون تغيير التخطيط الأساسي.",
+          },
         },
         byjojo: {
           name: "باي جوجو",
           type: "متجر إلكتروني",
+          businessType: "متجر هدايا مخصصة",
           description:
             "متجر أنيق للهدايا المخصصة، يسهّل اكتشاف المنتجات ويقدم طابعًا بصريًا دافئًا ومتقنًا.",
+          qualities: {
+            userExperience:
+              "يساعد الاتجاه البصري الدافئ واكتشاف المنتجات الواضح المتسوقين على استكشاف الهدايا المخصصة براحة على أي شاشة.",
+            performance:
+              "يحافظ هيكل المتجر المتجاوب على تركيز تصفح المنتجات مع صون العرض المرتبط بالعلامة.",
+            reliability:
+              "تجعل أنماط المنتجات والتنقل المتسقة رحلة التصفح قابلة للتوقع عند مقارنة خيارات الهدايا.",
+            management:
+              "تسمح أنماط المنتجات والمحتوى القابلة لإعادة الاستخدام بنمو مجموعة الهدايا وقصة العلامة ضمن هيكل سهل الصيانة.",
+          },
         },
         "ms-store": {
           name: "إم إس ستور",
           type: "متجر إلكتروني",
+          businessType: "متجر كتالوج منتجات",
           description:
             "متجر إلكتروني نظيف ينظم المنتجات بوضوح ويمنح العملاء تجربة تسوق بسيطة.",
+          qualities: {
+            userExperience:
+              "يمنح تنظيم المنتجات الواضح العملاء تجربة تسوق بسيطة وتصفحًا مباشرًا على مختلف الأجهزة.",
+            performance:
+              "يحافظ هيكل الصفحات المتجاوب والفعال على وضوح الكتالوج وتركيز مسار التسوق.",
+            reliability:
+              "يساعد عرض المنتجات والتنقل المتسقان العملاء على معرفة موقعهم داخل المتجر طوال الوقت.",
+            management:
+              "يدعم هيكل الكتالوج القابل لإعادة الاستخدام توسع المنتجات والمحتوى مستقبلًا مع سهولة صيانة المشروع.",
+          },
         },
       },
     },
     process: {
       hero: {
-        eyebrow: "الخطوات",
+        eyebrow: "آلية العمل",
         title: "مسار واضح من الطلب إلى الإطلاق.",
         description:
-          "خطوات بسيطة، وعملية واضحة، ورؤية مشتركة للموقع من البداية.",
+          "خمس مراحل مركزة تحافظ على وضوح المشروع من الطلب الأول حتى دعم ما بعد الإطلاق.",
       },
       questionsHeader: {
-        eyebrow: "الأسئلة",
-        title: "قبل أن نبدأ.",
-        description: "إجابات سريعة توضح كيف يسير المشروع.",
+        eyebrow: "الأسئلة الشائعة",
+        title: "أسئلة قبل أن نبدأ.",
+        description: "إجابات واضحة عن تخطيط موقعك وبنائه وإطلاقه ودعمه.",
       },
       cta: {
         eyebrow: "ابدأ بوضوح",
@@ -1883,65 +2395,217 @@ export const translations = {
         description:
           "وسنساعدك في تحديد المسار الأنسب لموقعك.",
       },
+      controls: {
+        stepperLabel: "مراحل مشروع الموقع",
+        stepLabel: "المرحلة {current} من {total}: {title}",
+        keyPoints: "النقاط الأساسية",
+        previous: "السابق",
+        next: "التالي",
+        previousAria: "الانتقال إلى المرحلة السابقة",
+        nextAria: "الانتقال إلى المرحلة التالية",
+      },
       steps: [
         {
           number: "01",
           title: "الطلب",
-          subtitle: "نبدأ بالأساسيات.",
+          subtitle: "ابدأ بالهدف.",
           description:
-            "أرسل هدف المشروع ونوع الموقع وأي تفاصيل تعرفها بالفعل.",
-          points: ["نوع الموقع", "هدف المشروع", "الجدول الزمني"],
+            "أخبرنا بما يحتاجه النشاط، ولمن يُصمَّم الموقع، وما الذي ينبغي أن يتمكن الزوار من فعله. تساعدنا الروابط الحالية والمراجع والصفحات والوظائف المطلوبة والموعد المتوقع على فهم نقطة البداية.",
+          points: [
+            "هدف النشاط والجمهور المستهدف",
+            "اتجاه الموقع وصفحاته ووظائفه",
+            "المراجع والموعد المفضل",
+          ],
         },
         {
           number: "02",
-          title: "الرؤية",
-          subtitle: "نحدد المسار.",
+          title: "الاتجاه",
+          subtitle: "حوّل الفكرة إلى خطة.",
           description:
-            "نحدد الصفحات والمميزات واحتياجات المحتوى والرؤية البصرية.",
-          points: ["هيكل الصفحات", "الإجراء الأساسي", "المميزات المطلوبة"],
+            "ننظم الطلب في هيكل واضح للموقع. يشمل الاتجاه خريطة الموقع ورحلات المستخدم والهوية البصرية والمتطلبات التقنية ومراحل التسليم ونطاق المشروع المعتمد.",
+          points: [
+            "خريطة الموقع ورحلات المستخدم الأساسية",
+            "الاتجاه البصري واتجاه المحتوى",
+            "النطاق وعرض السعر وخطة التسليم",
+          ],
         },
         {
           number: "03",
           title: "البناء",
-          subtitle: "تصميم وتطوير.",
+          subtitle: "صمّم. طوّر. اربط.",
           description:
-            "نبني الموقع بواجهة أنيقة وتصميم متجاوب وتجارب تعمل بسلاسة.",
-          points: ["واجهة متجاوبة", "نماذج أو تدفقات", "أدوات إدارة عند الحاجة"],
+            "يتحول الاتجاه المعتمد إلى موقع فعلي متجاوب. نبني التجربة العامة والحسابات ولوحات التحكم وأدوات التجارة ومسارات الحجز والتكاملات أو العمليات المخصصة التي يحتاجها النشاط.",
+          points: [
+            "تجربة واجهة متجاوبة",
+            "الخلفية والحسابات وأدوات الإدارة",
+            "النماذج أو المدفوعات أو مسارات العمل المطلوبة",
+          ],
         },
         {
           number: "04",
           title: "الإطلاق",
-          subtitle: "اختبار ثم نشر.",
+          subtitle: "اختبر قبل الإطلاق.",
           description:
-            "نراجع الموبايل والنماذج والروابط وتفاصيل الإطلاق قبل نشر الموقع.",
-          points: ["اختبار الموبايل", "فحص النماذج", "دعم الإطلاق"],
+            "نراجع الموقع المكتمل على أهم أحجام الشاشات ورحلات المستخدم. نتحقق من النماذج والمعاملات والتكاملات والروابط والمحتوى والأداء وضوابط الأمان وإعدادات النشر قبل الإطلاق.",
+          points: [
+            "اختبار التجاوب والوظائف",
+            "مراجعة الأداء والأمان",
+            "النشر والتسليم للمالك",
+          ],
+        },
+        {
+          number: "05",
+          title: "ما بعد الإطلاق",
+          subtitle: "ادعم الموقع بعد الإطلاق.",
+          description:
+            "يشمل كل موقع مكتمل شهرين من دعم ما بعد الإطلاق. نساعد في حل المشكلات المرتبطة بالنطاق المُسلَّم، ونجيب عن الأسئلة التقنية، ونجري التصحيحات المناسبة على التنفيذ الحالي.",
+          points: [
+            "شهران من الدعم المشمول",
+            "حل مشكلات النطاق المُسلَّم",
+            "صيانة وإضافات مستقبلية اختيارية",
+          ],
         },
       ],
-      questions: [
+      faqCategories: [
         {
-          question: "ماذا يحدث بعد إرسال الطلب؟",
-          answer:
-            "نراجع الهدف ونوع الموقع والتفاصيل التي أرسلتها، ثم نقترح المسار الأنسب والخطوة التالية.",
+          id: "process",
+          label: "العملية",
+          groupLabel: "تصنيفات الأسئلة الشائعة",
+          items: [
+            {
+              question: "ماذا يحدث بعد إرسال الطلب؟",
+              answer: "نراجع هدف النشاط ونوع الموقع والصفحات والوظائف المطلوبة والمراجع والموعد المتوقع. ثم نتواصل معك لتوضيح أي تفاصيل ناقصة وإعداد الاتجاه المقترح والنطاق وعرض السعر والخطوات التالية.",
+            },
+            {
+              question: "كم يستغرق تنفيذ مشروع الموقع؟",
+              answer: "تعتمد المدة على عدد الصفحات والوظائف وجاهزية المحتوى والربط التقني وسرعة الملاحظات. ونؤكد جدول تسليم واضحًا قبل بدء التطوير.",
+            },
+            {
+              question: "ماذا تحتاجون مني قبل البدء؟",
+              answer: "يكفي وجود هدف واضح للنشاط لبدء النقاش. تساعد الهوية الحالية والمحتوى وبيانات المنتجات والمراجع وبيانات النطاق والوظائف المطلوبة، لكن لا يلزم أن تكون كلها جاهزة قبل المحادثة الأولى.",
+            },
+            {
+              question: "كيف تتم المراجعات؟",
+              answer: "نجمع الملاحظات في مراحل متفق عليها حتى تظل التعديلات منظمة. وتُنفذ المراجعات الواقعة ضمن الاتجاه والنطاق المعتمدين قبل الموافقة النهائية والإطلاق.",
+            },
+            {
+              question: "هل يمكنني حجز مكالمة قبل البدء؟",
+              answer: "نعم. يمكن استخدام المكالمة لشرح النشاط ومقارنة مسارات المواقع ومناقشة الوظائف المطلوبة وتحديد مدى جاهزية المشروع للبدء.",
+            },
+            {
+              question: "مع من سأتواصل أثناء المشروع؟",
+              answer: "يبقى التواصل منظمًا عبر وسيلة التواصل المتفق عليها. وتظل التحديثات والأسئلة والملاحظات والموافقات والملفات المطلوبة مرتبطة بالمرحلة الحالية من المشروع.",
+            },
+            {
+              question: "ماذا يحدث إذا تغير نطاق المشروع؟",
+              answer: "يمكن التعامل مع التوضيحات الصغيرة الواقعة ضمن الاتجاه المعتمد أثناء المشروع. أما الصفحات الجديدة أو الوظائف الكبيرة أو التكاملات أو التغييرات الخارجة عن النطاق المعتمد فتُراجع بصورة منفصلة قبل متابعة العمل.",
+            },
+          ],
         },
         {
-          question: "هل يجب أن يكون كل شيء جاهزًا قبل البدء؟",
-          answer:
-            "لا. إذا كانت الفكرة الأساسية واضحة، يمكننا مساعدتك في تحديد الصفحات والهيكل وتوجّه المحتوى.",
+          id: "services",
+          label: "الخدمات",
+          groupLabel: "تصنيفات الأسئلة الشائعة",
+          items: [
+            {
+              question: "ما نوع الموقع المناسب لنشاطي؟",
+              answer: "يعتمد المسار الأفضل على ما يحتاج الزائر إلى فعله. يركز المتجر على الشراء، ويركز موقع الأعمال على الثقة وطلبات التواصل، ويعرض البورتفوليو الأعمال والهوية، بينما تدعم المنصة المخصصة مسار عمل محددًا.",
+            },
+            {
+              question: "هل تصممون متاجر إلكترونية؟",
+              answer: "نعم. يمكن أن تشمل المتاجر إدارة المنتجات والتصنيفات والخيارات والسلة والدفع والعروض وحسابات العملاء وتتبع الطلبات وربط بوابات الدفع وقواعد الشحن وأدوات الإدارة.",
+            },
+            {
+              question: "هل تصممون مواقع للشركات والأعمال؟",
+              answer: "نعم. تُبنى مواقع الأعمال لشرح الشركة وعرض خدماتها وأعمالها السابقة وبناء المصداقية وتوجيه الزوار إلى التواصل أو الحجز.",
+            },
+            {
+              question: "هل تصممون مواقع بورتفوليو وعلامات شخصية؟",
+              answer: "نعم. تعرض هذه المواقع الخبرات والمشاريع والخدمات والإنجازات والهوية بصورة احترافية للمحترفين والمبدعين والرياضيين والمستقلين والعلامات الشخصية.",
+            },
+            {
+              question: "هل تصممون مواقع للحجز والمواعيد؟",
+              answer: "نعم. يمكن أن تدعم مواقع الحجز اختيار الخدمة وإتاحة التواريخ والأوقات وطلبات الحجز والتأكيدات وسجلات العملاء ولوحات الإدارة.",
+            },
+            {
+              question: "هل يمكنكم بناء منصة أو لوحة تحكم مخصصة؟",
+              answer: "نعم. يمكن تصميم أنظمة مخصصة للتشغيل الداخلي أو بوابات العملاء أو الطلبات أو التحليلات أو العقود أو الحجوزات أو إدارة الطلبات أو أي مسار عمل خاص بالنشاط.",
+            },
+            {
+              question: "هل يمكنكم إعادة تصميم موقع قائم؟",
+              answer: "نعم. يمكن مراجعة الموقع الحالي وإعادة بنائه مع الحفاظ على المحتوى المفيد والهوية والنطاق والوظائف الأساسية للنشاط.",
+            },
+          ],
         },
         {
-          question: "هل يمكنني حجز مكالمة أولًا؟",
-          answer:
-            "نعم. إذا أردت مناقشة المشروع قبل إرسال التفاصيل، يمكنك البدء بمكالمة.",
+          id: "planning-pricing",
+          label: "الأسعار",
+          groupLabel: "تصنيفات الأسئلة الشائعة",
+          items: [
+            {
+              question: "كيف يُحسب سعر المشروع؟",
+              answer: "يعتمد السعر على عدد الصفحات وعمق التصميم ووظائف العملاء وأدوات الإدارة والربط التقني ومتطلبات المحتوى ومسارات العمل المخصصة والنطاق التقني العام.",
+            },
+            {
+              question: "هل يجب أن يكون المحتوى والهوية جاهزين بالكامل؟",
+              answer: "لا. يمكن أن يبدأ المشروع بتحديد اتجاه النشاط والهيكل المطلوب، ثم نحدد خلال التخطيط المحتوى والعناصر البصرية وقرارات الهوية الناقصة.",
+            },
+            {
+              question: "هل يمكن تسليم المشروع الكبير على مراحل؟",
+              answer: "نعم. يمكن تقسيم المنصات الكبيرة إلى نسخة إطلاق مركزة، تليها وظائف أو تكاملات أو تحسينات تشغيلية لاحقة.",
+            },
+            {
+              question: "هل تشمل التكلفة النطاق والاستضافة؟",
+              answer: "نوضح تكاليف النطاق والاستضافة والتطبيقات المدفوعة وبوابات الدفع وخدمات البريد وأي رسوم خارجية، ويتم التعامل معها وفق احتياجات كل مشروع.",
+            },
+            {
+              question: "ما الذي قد يزيد التكلفة النهائية للمشروع؟",
+              answer: "قد تتطلب الصفحات الجديدة أو التغييرات الكبيرة في التصميم أو التكاملات الإضافية أو لوحات التحكم المخصصة أو الأتمتة المعقدة أو الوظائف المضافة بعد النطاق الأصلي عرض سعر منفصلًا.",
+            },
+            {
+              question: "هل يلزم دفع مقدم قبل بدء العمل؟",
+              answer: "يُوضَّح نظام الدفع والمبلغ المطلوب للبدء بوضوح في عرض سعر المشروع قبل بدء التطوير.",
+            },
+            {
+              question: "هل يمكن لـ Web District المساعدة في إعداد محتوى الموقع؟",
+              answer: "يمكننا المساعدة في تنظيم هيكل الصفحات والعناوين والدعوات إلى الإجراء ومتطلبات المحتوى. ويمكن إضافة أعمال كتابة النصوص أو إدخال المنتجات أو إنتاج المحتوى الأكبر إلى نطاق المشروع عند الحاجة.",
+            },
+          ],
         },
         {
-          question: "كيف تتم المراجعات؟",
-          answer:
-            "نشارك العمل على مراحل واضحة، نجمع ملاحظاتك، ثم نعدّل الموقع قبل الإطلاق.",
-        },
-        {
-          question: "ماذا يحدث بعد الإطلاق؟",
-          answer:
-            "نتأكد أن الموقع منشور ويعمل بشكل صحيح وجاهز لاستقبال الزوار.",
+          id: "after-launch",
+          label: "الدعم",
+          groupLabel: "تصنيفات الأسئلة الشائعة",
+          items: [
+            {
+              question: "ما الدعم المشمول بعد الإطلاق؟",
+              answer: "يشمل كل موقع مكتمل شهرين من الدعم يبدأان من تاريخ الإطلاق.",
+            },
+            {
+              question: "ماذا يغطي الدعم المجاني لمدة شهرين؟",
+              answer: "يغطي إصلاح المشكلات المتعلقة بالنطاق المُسلَّم والمساعدة التقنية ودعم النشر والتصحيحات الصغيرة على الإعدادات أو المحتوى الحالي عند الحاجة.",
+            },
+            {
+              question: "ما الذي لا يشمله الدعم المجاني؟",
+              answer: "لا يشمل صفحات أو وظائف جديدة أو إعادة تصميم كبيرة أو رفع كميات كبيرة من المحتوى أو تكاملات جديدة أو أعمالًا خارج نطاق المشروع المعتمد.",
+            },
+            {
+              question: "هل يمكنني طلب وظائف جديدة بعد الإطلاق؟",
+              answer: "نعم. يمكن تخطيط الوظائف الجديدة أو الإضافات الكبيرة وتسعيرها بصورة منفصلة دون التأثير على الدعم المشمول للمشروع الأصلي.",
+            },
+            {
+              question: "ماذا يحدث بعد انتهاء الشهرين المجانيين؟",
+              answer: "يمكن أن يستمر الموقع دون خطة صيانة، أو يمكن ترتيب صيانة ودعم مستمرين وفق احتياجات المشروع.",
+            },
+            {
+              question: "هل سأتمكن من إدارة الموقع؟",
+              answer: "عندما يشمل المشروع أدوات للعملاء أو الإدارة، يحصل المالك على الصلاحيات والإرشادات المناسبة لإدارة المنتجات أو الطلبات أو الحجوزات أو المحتوى أو العمليات الأخرى المدعومة.",
+            },
+            {
+              question: "ماذا أفعل إذا وجدت مشكلة بعد الإطلاق؟",
+              answer: "أرسل لنا الصفحة والإجراء وتفاصيل ما حدث. خلال فترة الدعم المشمولة، نراجع المشكلات المرتبطة بنطاق المشروع المُسلَّم ونساعد في حلها.",
+            },
+          ],
         },
       ],
     },
@@ -2049,34 +2713,6 @@ export const translations = {
         nextDays: "أقرب 5 أيام متاحة",
         available: "متاح",
       },
-    },
-    contact: {
-      hero: {
-        eyebrow: "تواصل معنا",
-        title: "أخبرنا بما تحتاجه.",
-        description:
-          "راسلنا مباشرة، أو استخدم صفحة ابدأ إذا كانت لديك رؤية واضحة للموقع الذي تحتاجه.",
-      },
-      whatsappMessage:
-        "مرحبًا Web District، أريد الاستفسار عن بناء موقع.",
-      cards: [
-        {
-          title: "WhatsApp",
-          description: "راسلنا مباشرة.",
-        },
-        {
-          title: "الهاتف",
-          description: "اتصل لمحادثة سريعة.",
-        },
-        {
-          title: "البريد الإلكتروني",
-          description: "أرسل تفاصيل المشروع.",
-        },
-        {
-          title: "Instagram",
-          description: "تابعنا أو أرسل رسالة مباشرة.",
-        },
-      ],
     },
     auth: {
       login: {

@@ -71,8 +71,8 @@ function Terms() {
                 <Button to="/start">
                   {t("common.buttons.startProject")}
                 </Button>
-                <Button to="/contact" variant="secondary">
-                  {t("common.buttons.contactWebDistrict")}
+                <Button to="/process#faq" variant="secondary">
+                  {t("common.buttons.viewQuestions")}
                 </Button>
                 <Button to="/services" variant="secondary">
                   {t("common.buttons.websiteCare")}

@@ -43,7 +43,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scrollbar-gutter: stable;
   forced-color-adjust: none;
   background-color: #0B0B0A;

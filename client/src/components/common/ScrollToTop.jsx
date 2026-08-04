@@ -1,44 +1,45 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-const prefersReducedMotion = () =>
-  window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (hash) {
-      const targetId = decodeURIComponent(hash.replace("#", ""));
-      let attempts = 0;
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    return () => {
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
 
-      const scrollToHash = () => {
-        const target = document.getElementById(targetId);
-
-        if (target) {
-          target.scrollIntoView({
-            behavior: prefersReducedMotion() ? "auto" : "smooth",
-            block: "start",
-          });
-          return;
-        }
-
-        attempts += 1;
-
-        if (attempts < 12) {
-          window.setTimeout(scrollToHash, 50);
-        }
-      };
-
-      window.setTimeout(scrollToHash, 0);
-      return;
+  useLayoutEffect(() => {
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      return undefined;
     }
 
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: prefersReducedMotion() ? "auto" : "smooth",
-    });
+    const targetId = decodeURIComponent(hash.slice(1));
+    let frame = 0;
+    let attempts = 0;
+
+    const scrollToHash = () => {
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        return;
+      }
+
+      attempts += 1;
+      if (attempts < 24) {
+        frame = window.requestAnimationFrame(scrollToHash);
+        return;
+      }
+
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    };
+
+    scrollToHash();
+    return () => window.cancelAnimationFrame(frame);
   }, [pathname, hash]);
 
   return null;

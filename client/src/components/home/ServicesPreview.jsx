@@ -1,66 +1,41 @@
-import { useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Container from "../common/Container";
+import ManualCarouselControls from "../common/ManualCarousel";
+import useManualCarousel from "../common/useManualCarousel";
 import useLanguage from "../../hooks/useLanguage";
+import useMediaQuery from "../../hooks/useMediaQuery";
 import { trackCustomEvent } from "../../lib/metaPixel";
 
 function ServicesPreview() {
   const { effectiveLanguage, isRtl, t } = useLanguage();
   const services = t("services.cards", []);
-  const itemCount = services.length;
-  const trackRef = useRef(null);
-  const dragRef = useRef({ dragged: false, startX: 0, startY: 0 });
-  const [carouselProgress, setCarouselProgress] = useState({
-    language: effectiveLanguage,
-    index: 0,
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const {
+    activeIndex,
+    goTo,
+    handleClickCapture,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerUp,
+    handleTransitionEnd,
+    next,
+    pageCount,
+    previous,
+    slides,
+    trackRef,
+    viewportRef,
+  } = useManualCarousel({
+    items: services,
+    visibleCount: isMobile ? 1 : Math.max(1, services.length),
+    resetKey: effectiveLanguage,
   });
-  const activeIndex =
-    carouselProgress.language === effectiveLanguage ? carouselProgress.index : 0;
 
-  const startDrag = (event) => {
-    dragRef.current = {
-      dragged: false,
-      startX: event.clientX,
-      startY: event.clientY,
-    };
-  };
-
-  const trackDrag = (event) => {
-    const distanceX = Math.abs(event.clientX - dragRef.current.startX);
-    const distanceY = Math.abs(event.clientY - dragRef.current.startY);
-    if (distanceX > 8 || distanceY > 8) dragRef.current.dragged = true;
-  };
-
-  const updateProgress = () => {
-    const track = trackRef.current;
-    const firstCard = track?.querySelector("article");
-    if (!track || !firstCard) return;
-    const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
-    setCarouselProgress({
+  const trackServicesClick = () =>
+    trackCustomEvent("ServicesClick", {
+      button_name: "Services Preview",
       language: effectiveLanguage,
-      index: Math.min(
-        services.length - 1,
-        Math.max(0, Math.round(Math.abs(track.scrollLeft) / (firstCard.offsetWidth + gap))),
-      ),
     });
-  };
-
-  const moveTo = (nextIndex) => {
-    const track = trackRef.current;
-    const firstCard = track?.querySelector("article");
-    if (!track || !firstCard || !itemCount) return;
-    const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
-    const wrappedIndex = ((nextIndex % itemCount) + itemCount) % itemCount;
-    setCarouselProgress({ language: effectiveLanguage, index: wrappedIndex });
-    track.scrollTo({
-      left: (isRtl ? -1 : 1) * wrappedIndex * (firstCard.offsetWidth + gap),
-      behavior: "smooth",
-    });
-  };
-
-  const goToPrevious = () => moveTo((activeIndex - 1 + itemCount) % itemCount);
-  const goToNext = () => moveTo((activeIndex + 1) % itemCount);
 
   return (
     <section className="wd-services-preview" aria-labelledby="services-preview-title">
@@ -76,78 +51,81 @@ function ServicesPreview() {
         </div>
 
         <div
-          key={effectiveLanguage}
-          ref={trackRef}
-          className="wd-services-track wd-snap-track"
-          onScroll={updateProgress}
-          onPointerDown={startDrag}
-          onPointerMove={trackDrag}
+          ref={viewportRef}
+          className="wd-services-viewport wd-manual-carousel-viewport"
           aria-label={t("home.services.eyebrow")}
+          onClickCapture={handleClickCapture}
+          onPointerCancel={handlePointerCancel}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
         >
-          {services.map((service, index) => (
-            <Link
-              className="wd-service-panel-link"
-              key={service.title}
-              to="/services"
-              aria-label={`${service.title} — ${t("common.buttons.viewServices")}`}
-              draggable="false"
-              onClick={(event) => {
-                if (dragRef.current.dragged) event.preventDefault();
-              }}
-            >
-              <article className="wd-service-panel">
-                <p className="wd-service-panel__number">0{index + 1}</p>
-                <div>
-                  <h3 className="font-display">{service.title}</h3>
-                  <p>{service.description}</p>
-                </div>
-                <ArrowUpRight size={18} aria-hidden="true" />
-              </article>
-            </Link>
-          ))}
+          <div
+            ref={trackRef}
+            className="wd-services-track wd-manual-carousel-track"
+            dir="ltr"
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {slides.map(
+              ({ item: service, duplicate, logicalIndex }, index) => (
+                <Link
+                  className="wd-service-panel-link"
+                  key={`${service.title}-${index}`}
+                  to="/services"
+                  aria-label={`${service.title} - ${t("common.buttons.viewServices")}`}
+                  aria-hidden={duplicate || undefined}
+                  tabIndex={duplicate ? -1 : undefined}
+                  dir={isRtl ? "rtl" : "ltr"}
+                  draggable="false"
+                >
+                  <article className="wd-service-panel">
+                    <p className="wd-service-panel__number">0{logicalIndex + 1}</p>
+                    <div>
+                      <h3 className="font-display">{service.title}</h3>
+                      <p>{service.description}</p>
+                    </div>
+                    <ArrowUpRight size={18} aria-hidden="true" />
+                  </article>
+                </Link>
+              ),
+            )}
+          </div>
         </div>
 
-        <div className="wd-carousel-controls wd-carousel-controls--ink wd-services-controls">
+        {isMobile ? (
+          <ManualCarouselControls
+            activeIndex={activeIndex}
+            className="wd-services-controls"
+            count={pageCount}
+            dotLabel={(index) =>
+              t("work.caseStudy.slideLabel", undefined, {
+                current: index + 1,
+                total: pageCount,
+              })
+            }
+            nextLabel={t("home.services.nextAria")}
+            onNext={next}
+            onPrevious={previous}
+            onSelect={goTo}
+            previousLabel={t("home.services.previousAria")}
+            tone="ink"
+          />
+        ) : null}
+
+        <div className="wd-services-mobile-action">
           <Link
             to="/services"
             className="wd-home-button wd-home-button--ink wd-services-action"
-            onClick={() =>
-              trackCustomEvent("ServicesClick", {
-                button_name: "Services Preview",
-                language: effectiveLanguage,
-              })
-            }
+            onClick={trackServicesClick}
           >
             {t("common.buttons.viewServices")} <ArrowUpRight size={17} />
           </Link>
-          <div dir={isRtl ? "rtl" : "ltr"}>
-            <button
-              type="button"
-              onClick={goToPrevious}
-              aria-label={t("home.services.previousAria")}
-            >
-              {isRtl ? <ArrowRight /> : <ArrowLeft />}
-            </button>
-            <button
-              type="button"
-              onClick={goToNext}
-              aria-label={t("home.services.nextAria")}
-            >
-              {isRtl ? <ArrowLeft /> : <ArrowRight />}
-            </button>
-          </div>
         </div>
 
         <div className="wd-services-desktop-action">
           <Link
             to="/services"
             className="wd-home-button wd-home-button--ink"
-            onClick={() =>
-              trackCustomEvent("ServicesClick", {
-                button_name: "Services Preview",
-                language: effectiveLanguage,
-              })
-            }
+            onClick={trackServicesClick}
           >
             {t("common.buttons.viewServices")} <ArrowUpRight size={17} />
           </Link>

@@ -14,7 +14,6 @@ const trackedPublicPaths = new Set([
   "/work",
   "/process",
   "/start",
-  "/contact",
   "/success",
   "/terms",
   "/privacy",
@@ -31,7 +30,6 @@ const publicPageViews = {
     contentName: "Start Project",
     contentCategory: "Public Page",
   },
-  "/contact": { contentName: "Contact", contentCategory: "Public Page" },
   "/process": { contentName: "Process", contentCategory: "Public Page" },
 };
 

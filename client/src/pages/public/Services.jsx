@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   CheckCircle2,
   CircleSlash,
@@ -8,16 +7,14 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
 import ServiceCard from "../../components/services/ServiceCard";
 import { AGENCY } from "../../lib/constants";
-import { getWhatsappLink, truncateText } from "../../lib/helpers";
+import { getWhatsappLink } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
-import useInitialLoad from "../../hooks/useInitialLoad";
 import {
   trackContact,
   trackCustomEvent,
@@ -32,8 +29,7 @@ const websiteCareIcons = [
 ];
 
 function Services() {
-  const [packages, setPackages] = useState([]);
-  const { effectiveLanguage, isArabic, t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
   const websiteCareWhatsappLink = getWhatsappLink(
     AGENCY.whatsapp,
     t("services.care.whatsappMessage")
@@ -54,48 +50,7 @@ function Services() {
       language: effectiveLanguage,
     });
 
-  const fetchPackages = async () => {
-    try {
-      const { data } = await api.get("/packages/public", {
-        timeout: PUBLIC_CONTENT_TIMEOUT,
-      });
-
-      setPackages(data.packages || []);
-    } catch {
-      setPackages([]);
-    }
-  };
-
-  useInitialLoad(fetchPackages);
-
-  const services = useMemo(() => {
-    const fallbackServices = t("services.cards", []);
-
-    if (isArabic || !packages.length) return fallbackServices;
-
-    const apiServices = packages
-      .map((item) => ({
-        title: item.name,
-        label: item.websiteType,
-        description: truncateText(item.shortDescription, 110),
-        longDescription: truncateText(item.shortDescription, 140),
-        includes: item.features?.length
-          ? item.features.slice(0, 3)
-          : ["Custom website direction", "Mobile-first layout", "Clear CTA flow"],
-        bestFor: item.bestFor?.length
-          ? item.bestFor.slice(0, 3)
-          : ["Brands", "Businesses", "Campaigns"],
-        priceLabel: item.priceLabel,
-        isCustom: item.isCustom,
-        isFeatured: item.isFeatured,
-      }))
-      .slice(0, 4);
-
-    return [
-      ...apiServices,
-      ...fallbackServices.slice(apiServices.length, 4),
-    ].slice(0, 4);
-  }, [isArabic, packages, t]);
+  const services = t("services.cards", []);
 
   const websiteCareItems = t("services.care.items", []).map((item, index) => ({
     ...item,
@@ -128,7 +83,7 @@ function Services() {
 
       <section className="wd-section-black pt-6 pb-16 md:pt-8">
         <Container>
-          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {services.map((service, index) => (
               <ServiceCard
                 key={service.title}
@@ -321,7 +276,7 @@ function Services() {
               >
                 {t("common.buttons.startProject")}
               </Button>
-              <Button to="/process#process-questions" variant="secondary">
+              <Button to="/process#faq" variant="secondary">
                 {t("common.buttons.viewQuestions")}
               </Button>
             </div>

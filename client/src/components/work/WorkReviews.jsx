@@ -72,7 +72,7 @@ function WorkReviewCard({ review, duplicate = false }) {
 function WorkReviews() {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { isRtl, t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
 
   const fetchReviews = async () => {
     try {
@@ -107,7 +107,7 @@ function WorkReviews() {
           ariaLabel={t("home.reviews.eyebrow")}
           previousLabel={t("work.reviews.previousAria")}
           nextLabel={t("work.reviews.nextAria")}
-          isRtl={isRtl}
+          resetKey={effectiveLanguage}
           tone="light"
         />
       </Container>

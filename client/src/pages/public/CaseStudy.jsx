@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import api from "../../lib/axios";
 import Container from "../../components/common/Container";
 import CaseStudySection from "../../components/work/CaseStudySection";
-import FinalCTA from "../../components/home/FinalCTA";
 import Loader from "../../components/common/Loader";
 import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
@@ -89,13 +88,13 @@ function CaseStudy() {
         <section className="wd-section-black pb-20 pt-32">
           <Container>
             <div className="wd-card-on-black rounded-[2rem] p-8 md:p-12">
-              <p className="text-sm font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
+              <p className="text-sm font-bold uppercase tracking-[0.34em] text-[var(--wd-signature-gold)]">
                 {t("work.caseStudy.eyebrow")}
               </p>
               <h1 className="font-display mt-4 text-5xl font-bold tracking-[-0.06em]">
                 {t("work.caseStudy.notFoundTitle")}
               </h1>
-              <p className="mt-4 max-w-xl text-[#D9D4CC]">
+              <p className="mt-4 max-w-xl text-[var(--wd-stone-gray)]">
                 {t("work.caseStudy.notFoundDescription")}
               </p>
 
@@ -112,13 +111,7 @@ function CaseStudy() {
   return (
     <>
       {pageMeta}
-      <section className="wd-section-black pb-12 pt-32">
-        <Container>
-          <CaseStudySection project={project} />
-        </Container>
-      </section>
-
-      <FinalCTA liveUrl={project.liveUrl} />
+      <CaseStudySection project={project} />
     </>
   );
 }

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import ManualCarouselControls from "../common/ManualCarousel";
+import useManualCarousel from "../common/useManualCarousel";
+import useLanguage from "../../hooks/useLanguage";
 
 function WorkCollection({
   items,
@@ -8,184 +9,25 @@ function WorkCollection({
   ariaLabel,
   previousLabel,
   nextLabel,
-  isRtl = false,
+  resetKey,
   tone = "dark",
 }) {
-  const trackRef = useRef(null);
-  const activeIndexRef = useRef(0);
-  const physicalIndexRef = useRef(items.length > 1 ? 1 : 0);
-  const isNormalizingRef = useRef(false);
-  const normalizationFrameRef = useRef(null);
-  const settleTimerRef = useRef(null);
-  const hasLoop = items.length > 1;
-  const slides = hasLoop ? [items.at(-1), ...items, items[0]] : items;
-
-  const scrollToPhysicalSlide = useCallback((index, behavior = "smooth") => {
-    const track = trackRef.current;
-    const target = track?.querySelector(`[data-work-slide-index="${index}"]`);
-    if (!track || !target || !track.clientWidth || !target.getBoundingClientRect().width) {
-      return false;
-    }
-
-    const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const resolvedBehavior = shouldReduceMotion ? "auto" : behavior;
-    const previousBehavior = track.style.scrollBehavior;
-    if (resolvedBehavior === "auto") track.style.scrollBehavior = "auto";
-    target.scrollIntoView({ behavior: resolvedBehavior, block: "nearest", inline: "start" });
-    physicalIndexRef.current = index;
-
-    if (resolvedBehavior === "auto") {
-      window.requestAnimationFrame(() => {
-        if (trackRef.current) trackRef.current.style.scrollBehavior = previousBehavior;
-      });
-    }
-
-    return true;
-  }, []);
-
-  const normalizeToPhysicalSlide = useCallback((index) => {
-    window.clearTimeout(settleTimerRef.current);
-    isNormalizingRef.current = true;
-
-    const didScroll = scrollToPhysicalSlide(index, "auto");
-    if (!didScroll) {
-      isNormalizingRef.current = false;
-      return false;
-    }
-
-    window.cancelAnimationFrame(normalizationFrameRef.current);
-    normalizationFrameRef.current = window.requestAnimationFrame(() => {
-      isNormalizingRef.current = false;
-    });
-
-    return true;
-  }, [scrollToPhysicalSlide]);
-
-  const scrollToItem = useCallback((index, behavior = "smooth") => {
-    if (!items.length) return false;
-
-    const nextIndex = Math.max(0, Math.min(index, items.length - 1));
-    const physicalIndex = hasLoop ? nextIndex + 1 : nextIndex;
-    const didScroll = scrollToPhysicalSlide(physicalIndex, behavior);
-
-    if (didScroll) activeIndexRef.current = nextIndex;
-    return didScroll;
-  }, [hasLoop, items.length, scrollToPhysicalSlide]);
-
-  const settlePosition = useCallback(() => {
-    const track = trackRef.current;
-    if (!track || !items.length || isNormalizingRef.current) return;
-
-    const trackRect = track.getBoundingClientRect();
-    const trackStart = isRtl ? trackRect.right : trackRect.left;
-    const slideElements = [...track.querySelectorAll("[data-work-slide-index]")];
-    let closestIndex = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-
-    slideElements.forEach((slide, index) => {
-      const rect = slide.getBoundingClientRect();
-      const slideStart = isRtl ? rect.right : rect.left;
-      const distance = Math.abs(slideStart - trackStart);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = index;
-      }
-    });
-
-    physicalIndexRef.current = closestIndex;
-
-    if (!hasLoop) {
-      activeIndexRef.current = closestIndex;
-      return;
-    }
-
-    if (closestIndex === 0) {
-      activeIndexRef.current = items.length - 1;
-      normalizeToPhysicalSlide(items.length);
-      return;
-    }
-
-    if (closestIndex === items.length + 1) {
-      activeIndexRef.current = 0;
-      normalizeToPhysicalSlide(1);
-      return;
-    }
-
-    activeIndexRef.current = closestIndex - 1;
-  }, [hasLoop, isRtl, items.length, normalizeToPhysicalSlide]);
-
-  useLayoutEffect(() => {
-    if (!items.length) {
-      activeIndexRef.current = 0;
-      return undefined;
-    }
-
-    activeIndexRef.current = Math.min(activeIndexRef.current, items.length - 1);
-
-    const restorePosition = () => {
-      scrollToItem(activeIndexRef.current, "auto");
-    };
-
-    restorePosition();
-    const frame = window.requestAnimationFrame(restorePosition);
-    const resizeObserver = new ResizeObserver(restorePosition);
-
-    if (trackRef.current) resizeObserver.observe(trackRef.current);
-    window.addEventListener("resize", restorePosition);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.cancelAnimationFrame(normalizationFrameRef.current);
-      window.clearTimeout(settleTimerRef.current);
-      isNormalizingRef.current = false;
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", restorePosition);
-    };
-  }, [isRtl, items, scrollToItem]);
-
-  const handleScroll = useCallback(() => {
-    if (isNormalizingRef.current) return;
-
-    window.clearTimeout(settleTimerRef.current);
-    settleTimerRef.current = window.setTimeout(() => {
-      if (!isNormalizingRef.current) settlePosition();
-    }, 140);
-  }, [settlePosition]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track || !("onscrollend" in track)) return undefined;
-
-    const handleScrollEnd = () => {
-      if (isNormalizingRef.current) return;
-
-      window.clearTimeout(settleTimerRef.current);
-      settlePosition();
-    };
-
-    track.addEventListener("scrollend", handleScrollEnd);
-    return () => track.removeEventListener("scrollend", handleScrollEnd);
-  }, [settlePosition]);
-
-  const move = (step) => {
-    if (!hasLoop) return;
-
-    const currentIndex = activeIndexRef.current;
-    const nextIndex = (currentIndex + step + items.length) % items.length;
-    const isWrapping =
-      (step < 0 && currentIndex === 0) ||
-      (step > 0 && currentIndex === items.length - 1);
-
-    if (isWrapping) {
-      const cloneIndex = step < 0 ? 0 : items.length + 1;
-      if (scrollToPhysicalSlide(cloneIndex, "smooth")) {
-        activeIndexRef.current = nextIndex;
-      }
-      return;
-    }
-
-    scrollToItem(nextIndex, "smooth");
-  };
+  const { isRtl, t } = useLanguage();
+  const {
+    activeIndex,
+    goTo,
+    handleClickCapture,
+    handlePointerCancel,
+    handlePointerDown,
+    handlePointerUp,
+    handleTransitionEnd,
+    next,
+    pageCount,
+    previous,
+    slides,
+    trackRef,
+    viewportRef,
+  } = useManualCarousel({ items, visibleCount: 1, resetKey });
 
   return (
     <>
@@ -199,37 +41,50 @@ function WorkCollection({
 
       <div className={`wd-work-mobile-collection wd-work-mobile-collection--${tone}`}>
         <div
-          ref={trackRef}
-          className="wd-work-mobile-track"
-          dir={isRtl ? "rtl" : "ltr"}
+          ref={viewportRef}
+          className="wd-work-mobile-viewport wd-manual-carousel-viewport"
           aria-label={ariaLabel}
-          onScroll={handleScroll}
+          onClickCapture={handleClickCapture}
+          onPointerCancel={handlePointerCancel}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
         >
-          {slides.map((item, index) => {
-            const duplicate = hasLoop && (index === 0 || index === slides.length - 1);
-            return (
+          <div
+            ref={trackRef}
+            className="wd-work-mobile-track wd-manual-carousel-track"
+            dir="ltr"
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {slides.map(({ item, duplicate }, index) => (
               <div
                 className="wd-work-mobile-slide"
-                data-work-slide-index={index}
                 key={`${getKey(item, index)}-${index}`}
                 aria-hidden={duplicate || undefined}
+                dir={isRtl ? "rtl" : "ltr"}
               >
                 {renderItem(item, { duplicate })}
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
-        {hasLoop ? (
-          <div className="wd-work-mobile-controls">
-            <button type="button" onClick={() => move(-1)} aria-label={previousLabel}>
-              {isRtl ? <ArrowRight aria-hidden="true" /> : <ArrowLeft aria-hidden="true" />}
-            </button>
-            <button type="button" onClick={() => move(1)} aria-label={nextLabel}>
-              {isRtl ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
-            </button>
-          </div>
-        ) : null}
+        <ManualCarouselControls
+          activeIndex={activeIndex}
+          className="wd-work-mobile-controls"
+          count={pageCount}
+          dotLabel={(index) =>
+            t("work.caseStudy.slideLabel", undefined, {
+              current: index + 1,
+              total: pageCount,
+            })
+          }
+          nextLabel={nextLabel}
+          onNext={next}
+          onPrevious={previous}
+          onSelect={goTo}
+          previousLabel={previousLabel}
+          tone={tone}
+        />
       </div>
     </>
   );

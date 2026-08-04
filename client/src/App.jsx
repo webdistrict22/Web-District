@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import AuthProvider from "./context/AuthProvider.jsx";
 import LanguageProvider from "./context/LanguageProvider.jsx";
 import SettingsProvider from "./context/SettingsProvider.jsx";
-import WelcomeIntro from "./components/common/WelcomeIntro";
 import AppRoutes from "./routes/AppRoutes";
 import useLanguage from "./hooks/useLanguage";
 
@@ -120,8 +119,7 @@ function App() {
     <LanguageProvider>
       <AuthProvider>
         <SettingsProvider>
-          <WelcomeIntro />
-          <div data-app-content>
+          <div>
             <SkipLink />
             <AppRoutes />
           </div>

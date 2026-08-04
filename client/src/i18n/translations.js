@@ -51,7 +51,6 @@ export const translations = {
         viewServices: "View services",
         answerQuestions: "Answer Your Questions",
         viewQuestions: "View Questions & Answers",
-        websiteCare: "Website Care",
         backHome: "Back home",
         backToWork: "Back to work",
         open: "Open",
@@ -218,9 +217,11 @@ export const translations = {
         "Explore six Web District website services: online stores, business websites, portfolios, landing pages, booking websites, and custom platforms.",
       hero: {
         eyebrow: "Services",
-        title: "Websites built around the business goal.",
-        description:
-          "You choose the website direction. We shape the structure, visuals, and launch path.",
+        title: "Websites shaped around what the business needs.",
+      },
+      transitionBand: {
+        label: "Six website directions",
+        prompt: "Scroll to explore",
       },
       loading: "Loading website options...",
       cards: [
@@ -288,86 +289,145 @@ export const translations = {
           bestFor: ["Operations teams", "Customer portals", "Custom workflows"],
         },
       ],
-      care: {
-        eyebrow: "Website Care",
-        title: "Keep your website polished after launch.",
-        description:
-          "Small updates, fixes, and improvements handled monthly so your website keeps feeling fresh, reliable, and easy to manage.",
-        ask: "Ask About Website Care",
-        included: "What's included",
-        monthly: "Monthly care plans",
-        monthlyTitle: "Support that matches your update rhythm.",
-        customQuote: "Custom quote",
-        monthlySupport: "Monthly support based on your website needs.",
-        askWhatsapp: "Ask on WhatsApp",
-        notIncludedLabel: "Not included:",
-        notIncluded:
-          "Major redesigns, large new features, full system rebuilds, or emergency 24/7 support are quoted separately unless agreed.",
-        whatsappMessage: "Hi Web District, I want to ask about Website Care.",
-        items: [
-          {
-            title: "Small content edits",
-            description:
-              "Update short text, offers, contact details, sections, or repeated content.",
-          },
-          {
-            title: "Image or text updates",
-            description:
-              "Swap images, adjust copy, and keep important pages feeling current.",
-          },
-          {
-            title: "Website health checks",
-            description: "Review key pages, forms, links, and responsive behavior.",
-          },
-          {
-            title: "Small layout improvements",
-            description: "Refine compact areas without rebuilding the whole website.",
-          },
-          {
-            title: "Support and guidance",
-            description:
-              "Ask questions and get clear direction when your website needs attention.",
-          },
-        ],
-        plans: [
-          {
-            title: "Essential Care",
-            bestFor: "Best for small text/image updates.",
-            features: [
-              "Monthly small edits",
-              "Basic website checks",
-              "Image or copy swaps",
-              "Email or WhatsApp support",
-            ],
-          },
-          {
-            title: "Growth Care",
-            bestFor: "Best for active brands and stores.",
-            features: [
-              "Frequent content updates",
-              "Offer or product support",
-              "Small layout refinements",
-              "Monthly improvement notes",
-            ],
-          },
-          {
-            title: "Priority Care",
-            bestFor:
-              "Best for businesses that need faster support and ongoing improvements.",
-            features: [
-              "Faster support window",
-              "Ongoing refinement tasks",
-              "Regular health checks",
-              "Roadmap guidance",
-            ],
-          },
-        ],
+      sectionLabels: {
+        bestSuitedFor: "Best suited for",
+        builtToAchieve: "Built to achieve",
+        canInclude: "Can include",
       },
+      details: [
+        {
+          category: "E-commerce",
+          title: "Online Stores",
+          description:
+            "Custom storefronts shaped around the products, customer journey, and day-to-day sales operations.",
+          bestFor:
+            "Product brands, specialty retailers, and businesses moving from social-media orders to a complete online store.",
+          outcomes: [
+            "Make products easier to discover and compare",
+            "Create a clear path from selection to checkout",
+            "Simplify sales management while supporting future growth",
+          ],
+          includes: [
+            "Storefront: Homepage, categories, search, filters, product pages, and variants",
+            "Purchasing: Cart, checkout, payment methods, delivery rules, and order tracking",
+            "Growth tools: Bundles, offers, discount codes, and upsells",
+            "Customer experience: Accounts, My Orders or Track Order, and responsive shopping flows",
+            "Management: Products, customers, orders, inventory, analytics, and reporting",
+            "Languages: Arabic and English storefronts",
+          ],
+          scopeNote:
+            "Final store features depend on the agreed project scope.",
+        },
+        {
+          category: "Companies",
+          title: "Business Websites",
+          description:
+            "Professional websites that explain the business clearly, build credibility, and turn interest into enquiries.",
+          bestFor:
+            "Companies, factories, agencies, consultants, manufacturers, professional services, and B2B teams.",
+          outcomes: [
+            "Explain services and capabilities without confusing visitors",
+            "Build trust through clear structure and credible proof",
+            "Generate qualified enquiries across desktop and mobile",
+          ],
+          includes: [
+            "Company presentation: Overview, services, industries, team, product lines, and capabilities",
+            "Lead generation: Enquiry forms, direct contact paths, and call or appointment booking",
+            "Trust and proof: Clients, case studies, testimonials, brochures, and company profiles",
+            "Content management: Admin-managed pages, downloads, and business updates",
+            "Delivery: Responsive Arabic and English content, analytics, and search foundations",
+          ],
+        },
+        {
+          category: "Personal brands",
+          title: "Portfolio & Personal Brand Websites",
+          description:
+            "Personal websites that unite work, experience, services, achievements, and identity in one memorable presence.",
+          bestFor:
+            "Designers, developers, photographers, consultants, artists, creators, freelancers, and professionals building a reputation.",
+          outcomes: [
+            "Present work and expertise with a clear personal direction",
+            "Create a professional home beyond social-media profiles",
+            "Help clients, employers, or collaborators take the next step",
+          ],
+          includes: [
+            "Identity: Personal introduction, biography, and visual direction",
+            "Work: Portfolio projects, case studies, photography, and video",
+            "Experience: Services, expertise, achievements, testimonials, press, and appearances",
+            "Enquiries: Contact, booking, downloadable profile, or CV",
+            "Management: Articles, insights, and admin-managed portfolio content",
+          ],
+        },
+        {
+          category: "Campaigns",
+          title: "Landing Pages",
+          description:
+            "Focused pages built around one campaign, launch, offer, or action without the distractions of a full website.",
+          bestFor:
+            "Advertising campaigns, launches, waitlists, event registrations, limited offers, lead generation, and idea validation.",
+          outcomes: [
+            "Keep attention on one clear action",
+            "Explain an offer quickly and convincingly",
+            "Measure campaign traffic and conversion clearly",
+          ],
+          includes: [
+            "Campaign message: Headline, offer, benefits, features, and a focused call to action",
+            "Conversion: Lead, registration, or sales forms with confirmation pages",
+            "Proof: Testimonials, frequently asked questions, and launch details where useful",
+            "Tracking: Analytics, advertising pixels, and a structure prepared for testing",
+            "Integrations: Email, CRM, and other agreed marketing tools",
+          ],
+        },
+        {
+          category: "Bookings",
+          title: "Booking & Reservation Websites",
+          description:
+            "Websites that let customers explore services, choose a suitable time, book, and receive clear confirmation.",
+          bestFor:
+            "Travel, clinics, salons, coaches, events, hospitality, rentals, activities, and appointment-based services.",
+          outcomes: [
+            "Reduce manual back-and-forth with customers",
+            "Make services, packages, and availability easier to understand",
+            "Organise bookings, customer records, and operational follow-up",
+          ],
+          includes: [
+            "Discovery: Services, packages, appointment types, and availability",
+            "Scheduling: Date and time selection with staff, room, package, or resource assignment",
+            "Booking: Reservation forms, deposits or online payment, confirmations, and cancellation rules",
+            "Customer experience: Accounts, booking history, rescheduling, notifications, and reminders",
+            "Operations: Admin management, calendar views, customer records, and reporting",
+            "Languages: Responsive booking flows in Arabic and English",
+          ],
+        },
+        {
+          category: "Custom systems",
+          title: "Custom Platforms & Dashboards",
+          description:
+            "Purpose-built portals, dashboards, and workflows shaped around how the business actually operates.",
+          bestFor:
+            "Businesses with internal workflows, customer portals, approvals, records, reporting, or specialised digital services.",
+          outcomes: [
+            "Centralise information and reduce repeated manual work",
+            "Give different users controlled access to the tools they need",
+            "Turn complex workflows into a system that can expand with the business",
+          ],
+          includes: [
+            "Portals and access: Customer portals, admin dashboards, and role-based permissions",
+            "Workflows: Requests, approvals, orders, bookings, contracts, production, and status tracking",
+            "Data: Business records, uploads, search, filtering, exports, analytics, and reporting",
+            "Controls: Notifications, audit history, and custom business rules for staff and administrators",
+            "Integrations: Connections to agreed third-party services and APIs",
+            "Growth: Scalable modules and Arabic and English interfaces",
+          ],
+          scopeNote:
+            "Each platform is scoped around its users, rules, workflows, and integrations.",
+        },
+      ],
       bottomCta: {
         eyebrow: "Not sure what you need?",
         title: "Start with the goal.",
         description:
-          "Tell us what the website should do. We'll shape the right structure.",
+          "Tell us what the website should achieve. We’ll recommend the right direction and shape the scope with you.",
       },
     },
     work: {
@@ -1408,7 +1468,7 @@ export const translations = {
       terms: {
         metaTitle: "Terms & Conditions",
         metaDescription:
-          "Read Web District's clear service terms for website requests, proposals, payments, timelines, revisions, launch, and monthly support.",
+          "Read Web District's clear service terms for website requests, proposals, payments, timelines, revisions, and launch.",
         eyebrow: "Terms",
         title: "Terms & Conditions",
         description:
@@ -1416,7 +1476,7 @@ export const translations = {
         ctaEyebrow: "Contact",
         ctaTitle: "Questions about these terms?",
         ctaDescription:
-          "Start a project when you are ready, contact Web District with any questions, or review monthly Website Care inside our services for support after launch.",
+          "Start a project when you are ready, or review our questions and answers for more information about working with Web District.",
         sections: [
           {
             title: "Services",
@@ -1479,13 +1539,6 @@ export const translations = {
             body: [
               "Before launch, Web District checks the agreed pages, responsive layout, core links, and main forms or flows.",
               "Final launch depends on access, approvals, domain or hosting readiness, and any third-party services involved.",
-            ],
-          },
-          {
-            title: "Monthly support / website care",
-            body: [
-              "Monthly support or website care is separate unless it is included in the project agreement.",
-              "Care plans may cover small edits, updates, checks, and guidance. Major new features are not included as small monthly edits unless agreed.",
             ],
           },
         ],
@@ -1630,7 +1683,6 @@ export const translations = {
         viewServices: "شاهد الخدمات",
         answerQuestions: "إجابات لأسئلتك",
         viewQuestions: "الأسئلة والإجابات",
-        websiteCare: "العناية بالموقع",
         backHome: "العودة للرئيسية",
         backToWork: "العودة للأعمال",
         open: "فتح",
@@ -1797,9 +1849,11 @@ export const translations = {
         "تعرّف على مسارات Web District الستة: المتاجر الإلكترونية، مواقع الأعمال، البورتفوليو، صفحات الهبوط، مواقع الحجز، والمنصات المخصصة.",
       hero: {
         eyebrow: "الخدمات",
-        title: "مواقع مصممة لتحقيق أهداف عملك.",
-        description:
-          "اختر المسار الأنسب لموقعك، ونحن نتولى بناء الهيكل والتصميم وخطة الإطلاق.",
+        title: "مواقع تُصاغ وفق ما يحتاجه النشاط.",
+      },
+      transitionBand: {
+        label: "ستة مسارات للمواقع الإلكترونية",
+        prompt: "مرّر للاستكشاف",
       },
       loading: "جارٍ تحميل خيارات المواقع...",
       cards: [
@@ -1868,87 +1922,145 @@ export const translations = {
           bestFor: ["فرق التشغيل", "بوابات العملاء", "مسارات العمل المخصصة"],
         },
       ],
-      care: {
-        eyebrow: "العناية بالموقع",
-        title: "حافظ على موقعك أنيقًا ومحدّثًا بعد الإطلاق.",
-        description:
-          "تحديثات وإصلاحات وتحسينات شهرية بسيطة تحافظ على موقعك محدّثًا وموثوقًا وسهل الإدارة.",
-        ask: "اسأل عن العناية بالموقع",
-        included: "ما تتضمنه الخدمة",
-        monthly: "خطط العناية الشهرية",
-        monthlyTitle: "دعم شهري يناسب احتياجات موقعك.",
-        customQuote: "تسعير مخصص",
-        monthlySupport: "دعم شهري حسب احتياج موقعك.",
-        askWhatsapp: "اسأل عبر WhatsApp",
-        notIncludedLabel: "غير مشمول:",
-        notIncluded:
-          "إعادة تصميم شاملة، إضافة مميزات كبيرة جديدة، إعادة بناء النظام بالكامل، أو الدعم الطارئ على مدار الساعة. يتم تسعير هذه الأعمال بشكل منفصل ما لم يتم الاتفاق عليها مسبقًا.",
-        whatsappMessage: "مرحبًا Web District، أريد الاستفسار عن العناية بالموقع.",
-        items: [
-          {
-            title: "تعديلات محتوى بسيطة",
-            description:
-              "تحديث نصوص قصيرة أو عروض أو بيانات التواصل أو أقسام متكررة.",
-          },
-          {
-            title: "تحديثات الصور والنصوص",
-            description:
-              "تبديل الصور، تحسين النصوص، والحفاظ على صفحاتك المهمة محدّثة.",
-          },
-          {
-            title: "فحوصات دورية للموقع",
-            description:
-              "مراجعة الصفحات الأساسية والنماذج والروابط ومدى تجاوب الموقع على مختلف الشاشات.",
-          },
-          {
-            title: "تحسينات بسيطة في التصميم",
-            description:
-              "تحسين أجزاء محددة من الموقع دون الحاجة إلى إعادة بنائه بالكامل.",
-          },
-          {
-            title: "دعم وتوجيه",
-            description:
-              "اطرح أسئلتك واحصل على توجيه واضح عندما يحتاج موقعك إلى عناية.",
-          },
-        ],
-        plans: [
-          {
-            title: "العناية الأساسية",
-            bestFor: "مناسبة لتحديثات النصوص والصور البسيطة.",
-            features: [
-              "تعديلات بسيطة شهرية",
-              "فحوصات أساسية للموقع",
-              "تبديل صور أو نصوص",
-              "دعم عبر البريد أو WhatsApp",
-            ],
-          },
-          {
-            title: "العناية للنمو",
-            bestFor: "مناسبة للعلامات والمتاجر النشطة.",
-            features: [
-              "تحديثات محتوى متكررة",
-              "دعم للعروض أو المنتجات",
-              "تحسينات بسيطة في التصميم",
-              "توصيات شهرية للتحسين",
-            ],
-          },
-          {
-            title: "العناية المتقدمة",
-            bestFor: "مناسبة للأعمال التي تحتاج دعمًا أسرع وتحسينات مستمرة.",
-            features: [
-              "أولوية في الدعم",
-              "تحسينات مستمرة",
-              "فحوصات دورية للموقع",
-              "توجيه واضح للتطوير",
-            ],
-          },
-        ],
+      sectionLabels: {
+        bestSuitedFor: "الأنسب لـ",
+        builtToAchieve: "مصمم لتحقيق",
+        canInclude: "يمكن أن يشمل",
       },
+      details: [
+        {
+          category: "التجارة الإلكترونية",
+          title: "المتاجر الإلكترونية",
+          description:
+            "واجهات متاجر مخصصة تُصاغ حول المنتجات ورحلة العميل وعمليات البيع اليومية.",
+          bestFor:
+            "العلامات التجارية للمنتجات، ومتاجر التجزئة المتخصصة، والأعمال التي تنتقل من طلبات منصات التواصل إلى متجر إلكتروني متكامل.",
+          outcomes: [
+            "تسهيل اكتشاف المنتجات ومقارنتها",
+            "إنشاء مسار واضح من اختيار المنتج إلى إتمام الطلب",
+            "تبسيط إدارة المبيعات مع دعم نمو المتجر مستقبلًا",
+          ],
+          includes: [
+            "واجهة المتجر: الرئيسية والأقسام والبحث والفلاتر وصفحات المنتجات والخيارات",
+            "الشراء: السلة وإتمام الطلب وطرق الدفع وقواعد التوصيل وتتبع الطلبات",
+            "أدوات النمو: الباقات والعروض وأكواد الخصم والبيع الإضافي",
+            "تجربة العميل: الحسابات وطلباتي أو تتبع الطلب ومسارات شراء متجاوبة",
+            "الإدارة: المنتجات والعملاء والطلبات والمخزون والتحليلات والتقارير",
+            "اللغات: واجهات متجر بالعربية والإنجليزية",
+          ],
+          scopeNote:
+            "تعتمد مزايا المتجر النهائية على نطاق المشروع المتفق عليه.",
+        },
+        {
+          category: "الشركات",
+          title: "مواقع الشركات والأعمال",
+          description:
+            "مواقع احترافية تشرح النشاط بوضوح، وتعزز المصداقية، وتحول اهتمام الزائر إلى استفسار جاد.",
+          bestFor:
+            "الشركات والمصانع والوكالات والاستشاريون والمصنّعون والخدمات المهنية وفرق الأعمال الموجهة للشركات.",
+          outcomes: [
+            "شرح الخدمات والقدرات دون إرباك الزائر",
+            "بناء الثقة من خلال هيكل واضح وأدلة موثوقة",
+            "جذب استفسارات مؤهلة على الكمبيوتر والهاتف",
+          ],
+          includes: [
+            "تقديم الشركة: النبذة والخدمات والقطاعات والفريق وخطوط المنتجات والقدرات",
+            "جذب العملاء: نماذج الاستفسار ومسارات التواصل المباشر وحجز المكالمات أو المواعيد",
+            "الثقة والأدلة: العملاء ودراسات الحالة والآراء والكتيبات والملف التعريفي",
+            "إدارة المحتوى: صفحات وتحديثات وملفات يديرها فريق الشركة",
+            "التقديم التقني: محتوى عربي وإنجليزي متجاوب وتحليلات وأساسيات الظهور في البحث",
+          ],
+        },
+        {
+          category: "العلامات الشخصية",
+          title: "مواقع البورتفوليو والعلامات الشخصية",
+          description:
+            "مواقع شخصية تجمع الأعمال والخبرة والخدمات والإنجازات والهوية في حضور واحد يسهل تذكره.",
+          bestFor:
+            "المصممون والمطورون والمصورون والاستشاريون والفنانون وصنّاع المحتوى والمستقلون وكل محترف يبني سمعته.",
+          outcomes: [
+            "عرض الأعمال والخبرة ضمن اتجاه شخصي واضح",
+            "إنشاء مقر مهني يتجاوز حسابات منصات التواصل",
+            "مساعدة العملاء وأصحاب العمل والمتعاونين على اتخاذ الخطوة التالية",
+          ],
+          includes: [
+            "الهوية: المقدمة الشخصية والسيرة والاتجاه البصري",
+            "الأعمال: مشروعات البورتفوليو ودراسات الحالة والصور والفيديو",
+            "الخبرة: الخدمات والتخصصات والإنجازات والآراء والظهور الإعلامي",
+            "الاستفسارات: التواصل أو الحجز أو تنزيل الملف التعريفي أو السيرة الذاتية",
+            "الإدارة: المقالات والرؤى ومحتوى البورتفوليو من لوحة التحكم",
+          ],
+        },
+        {
+          category: "الحملات",
+          title: "صفحات الهبوط",
+          description:
+            "صفحات مركّزة حول حملة أو إطلاق أو عرض أو إجراء واحد، دون مشتتات الموقع الكامل.",
+          bestFor:
+            "الحملات الإعلانية وإطلاق المنتجات وقوائم الانتظار وتسجيل الفعاليات والعروض المحدودة وجمع العملاء واختبار الأفكار.",
+          outcomes: [
+            "تركيز الانتباه على إجراء واحد واضح",
+            "شرح العرض بسرعة وبصورة مقنعة",
+            "قياس زيارات الحملة والتحويلات بوضوح",
+          ],
+          includes: [
+            "رسالة الحملة: العنوان والعرض والفوائد والمزايا ودعوة مركّزة لاتخاذ الإجراء",
+            "التحويل: نماذج التواصل أو التسجيل أو البيع مع صفحات التأكيد",
+            "الأدلة: آراء العملاء والأسئلة الشائعة ومعلومات الإطلاق عند الحاجة",
+            "التتبع: التحليلات وأكواد الإعلانات وهيكل مهيأ للاختبار",
+            "الربط: البريد الإلكتروني ونظام إدارة العملاء وأدوات التسويق المتفق عليها",
+          ],
+        },
+        {
+          category: "الحجوزات",
+          title: "مواقع الحجز والمواعيد",
+          description:
+            "مواقع تتيح للعملاء استكشاف الخدمات واختيار موعد مناسب والحجز واستلام تأكيد واضح.",
+          bestFor:
+            "السفر والعيادات والصالونات والمدربون والفعاليات والضيافة والتأجير والأنشطة والخدمات المرتبطة بالمواعيد.",
+          outcomes: [
+            "تقليل التواصل اليدوي المتكرر مع العملاء",
+            "توضيح الخدمات والباقات والمواعيد المتاحة",
+            "تنظيم الحجوزات وسجلات العملاء والمتابعة التشغيلية",
+          ],
+          includes: [
+            "الاستكشاف: الخدمات والباقات وأنواع المواعيد والأوقات المتاحة",
+            "الجدولة: اختيار التاريخ والوقت وتوزيع الموظف أو الغرفة أو الباقة أو المورد",
+            "الحجز: نماذج الحجز والعربون أو الدفع والتأكيد وقواعد الإلغاء",
+            "تجربة العميل: الحسابات وسجل الحجوزات وإعادة الجدولة والإشعارات والتذكيرات",
+            "التشغيل: إدارة الحجوزات والتقويم وسجلات العملاء والتقارير",
+            "اللغات: مسارات حجز متجاوبة بالعربية والإنجليزية",
+          ],
+        },
+        {
+          category: "أنظمة مخصصة",
+          title: "المنصات ولوحات التحكم المخصصة",
+          description:
+            "بوابات ولوحات تحكم ومسارات عمل تُصاغ حول الطريقة الفعلية التي يعمل بها النشاط.",
+          bestFor:
+            "الأعمال التي لديها مسارات داخلية أو بوابات عملاء أو موافقات أو سجلات أو تقارير أو خدمات رقمية متخصصة.",
+          outcomes: [
+            "جمع المعلومات وتقليل العمل اليدوي المتكرر",
+            "منح كل مستخدم وصولًا مضبوطًا إلى الأدوات التي يحتاجها",
+            "تحويل المسارات المعقدة إلى نظام يمكنه التوسع مع النشاط",
+          ],
+          includes: [
+            "البوابات والصلاحيات: بوابات العملاء ولوحات التحكم وصلاحيات الأدوار",
+            "مسارات العمل: الطلبات والموافقات والحجوزات والعقود والإنتاج وتتبع الحالات",
+            "البيانات: سجلات النشاط والملفات والبحث والتصفية والتصدير والتحليلات والتقارير",
+            "التحكم: الإشعارات وسجل العمليات وقواعد العمل المخصصة للإدارة والموظفين",
+            "الربط: التكامل مع الخدمات الخارجية وواجهات البرمجة المتفق عليها",
+            "النمو: وحدات قابلة للتوسع وواجهات بالعربية والإنجليزية",
+          ],
+          scopeNote:
+            "يُحدد نطاق كل منصة وفق مستخدميها وقواعدها ومسارات عملها وعمليات الربط.",
+        },
+      ],
       bottomCta: {
         eyebrow: "لست متأكدًا مما تحتاجه؟",
         title: "ابدأ من الهدف.",
         description:
-          "أخبرنا بما تريد أن يحققه الموقع، وسنحدد الهيكل الأنسب له.",
+          "أخبرنا بما يجب أن يحققه الموقع. سنوصي بالمسار المناسب ونحدد نطاق المشروع معك.",
       },
     },
     work: {
@@ -2984,7 +3096,7 @@ export const translations = {
       terms: {
         metaTitle: "الشروط والأحكام",
         metaDescription:
-          "اقرأ شروط Web District الواضحة للطلبات والعروض والدفع والجداول الزمنية والمراجعات والإطلاق والدعم الشهري.",
+          "اقرأ شروط Web District الواضحة للطلبات والعروض والدفع والجداول الزمنية والمراجعات والإطلاق.",
         eyebrow: "الشروط",
         title: "الشروط والأحكام",
         description:
@@ -2992,7 +3104,7 @@ export const translations = {
         ctaEyebrow: "تواصل",
         ctaTitle: "هل لديك سؤال عن هذه الشروط؟",
         ctaDescription:
-          "ابدأ مشروعك عندما تكون جاهزًا، أو تواصل مع Web District لأي سؤال، أو راجع خدمة العناية بالموقع داخل صفحة الخدمات للدعم بعد الإطلاق.",
+          "ابدأ مشروعك عندما تكون جاهزًا، أو راجع الأسئلة والإجابات لمعرفة المزيد عن العمل مع Web District.",
         sections: [
           {
             title: "الخدمات",
@@ -3055,13 +3167,6 @@ export const translations = {
             body: [
               "قبل الإطلاق، تراجع Web District الصفحات المتفق عليها والتجاوب والروابط الأساسية والنماذج أو التدفقات الرئيسية.",
               "يعتمد الإطلاق النهائي على الصلاحيات والموافقات وجاهزية اسم النطاق (الدومين) أو الاستضافة وأي خدمات خارجية مرتبطة.",
-            ],
-          },
-          {
-            title: "الدعم الشهري / العناية بالموقع",
-            body: [
-              "الدعم الشهري أو العناية بالموقع خدمة منفصلة ما لم تكن مشمولة في اتفاق المشروع.",
-              "قد تشمل خطط العناية تعديلات بسيطة وتحديثات وفحوصات وتوجيه. المميزات الكبيرة الجديدة لا تُعد تعديلات شهرية بسيطة إلا إذا تم الاتفاق عليها.",
             ],
           },
         ],

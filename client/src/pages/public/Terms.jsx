@@ -74,9 +74,6 @@ function Terms() {
                 <Button to="/process#faq" variant="secondary">
                   {t("common.buttons.viewQuestions")}
                 </Button>
-                <Button to="/services" variant="secondary">
-                  {t("common.buttons.websiteCare")}
-                </Button>
               </div>
             </div>
           </div>

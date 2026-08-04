@@ -1,290 +1,170 @@
-import {
-  CheckCircle2,
-  CircleSlash,
-  HeartHandshake,
-  Layout,
-  MessageCircle,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { useLayoutEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
-import SectionHeader from "../../components/common/SectionHeader";
 import Button from "../../components/common/Button";
-import ServiceCard from "../../components/services/ServiceCard";
-import { AGENCY } from "../../lib/constants";
-import { getWhatsappLink } from "../../lib/helpers";
+import ServiceSection from "../../components/services/ServiceSection";
+import { servicesPageSections } from "../../data/servicesData";
 import useLanguage from "../../hooks/useLanguage";
-import {
-  trackContact,
-  trackCustomEvent,
-} from "../../lib/metaPixel";
+import useMediaQuery from "../../hooks/useMediaQuery";
+import { trackCustomEvent } from "../../lib/metaPixel";
+import "./Services.css";
 
-const websiteCareIcons = [
-  Sparkles,
-  Layout,
-  ShieldCheck,
-  CheckCircle2,
-  HeartHandshake,
-];
+const serviceIds = new Set(servicesPageSections.map(({ id }) => id));
+
+const getServiceIdFromHash = (hash) => {
+  if (!hash) return null;
+
+  try {
+    const serviceId = decodeURIComponent(hash.slice(1));
+    return serviceIds.has(serviceId) ? serviceId : null;
+  } catch {
+    return null;
+  }
+};
 
 function Services() {
   const { effectiveLanguage, t } = useLanguage();
-  const websiteCareWhatsappLink = getWhatsappLink(
-    AGENCY.whatsapp,
-    t("services.care.whatsappMessage")
-  );
-  const trackWebsiteCareWhatsapp = (buttonName) => {
-    const params = {
-      button_name: buttonName,
-      contact_method: "whatsapp",
-      language: effectiveLanguage,
-    };
+  const { hash, key: locationKey } = useLocation();
+  const isMobile = useMediaQuery("(max-width: 720px)");
+  const hashedServiceId = getServiceIdFromHash(hash);
+  const [mobileAccordion, setMobileAccordion] = useState(() => ({
+    locationKey,
+    openServiceId: hashedServiceId,
+  }));
+  const openServiceId =
+    mobileAccordion.locationKey === locationKey
+      ? mobileAccordion.openServiceId
+      : hashedServiceId;
+  const serviceDetails = t("services.details", []);
+  const transitionBand = t("services.transitionBand", {});
+  const sectionLabels = t("services.sectionLabels", {});
+  const services = servicesPageSections.map((section, index) => ({
+    ...section,
+    ...serviceDetails[index],
+  }));
 
-    trackContact("whatsapp", params);
-    trackCustomEvent("WhatsAppClick", params);
-  };
-  const trackStartProject = (buttonName) =>
+  const trackStartProject = () =>
     trackCustomEvent("StartProjectClick", {
-      button_name: buttonName,
+      button_name: "Services Final CTA Start Project",
       language: effectiveLanguage,
     });
 
-  const services = t("services.cards", []);
+  const toggleService = (serviceId) => {
+    setMobileAccordion({
+      locationKey,
+      openServiceId: openServiceId === serviceId ? null : serviceId,
+    });
+  };
 
-  const websiteCareItems = t("services.care.items", []).map((item, index) => ({
-    ...item,
-    icon: websiteCareIcons[index] || Sparkles,
-  }));
-  const websiteCarePlans = t("services.care.plans", []);
+  useLayoutEffect(() => {
+    if (!isMobile || !hashedServiceId) return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(hashedServiceId)?.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [hashedServiceId, isMobile, locationKey]);
 
   return (
-    <>
+    <div className="wd-services-page">
       <PageMeta
         title={t("services.metaTitle")}
         description={t("services.metaDescription")}
         canonical="/services"
       />
 
-      <section className="wd-section-black pt-32 pb-6 md:pb-8">
+      <section
+        className="wd-services-hero"
+        aria-labelledby="services-page-title"
+      >
         <Container>
-        <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-          <SectionHeader
-            as="h1"
-            eyebrow={t("services.hero.eyebrow")}
-            title={t("services.hero.title")}
-            description={t("services.hero.description")}
-          />
-
-
-        </section>
+          <div className="wd-services-hero__content">
+            <p className="wd-services-eyebrow">
+              {t("services.hero.eyebrow")}
+            </p>
+            <h1 id="services-page-title" className="font-display">
+              {t("services.hero.title")}
+            </h1>
+          </div>
         </Container>
       </section>
 
-      <section className="wd-section-black pt-6 pb-16 md:pt-8">
+      <div className="wd-services-transition">
         <Container>
-          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {services.map((service, index) => (
-              <ServiceCard
-                key={service.title}
-                service={service}
-                index={index}
-                className="wd-card-on-black"
-              />
-            ))}
-          </section>
-        </Container>
-      </section>
-
-      <section className="wd-section-black py-12 md:py-16">
-        <Container>
-          <section className="overflow-hidden rounded-[2rem] border border-[#C4A77D]/18 bg-[radial-gradient(circle_at_8%_8%,rgba(196,167,125,0.12),transparent_34%),linear-gradient(135deg,#080808,#0B0B0B)] p-6 md:p-8 lg:p-10">
-            <div className="grid gap-8 lg:grid-cols-[0.72fr_1fr] lg:items-end">
-              <div>
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-                  {t("services.care.eyebrow")}
-                </p>
-
-                <h2 className="font-display text-4xl font-bold tracking-[-0.06em] text-[#F8F7F4] md:text-5xl">
-                  {t("services.care.title")}
-                </h2>
-
-                <p className="mt-5 max-w-xl leading-8 text-[#D9D4CC]">
-                  {t("services.care.description")}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-4 sm:flex-row lg:justify-end">
-                <Button
-                  href={websiteCareWhatsappLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() =>
-                    trackWebsiteCareWhatsapp("Website Care Primary WhatsApp")
-                  }
-                >
-                  <MessageCircle size={17} />
-                  {t("services.care.ask")}
-                </Button>
-
-                <Button
-                  to="/start"
-                  variant="secondary"
-                  onClick={() =>
-                    trackStartProject("Website Care Start Project")
-                  }
-                >
-                  {t("common.buttons.startProject")}
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <p className="mb-5 text-sm font-bold uppercase tracking-[0.24em] text-[#C4A77D]">
-                {t("services.care.included")}
-              </p>
-
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {websiteCareItems.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <article
-                      key={item.title}
-                      className="wd-card-on-black rounded-[1.5rem] p-5 md:p-6"
-                    >
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
-                        <Icon size={22} />
-                      </div>
-                      <h3 className="font-display text-xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 leading-7 text-[#D9D4CC]">
-                        {item.description}
-                      </p>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="mt-10">
-              <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.24em] text-[#C4A77D]">
-                    {t("services.care.monthly")}
-                  </p>
-                  <h3 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-                    {t("services.care.monthlyTitle")}
-                  </h3>
-                </div>
-              </div>
-
-              <div className="grid gap-5 lg:grid-cols-3">
-                {websiteCarePlans.map((plan) => (
-                  <article
-                    key={plan.title}
-                    className="wd-card-on-black flex h-full flex-col rounded-[1.5rem] border-[#C4A77D]/20 p-6"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <h4 className="font-display text-2xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-                        {plan.title}
-                      </h4>
-                      <span className="rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#C4A77D]">
-                        {t("services.care.customQuote")}
-                      </span>
-                    </div>
-
-                    <p className="mt-4 leading-7 text-[#D9D4CC]">
-                      {plan.bestFor}
-                    </p>
-                    <p className="mt-3 text-sm font-semibold text-[#F8F7F4]">
-                      {t("services.care.monthlySupport")}
-                    </p>
-
-                    <ul className="mt-6 space-y-3 text-sm leading-6 text-[#D9D4CC]">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex gap-3">
-                          <CheckCircle2
-                            className="mt-0.5 shrink-0 text-[#C4A77D]"
-                            size={17}
-                          />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div className="flex gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5 text-[#D9D4CC]">
-                <CircleSlash
-                  className="mt-1 shrink-0 text-[#C4A77D]"
-                  size={20}
-                />
-                <p className="leading-7">
-                  <span className="font-semibold text-[#F8F7F4]">
-                    {t("services.care.notIncludedLabel")}
-                  </span>{" "}
-                  {t("services.care.notIncluded")}
-                </p>
-              </div>
-
-              <Button
-                href={websiteCareWhatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                variant="secondary"
-                onClick={() =>
-                  trackWebsiteCareWhatsapp("Website Care Secondary WhatsApp")
-                }
+          <div className="wd-services-transition__layout">
+            <p className="wd-services-transition__range" dir="ltr">
+              01—06
+            </p>
+            <p className="wd-services-transition__label">
+              {transitionBand.label}
+              <span
+                className="wd-services-transition__mobile-arrow"
+                aria-hidden="true"
               >
-                <MessageCircle size={17} />
-                {t("services.care.askWhatsapp")}
-              </Button>
-            </div>
-          </section>
+                ↓
+              </span>
+            </p>
+            <p className="wd-services-transition__prompt">
+              {transitionBand.prompt}
+              <span aria-hidden="true">↓</span>
+            </p>
+          </div>
         </Container>
-      </section>
+      </div>
 
-      <section className="wd-section-black py-16 md:py-20">
+      {services.map((service, index) => (
+        <ServiceSection
+          key={service.id}
+          service={service}
+          number={String(index + 1).padStart(2, "0")}
+          labels={sectionLabels}
+          isMobile={isMobile}
+          isExpanded={openServiceId === service.id}
+          onToggle={() => toggleService(service.id)}
+        />
+      ))}
+
+      <section
+        className="wd-services-cta"
+        aria-labelledby="services-final-cta-title"
+      >
         <Container>
-        <section className="overflow-hidden rounded-[2rem] border border-[#C4A77D]/20 bg-[radial-gradient(circle_at_80%_20%,rgba(196,167,125,0.16),transparent_32%),linear-gradient(135deg,#080808,#0B0B0B)] p-8 md:p-12">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
-            <div>
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
+          <div className="wd-services-cta__layout">
+            <div className="wd-services-cta__copy">
+              <p className="wd-services-eyebrow">
                 {t("services.bottomCta.eyebrow")}
               </p>
-
-              <h2 className="font-display text-4xl font-bold tracking-[-0.06em] md:text-5xl">
+              <h2 id="services-final-cta-title" className="font-display">
                 {t("services.bottomCta.title")}
               </h2>
-
-              <p className="mt-5 max-w-2xl leading-8 text-[#D9D4CC]">
-                {t("services.bottomCta.description")}
-              </p>
+              <p>{t("services.bottomCta.description")}</p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="wd-services-cta__actions">
               <Button
                 to="/start"
-                onClick={() =>
-                  trackStartProject("Services Bottom Start Project")
-                }
+                className="wd-services-cta__primary"
+                onClick={trackStartProject}
               >
                 {t("common.buttons.startProject")}
               </Button>
-              <Button to="/process#faq" variant="secondary">
+              <Button
+                to="/process#faq"
+                variant="secondaryLight"
+                className="wd-services-cta__secondary"
+              >
                 {t("common.buttons.viewQuestions")}
               </Button>
             </div>
           </div>
-        </section>
         </Container>
       </section>
-    </>
+    </div>
   );
 }
 

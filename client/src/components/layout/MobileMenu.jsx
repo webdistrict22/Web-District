@@ -181,6 +181,7 @@ function MobileMenu({ isOpen, onClose, triggerRef }) {
 
           <Button
             to="/start"
+            style={{ color: "#080808" }}
             onClick={() =>
               handleTrackedNavigation("/start", "Mobile Navigation CTA")
             }

@@ -124,10 +124,10 @@ export const translations = {
       websiteTypes: {
         "Online Store": "Online Store",
         "Business Website": "Business Website",
-        "Portfolio & Personal Brand Website": "Portfolio & Personal Brand Website",
+        "Portfolio & Personal Brand Website": "Portfolio / Personal Brand Website",
         "Landing Page": "Landing Page",
-        "Booking & Reservation Website": "Booking & Reservation Website",
-        "Custom Platform & Dashboard": "Custom Platform & Dashboard",
+        "Booking & Reservation Website": "Booking / Reservation Website",
+        "Custom Platform & Dashboard": "Custom Platform / Dashboard",
       },
       contactMethods: {
         WhatsApp: "WhatsApp",
@@ -1095,33 +1095,21 @@ export const translations = {
         description:
           "Send the details now, or book a call if you want to shape the direction first.",
       },
-      loggedIn: {
-        title: "You're starting as {name}",
-        description:
-          "Your requests and appointments will appear in your dashboard.",
-        button: "View my requests",
-      },
       options: {
-        eyebrow: "Choose your way",
-        title: "Start with the path that fits.",
-        description:
-          "Send the request now, or book a call if the direction needs shaping first.",
-        footer:
-          "Logged-in clients can track requests and appointments from their dashboard.",
+        ariaLabel: "Choose how to start",
         items: [
           {
             id: "request",
-            title: "Send a project request",
-            description: "Best if you already know the website you need.",
+            title: "Send a Project Request",
           },
           {
             id: "call",
-            title: "Book a call",
-            description: "Best if you want to discuss the direction first.",
+            title: "Book a Call",
           },
         ],
       },
       whatsapp: {
+        ariaLabel: "WhatsApp alternative",
         title: "Prefer WhatsApp?",
         description: "Message us directly.",
         button: "Message us on WhatsApp",
@@ -1132,7 +1120,12 @@ export const translations = {
         eyebrow: "Website request",
         title: "Tell us what you need.",
         description:
-          "Share the business, goal, and website direction. We'll review it and contact you with the next step.",
+          "Tell us about the business and what the website should achieve. We'll review the details and contact you with the next step.",
+        groups: {
+          contact: "Contact",
+          direction: "Project direction",
+          scope: "Scope",
+        },
         name: "Name *",
         namePlaceholder: "Your name",
         businessName: "Business name",
@@ -1144,14 +1137,14 @@ export const translations = {
         websiteType: "Website type *",
         preferredContact: "Preferred contact method",
         identity: "Do you already have a logo / identity?",
-        content: "Do you have content/products/images?",
+        content: "Do you have content / products / images?",
         budget: "Budget range",
         optional: "Optional",
-        deadline: "Deadline",
+        deadline: "Preferred deadline",
         details: "Project details *",
         detailsPlaceholder:
           "Tell us about your business, website goal, key pages, and important features.",
-        submit: "Submit website request",
+        submit: "Submit Website Request",
         submitting: "Submitting...",
         validation:
           "Please fill name, phone, email, and project details.",
@@ -1164,7 +1157,7 @@ export const translations = {
         eyebrow: "Book a call",
         title: "Choose a time to talk.",
         description:
-          "Pick an available call slot and tell us what you want to discuss.",
+          "Choose an available time and tell us what you would like to discuss.",
         bookingAs:
           "You are booking as {name}. This appointment will appear in your client dashboard.",
         availableSlots: "Available slots",
@@ -1173,7 +1166,8 @@ export const translations = {
           "Example: I want an online store for my brand",
         notes: "Optional notes",
         notesPlaceholder: "Any extra details before the call?",
-        submit: "Book call appointment",
+        summaryLabel: "Selected time",
+        submit: "Book Call Appointment",
         submitting: "Booking...",
         myAppointments: "My appointments",
         validationSlot: "Please choose a call slot.",
@@ -1193,6 +1187,13 @@ export const translations = {
         chooseDay: "Choose a day",
         nextDays: "Next 5 available days",
         available: "Available",
+      },
+      confirmation: {
+        requestTitle: "Request received.",
+        requestDescription:
+          "We'll review the details and contact you through your preferred contact method.",
+        callTitle: "Your call is booked.",
+        returnHome: "Return Home",
       },
     },
     auth: {
@@ -1756,10 +1757,10 @@ export const translations = {
       websiteTypes: {
         "Online Store": "متجر إلكتروني",
         "Business Website": "موقع تعريفي للأعمال",
-        "Portfolio & Personal Brand Website": "موقع بورتفوليو أو علامة شخصية",
+        "Portfolio & Personal Brand Website": "موقع أعمال / علامة شخصية",
         "Landing Page": "صفحة هبوط",
-        "Booking & Reservation Website": "موقع حجز ومواعيد",
-        "Custom Platform & Dashboard": "منصة أو لوحة تحكم مخصصة",
+        "Booking & Reservation Website": "موقع حجز / مواعيد",
+        "Custom Platform & Dashboard": "منصة مخصصة / لوحة تحكم",
       },
       contactMethods: {
         WhatsApp: "WhatsApp",
@@ -2728,32 +2729,21 @@ export const translations = {
         description:
           "أرسل التفاصيل الآن، أو احجز مكالمة إذا أردت تحديد المسار المناسب أولًا.",
       },
-      loggedIn: {
-        title: "ستبدأ الطلب باسم {name}",
-        description: "ستظهر طلباتك ومواعيدك داخل لوحة حسابك.",
-        button: "عرض طلباتي",
-      },
       options: {
-        eyebrow: "اختر الطريقة",
-        title: "ابدأ بالمسار الأنسب لك.",
-        description:
-          "أرسل طلب المشروع الآن، أو احجز مكالمة إذا كنت بحاجة إلى تحديد المسار المناسب أولًا.",
-        footer:
-          "يمكن للعملاء المسجلين متابعة الطلبات والمواعيد من لوحة حسابهم.",
+        ariaLabel: "اختر طريقة البدء",
         items: [
           {
             id: "request",
             title: "إرسال طلب مشروع",
-            description: "الأفضل إذا كنت تعرف بالفعل نوع الموقع الذي تحتاجه.",
           },
           {
             id: "call",
             title: "حجز مكالمة",
-            description: "الأفضل إذا أردت مناقشة رؤية الموقع أولًا.",
           },
         ],
       },
       whatsapp: {
+        ariaLabel: "التواصل عبر واتساب",
         title: "تفضّل واتساب؟",
         description: "راسلنا مباشرة.",
         button: "راسلنا على واتساب",
@@ -2761,10 +2751,15 @@ export const translations = {
           "مرحبًا Web District، أريد البدء في مشروع موقع إلكتروني.",
       },
       requestForm: {
-        eyebrow: "طلب مشروع",
+        eyebrow: "طلب موقع إلكتروني",
         title: "أخبرنا بما تحتاجه.",
         description:
-          "شاركنا نشاطك وهدف المشروع ورؤيتك للموقع. سنراجع التفاصيل ونتواصل معك بالخطوة التالية.",
+          "أخبرنا عن نشاطك وما الذي تريد أن يحققه الموقع. سنراجع التفاصيل ونتواصل معك بالخطوة التالية.",
+        groups: {
+          contact: "بيانات التواصل",
+          direction: "اتجاه المشروع",
+          scope: "نطاق المشروع",
+        },
         name: "الاسم *",
         namePlaceholder: "اسمك",
         businessName: "اسم النشاط",
@@ -2779,11 +2774,11 @@ export const translations = {
         content: "هل المحتوى / المنتجات / الصور جاهزة؟",
         budget: "نطاق الميزانية",
         optional: "اختياري",
-        deadline: "الموعد المستهدف",
+        deadline: "الموعد النهائي المفضّل",
         details: "تفاصيل المشروع *",
         detailsPlaceholder:
           "أخبرنا عن نشاطك، هدف الموقع، الصفحات الأساسية، وأهم المميزات.",
-        submit: "إرسال طلب المشروع",
+        submit: "إرسال طلب الموقع",
         submitting: "جارٍ الإرسال...",
         validation:
           "يرجى إدخال الاسم والهاتف والبريد الإلكتروني وتفاصيل المشروع.",
@@ -2795,7 +2790,7 @@ export const translations = {
       callForm: {
         eyebrow: "حجز مكالمة",
         title: "اختر وقتًا للحديث.",
-        description: "اختر موعدًا متاحًا وأخبرنا بما تريد مناقشته.",
+        description: "اختر وقتًا متاحًا وأخبرنا بما تود مناقشته.",
         bookingAs:
           "سيتم الحجز باسم {name}. سيظهر هذا الموعد داخل لوحة حسابك.",
         availableSlots: "المواعيد المتاحة",
@@ -2804,7 +2799,8 @@ export const translations = {
           "مثال: أريد متجرًا إلكترونيًا لعلامتي التجارية",
         notes: "ملاحظات اختيارية",
         notesPlaceholder: "أي تفاصيل إضافية قبل المكالمة؟",
-        submit: "حجز موعد مكالمة",
+        summaryLabel: "الوقت المختار",
+        submit: "حجز موعد المكالمة",
         submitting: "جارٍ الحجز...",
         myAppointments: "مواعيدي",
         validationSlot: "يرجى اختيار موعد للمكالمة.",
@@ -2824,6 +2820,13 @@ export const translations = {
         chooseDay: "اختر اليوم",
         nextDays: "أقرب 5 أيام متاحة",
         available: "متاح",
+      },
+      confirmation: {
+        requestTitle: "تم استلام طلبك.",
+        requestDescription:
+          "سنراجع التفاصيل ونتواصل معك عبر طريقة التواصل التي اخترتها.",
+        callTitle: "تم حجز مكالمتك.",
+        returnHome: "العودة إلى الرئيسية",
       },
     },
     auth: {

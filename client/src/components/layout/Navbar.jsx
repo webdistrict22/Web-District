@@ -177,6 +177,7 @@ function Navbar() {
               onClick={() =>
                 trackNavigation("/start", "Desktop Navigation CTA")
               }
+              style={{ color: "#171411" }}
               className="inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] bg-[#D6A75D] px-5 py-3 text-sm font-bold text-[#171411] transition hover:bg-[#E7C87A] active:translate-y-px"
             >
               {t("nav.startProject")}

@@ -1,19 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
+import useLanguage from "../../hooks/useLanguage";
 import Button from "../common/Button";
-import Card from "../common/Card";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
-import useLanguage from "../../hooks/useLanguage";
+import StartSuccessState from "./StartSuccessState";
 import { focusFirstInvalidControl } from "../../lib/a11y";
-import {
-  trackCustomEvent,
-  trackLead,
-} from "../../lib/metaPixel";
+import { trackCustomEvent, trackLead } from "../../lib/metaPixel";
 
 const initialForm = {
   name: "",
@@ -29,16 +25,19 @@ const initialForm = {
   preferredContactMethod: "WhatsApp",
 };
 
-function WebsiteRequestForm({ className = "" }) {
-  const { isAuthenticated, user } = useAuth();
-  const {
-    effectiveLanguage,
-    getErrorMessage,
-    t,
-    translateValue,
-  } = useLanguage();
-  const navigate = useNavigate();
+const websiteTypes = [
+  "Online Store",
+  "Business Website",
+  "Portfolio & Personal Brand Website",
+  "Landing Page",
+  "Booking & Reservation Website",
+  "Custom Platform & Dashboard",
+];
 
+function WebsiteRequestForm() {
+  const { isAuthenticated, user } = useAuth();
+  const { effectiveLanguage, getErrorMessage, t, translateValue } =
+    useLanguage();
   const [form, setForm] = useState(() => ({
     ...initialForm,
     name: user?.name || "",
@@ -46,24 +45,26 @@ function WebsiteRequestForm({ className = "" }) {
     phone: user?.phone || "",
     email: user?.email || "",
   }));
-
   const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
 
   const updateField = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
+    setForm((previousForm) => ({
+      ...previousForm,
       [field]: value,
     }));
-    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setFieldErrors((previousErrors) => ({
+      ...previousErrors,
+      [field]: "",
+    }));
     setFormError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formElement = e.currentTarget;
-
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formElement = event.currentTarget;
     const validationMessage = t("start.requestForm.validation");
     const nextErrors = {
       name: form.name ? "" : validationMessage,
@@ -79,7 +80,7 @@ function WebsiteRequestForm({ className = "" }) {
       nextErrors.projectDetails
     ) {
       const invalidFields = Object.keys(nextErrors).filter(
-        (field) => nextErrors[field]
+        (field) => nextErrors[field],
       );
       setFieldErrors(nextErrors);
       setFormError(validationMessage);
@@ -105,18 +106,9 @@ function WebsiteRequestForm({ className = "" }) {
       toast.success(
         isAuthenticated
           ? t("start.requestForm.successLoggedIn")
-          : t("start.requestForm.success")
+          : t("start.requestForm.success"),
       );
-
-      setForm({
-        ...initialForm,
-        name: user?.name || "",
-        businessName: user?.businessName || "",
-        phone: user?.phone || "",
-        email: user?.email || "",
-      });
-
-      navigate("/success?type=request");
+      setIsComplete(true);
     } catch (error) {
       const message = getErrorMessage(error, "start.requestForm.error");
       setFormError(message);
@@ -126,170 +118,197 @@ function WebsiteRequestForm({ className = "" }) {
     }
   };
 
-  return (
-    <Card className={`p-6 md:p-8 ${className}`}>
-      <div className="mb-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-          {t("start.requestForm.eyebrow")}
-        </p>
-        <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-          {t("start.requestForm.title")}
-        </h2>
-        <p className="mt-3 max-w-2xl leading-7 text-[#D9D4CC]">
-          {t("start.requestForm.description")}
-        </p>
-      </div>
+  if (isComplete) {
+    return <StartSuccessState type="request" />;
+  }
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        aria-busy={isLoading}
-        className="grid gap-5"
-      >
-        {formError && (
-          <p
-            role="alert"
-            className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
-          >
+  return (
+    <div className="wd-start-form">
+      <header className="wd-start-form__header">
+        <div className="wd-start-form__header-copy">
+          <p className="wd-start-form__eyebrow">
+            {t("start.requestForm.eyebrow")}
+          </p>
+          <h2>{t("start.requestForm.title")}</h2>
+          <p>{t("start.requestForm.description")}</p>
+        </div>
+      </header>
+
+      <form onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
+        {formError ? (
+          <p role="alert" className="wd-start-form__error">
             {formError}
           </p>
-        )}
+        ) : null}
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <Input
-            label={t("start.requestForm.name")}
-            name="name"
-            autoComplete="name"
+        <fieldset className="wd-start-field-group">
+          <legend>{t("start.requestForm.groups.contact")}</legend>
+          <div className="wd-start-field-grid">
+            <Input
+              tone="light"
+              label={t("start.requestForm.name")}
+              name="name"
+              autoComplete="name"
+              required
+              error={fieldErrors.name}
+              placeholder={t("start.requestForm.namePlaceholder")}
+              value={form.name}
+              onChange={(event) => updateField("name", event.target.value)}
+            />
+            <Input
+              tone="light"
+              label={t("start.requestForm.businessName")}
+              name="businessName"
+              autoComplete="organization"
+              placeholder={t("start.requestForm.businessNamePlaceholder")}
+              value={form.businessName}
+              onChange={(event) =>
+                updateField("businessName", event.target.value)
+              }
+            />
+            <Input
+              tone="light"
+              label={t("start.requestForm.phone")}
+              type="tel"
+              name="phone"
+              autoComplete="tel"
+              inputMode="tel"
+              required
+              error={fieldErrors.phone}
+              placeholder={t("start.requestForm.phonePlaceholder")}
+              className="wd-ltr"
+              value={form.phone}
+              onChange={(event) => updateField("phone", event.target.value)}
+            />
+            <Input
+              tone="light"
+              label={t("start.requestForm.email")}
+              type="email"
+              name="email"
+              autoComplete="email"
+              inputMode="email"
+              required
+              error={fieldErrors.email}
+              placeholder={t("start.requestForm.emailPlaceholder")}
+              className="wd-ltr"
+              value={form.email}
+              onChange={(event) => updateField("email", event.target.value)}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className="wd-start-field-group">
+          <legend>{t("start.requestForm.groups.direction")}</legend>
+          <div className="wd-start-field-grid">
+            <Select
+              tone="light"
+              label={t("start.requestForm.websiteType")}
+              name="websiteType"
+              required
+              value={form.websiteType}
+              onChange={(event) =>
+                updateField("websiteType", event.target.value)
+              }
+            >
+              {websiteTypes.map((type) => (
+                <option key={type} value={type}>
+                  {translateValue("websiteTypes", type)}
+                </option>
+              ))}
+            </Select>
+            <Select
+              tone="light"
+              label={t("start.requestForm.preferredContact")}
+              name="preferredContactMethod"
+              value={form.preferredContactMethod}
+              onChange={(event) =>
+                updateField("preferredContactMethod", event.target.value)
+              }
+            >
+              {["WhatsApp", "Phone Call", "Email", "Instagram"].map(
+                (method) => (
+                  <option key={method} value={method}>
+                    {translateValue("contactMethods", method)}
+                  </option>
+                ),
+              )}
+            </Select>
+            <Select
+              tone="light"
+              label={t("start.requestForm.identity")}
+              name="hasBrandIdentity"
+              value={form.hasBrandIdentity}
+              onChange={(event) =>
+                updateField("hasBrandIdentity", event.target.value)
+              }
+            >
+              {["Yes", "No", "Not sure"].map((value) => (
+                <option key={value} value={value}>
+                  {translateValue("yesNo", value)}
+                </option>
+              ))}
+            </Select>
+            <Select
+              tone="light"
+              label={t("start.requestForm.content")}
+              name="hasContentReady"
+              value={form.hasContentReady}
+              onChange={(event) =>
+                updateField("hasContentReady", event.target.value)
+              }
+            >
+              {["Yes", "No", "Partially"].map((value) => (
+                <option key={value} value={value}>
+                  {translateValue("yesNo", value)}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </fieldset>
+
+        <fieldset className="wd-start-field-group">
+          <legend>{t("start.requestForm.groups.scope")}</legend>
+          <div className="wd-start-field-grid">
+            <Input
+              tone="light"
+              label={t("start.requestForm.budget")}
+              name="budgetRange"
+              placeholder={t("start.requestForm.optional")}
+              value={form.budgetRange}
+              onChange={(event) =>
+                updateField("budgetRange", event.target.value)
+              }
+            />
+            <Input
+              tone="light"
+              label={t("start.requestForm.deadline")}
+              name="deadline"
+              placeholder={t("start.requestForm.optional")}
+              value={form.deadline}
+              onChange={(event) => updateField("deadline", event.target.value)}
+            />
+          </div>
+          <Textarea
+            tone="light"
+            label={t("start.requestForm.details")}
+            name="projectDetails"
+            rows={7}
             required
-            error={fieldErrors.name}
-            placeholder={t("start.requestForm.namePlaceholder")}
-            value={form.name}
-            onChange={(e) => updateField("name", e.target.value)}
-          />
-
-          <Input
-            label={t("start.requestForm.businessName")}
-            name="businessName"
-            autoComplete="organization"
-            placeholder={t("start.requestForm.businessNamePlaceholder")}
-            value={form.businessName}
-            onChange={(e) => updateField("businessName", e.target.value)}
-          />
-
-          <Input
-            label={t("start.requestForm.phone")}
-            type="tel"
-            name="phone"
-            autoComplete="tel"
-            required
-            error={fieldErrors.phone}
-            placeholder={t("start.requestForm.phonePlaceholder")}
-            className="wd-ltr"
-            value={form.phone}
-            onChange={(e) => updateField("phone", e.target.value)}
-          />
-
-          <Input
-            label={t("start.requestForm.email")}
-            type="email"
-            name="email"
-            autoComplete="email"
-            required
-            error={fieldErrors.email}
-            placeholder={t("start.requestForm.emailPlaceholder")}
-            className="wd-ltr"
-            value={form.email}
-            onChange={(e) => updateField("email", e.target.value)}
-          />
-
-          <Select
-            label={t("start.requestForm.websiteType")}
-            name="websiteType"
-            value={form.websiteType}
-            onChange={(e) => updateField("websiteType", e.target.value)}
-          >
-            {[
-              "Online Store",
-              "Business Website",
-              "Landing Page",
-              "Custom Website",
-            ].map((type) => (
-              <option key={type} value={type}>
-                {translateValue("websiteTypes", type)}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("start.requestForm.preferredContact")}
-            name="preferredContactMethod"
-            value={form.preferredContactMethod}
-            onChange={(e) =>
-              updateField("preferredContactMethod", e.target.value)
+            error={fieldErrors.projectDetails}
+            placeholder={t("start.requestForm.detailsPlaceholder")}
+            value={form.projectDetails}
+            onChange={(event) =>
+              updateField("projectDetails", event.target.value)
             }
-          >
-            {["WhatsApp", "Phone Call", "Email", "Instagram"].map((method) => (
-              <option key={method} value={method}>
-                {translateValue("contactMethods", method)}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("start.requestForm.identity")}
-            name="hasBrandIdentity"
-            value={form.hasBrandIdentity}
-            onChange={(e) => updateField("hasBrandIdentity", e.target.value)}
-          >
-            {["Yes", "No", "Not sure"].map((value) => (
-              <option key={value} value={value}>
-                {translateValue("yesNo", value)}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label={t("start.requestForm.content")}
-            name="hasContentReady"
-            value={form.hasContentReady}
-            onChange={(e) => updateField("hasContentReady", e.target.value)}
-          >
-            {["Yes", "No", "Partially"].map((value) => (
-              <option key={value} value={value}>
-                {translateValue("yesNo", value)}
-              </option>
-            ))}
-          </Select>
-
-          <Input
-            label={t("start.requestForm.budget")}
-            name="budgetRange"
-            placeholder={t("start.requestForm.optional")}
-            value={form.budgetRange}
-            onChange={(e) => updateField("budgetRange", e.target.value)}
           />
+        </fieldset>
 
-          <Input
-            label={t("start.requestForm.deadline")}
-            name="deadline"
-            placeholder={t("start.requestForm.optional")}
-            value={form.deadline}
-            onChange={(e) => updateField("deadline", e.target.value)}
-          />
-        </div>
-
-        <Textarea
-          label={t("start.requestForm.details")}
-          name="projectDetails"
-          required
-          error={fieldErrors.projectDetails}
-          placeholder={t("start.requestForm.detailsPlaceholder")}
-          value={form.projectDetails}
-          onChange={(e) => updateField("projectDetails", e.target.value)}
-        />
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button type="submit" disabled={isLoading}>
+        <div className="wd-start-submit-row">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="wd-start-primary-button"
+          >
             {isLoading
               ? t("start.requestForm.submitting")
               : t("start.requestForm.submit")}
@@ -299,7 +318,7 @@ function WebsiteRequestForm({ className = "" }) {
           </span>
         </div>
       </form>
-    </Card>
+    </div>
   );
 }
 

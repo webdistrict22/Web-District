@@ -35,7 +35,15 @@ const websiteRequestSchema = new mongoose.Schema(
 
     websiteType: {
       type: String,
-      enum: ["Online Store", "Business Website", "Landing Page", "Custom Website"],
+      enum: [
+        "Online Store",
+        "Business Website",
+        "Portfolio & Personal Brand Website",
+        "Landing Page",
+        "Booking & Reservation Website",
+        "Custom Platform & Dashboard",
+        "Custom Website",
+      ],
       required: [true, "Website type is required"],
     },
 

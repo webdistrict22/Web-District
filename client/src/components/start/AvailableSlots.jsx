@@ -1,65 +1,22 @@
-import { CalendarDays } from "lucide-react";
 import { useMemo, useState } from "react";
-import Card from "../common/Card";
 import useLanguage from "../../hooks/useLanguage";
+import {
+  formatSlotDateLong,
+  formatSlotDayNumber,
+  formatSlotMonth,
+  formatSlotTime,
+  formatSlotWeekday,
+} from "./slotFormatting";
 
 const visibleDayCount = 5;
 
-const formatSlotDate = (date, locale) => {
-  const parsedDate = new Date(`${date}T00:00:00`);
-
-  if (Number.isNaN(parsedDate.getTime())) return date;
-
-  return new Intl.DateTimeFormat(locale, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-}).format(parsedDate);
-};
-
-const formatDayLabel = (date, locale) => {
-  const parsedDate = new Date(`${date}T00:00:00`);
-
-  if (Number.isNaN(parsedDate.getTime())) return date;
-
-  return new Intl.DateTimeFormat(locale, {
-    weekday: "short",
-  }).format(parsedDate);
-};
-
-const formatDayNumber = (date, locale) => {
-  const parsedDate = new Date(`${date}T00:00:00`);
-
-  if (Number.isNaN(parsedDate.getTime())) return "";
-
-  return new Intl.DateTimeFormat(locale, {
-    month: "short",
-    day: "numeric",
-}).format(parsedDate);
-};
-
-const formatSlotTime = (time, locale) => {
-  const [hourValue, minuteValue = "00"] = String(time).split(":");
-  const hour = Number(hourValue);
-  const minute = Number(minuteValue);
-
-  if (Number.isNaN(hour) || Number.isNaN(minute)) return time;
-
-  const period = hour >= 12 ? (locale === "ar-EG" ? "م" : "PM") : (locale === "ar-EG" ? "ص" : "AM");
-  const displayHour = hour % 12 || 12;
-  const displayMinute = minute ? `:${String(minute).padStart(2, "0")}` : "";
-
-  return `${displayHour}${displayMinute} ${period}`;
-};
-
 const groupSlotsByDate = (slots) =>
   slots.reduce((groups, slot) => {
-    const date = slot.date || "Available";
+    if (!slot.date) return groups;
 
-    if (!groups[date]) groups[date] = [];
+    if (!groups[slot.date]) groups[slot.date] = [];
 
-    groups[date].push(slot);
-
+    groups[slot.date].push(slot);
     return groups;
   }, {});
 
@@ -73,42 +30,38 @@ function AvailableSlots({
 }) {
   const [selectedDate, setSelectedDate] = useState("");
   const { effectiveLanguage, t } = useLanguage();
-  const dateLocale = effectiveLanguage === "ar" ? "ar-EG" : undefined;
 
   const slotsByDate = useMemo(() => groupSlotsByDate(slots), [slots]);
   const visibleDates = useMemo(
     () => Object.keys(slotsByDate).sort().slice(0, visibleDayCount),
-    [slotsByDate]
+    [slotsByDate],
   );
-
   const activeDate =
     selectedDate && slotsByDate[selectedDate] ? selectedDate : visibleDates[0];
   const activeSlots = activeDate ? slotsByDate[activeDate] || [] : [];
 
   if (isLoading) {
     return (
-      <Card className="p-6" role="status" aria-live="polite">
-        <p className="text-[#D9D4CC]">{t("start.slots.loading")}</p>
-      </Card>
+      <div className="wd-start-slots-loading" role="status" aria-live="polite">
+        <span className="wd-start-slots-loading__line" />
+        <span className="wd-start-slots-loading__days" />
+        <span>{t("start.slots.loading")}</span>
+      </div>
     );
   }
 
   if (!slots.length) {
     return (
-      <Card className="p-6" role="status">
-        <p className="font-semibold text-[#F8F7F4]">
-          {t("start.slots.emptyTitle")}
-        </p>
-        <p className="mt-2 leading-7 text-[#D9D4CC]">
-          {t("start.slots.emptyDescription")}
-        </p>
-      </Card>
+      <div className="wd-start-slots-empty" role="status">
+        <p>{t("start.slots.emptyTitle")}</p>
+        <span>{t("start.slots.emptyDescription")}</span>
+      </div>
     );
   }
 
   return (
-    <Card
-      className="p-4"
+    <div
+      className="wd-start-slots"
       role="group"
       tabIndex="-1"
       data-validation-name="slot"
@@ -116,20 +69,7 @@ function AvailableSlots({
       aria-describedby={errorId}
       aria-invalid={errorId ? true : undefined}
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F3EEE4]">
-          <CalendarDays size={18} />
-        </div>
-
-        <div>
-          <p className="font-semibold text-[#F3EEE4]">
-            {t("start.slots.chooseDay")}
-          </p>
-          <p className="text-sm text-[#D6CFC2]">{t("start.slots.nextDays")}</p>
-        </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5">
+      <div className="wd-start-day-grid" aria-label={t("start.slots.chooseDay")}>
         {visibleDates.map((date) => {
           const isActive = activeDate === date;
 
@@ -142,41 +82,36 @@ function AvailableSlots({
                 setSelectedSlot("");
               }}
               aria-pressed={isActive}
-              className={`rounded-2xl border px-3 py-3 text-left transition forced-color-adjust-none ${
-                isActive
-                  ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#080808]"
-                  : "border-white/10 bg-white/[0.035] text-[#D6CFC2] hover:border-[#C4A77D]/45 hover:text-[#F3EEE4]"
-              }`}
+              aria-label={formatSlotDateLong(date, effectiveLanguage)}
+              className={`wd-start-day ${isActive ? "is-active" : ""}`}
             >
-              <span className="block text-xs font-bold uppercase tracking-[0.18em]">
-                {formatDayLabel(date, dateLocale)}
+              <span className="wd-start-day__weekday">
+                {formatSlotWeekday(date, effectiveLanguage)}
               </span>
-              <span className="mt-1 block text-sm font-semibold">
-                {formatDayNumber(date, dateLocale)}
+              <span className="wd-start-day__month">
+                {formatSlotMonth(date, effectiveLanguage)}
+              </span>
+              <span className="wd-start-day__number">
+                {formatSlotDayNumber(date, effectiveLanguage)}
               </span>
             </button>
           );
         })}
       </div>
 
-      {activeDate && (
-        <div className="mt-5 border-t border-white/10 pt-4">
-          <div className="mb-3 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F3EEE4]">
-              <CalendarDays size={18} />
-            </div>
-
-            <div>
-              <p className="font-semibold text-[#F3EEE4]">
-                {formatSlotDate(activeDate, dateLocale)}
-              </p>
-              <p className="text-sm text-[#D6CFC2]">{activeDate}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {activeDate ? (
+        <div className="wd-start-time-group">
+          <p className="wd-start-time-group__date">
+            {formatSlotDateLong(activeDate, effectiveLanguage)}
+          </p>
+          <div className="wd-start-time-grid">
             {activeSlots.map((slot) => {
               const isSelected = selectedSlot === slot._id;
+              const isDisabled = slot.isBooked || slot.isActive === false;
+              const timeLabel = `${formatSlotTime(
+                slot.startTime,
+                effectiveLanguage,
+              )} - ${formatSlotTime(slot.endTime, effectiveLanguage)}`;
 
               return (
                 <button
@@ -184,20 +119,19 @@ function AvailableSlots({
                   type="button"
                   onClick={() => setSelectedSlot(slot._id)}
                   aria-pressed={isSelected}
-                  className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition forced-color-adjust-none ${
-                    isSelected
-                      ? "border-[#C4A77D]/70 bg-[#A8874F] text-[#080808]"
-                      : "border-white/10 bg-white/[0.035] text-[#D6CFC2] hover:border-[#C4A77D]/45 hover:text-[#F3EEE4]"
+                  disabled={isDisabled}
+                  className={`wd-start-time ${
+                    isSelected ? "is-active" : ""
                   }`}
                 >
-                  {formatSlotTime(slot.startTime, dateLocale)} - {formatSlotTime(slot.endTime, dateLocale)}
+                  {timeLabel}
                 </button>
               );
             })}
           </div>
         </div>
-      )}
-    </Card>
+      ) : null}
+    </div>
   );
 }
 

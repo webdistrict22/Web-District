@@ -4,6 +4,7 @@ function Select({
   label,
   error,
   children,
+  tone = "dark",
   className = "",
   style,
   id,
@@ -18,13 +19,21 @@ function Select({
   const describedBy = [ariaDescribedBy, error ? errorId : ""]
     .filter(Boolean)
     .join(" ");
+  const isLight = tone === "light";
+  const labelClass = isLight
+    ? "font-semibold text-[#171411]"
+    : "font-medium text-[#D6CFC2]";
+  const selectClass = isLight
+    ? "rounded-xl border-[rgba(23,20,17,0.22)] bg-[#FFFDFC] text-[#171411] focus:border-[#B88A45]"
+    : "rounded-2xl border-[rgba(243,238,228,0.24)] bg-[#1B1B19] text-[#F3EEE4] focus:border-[#C4A77D]";
+  const errorClass = isLight ? "text-[#64131A]" : "text-[#C4A77D]";
 
   return (
     <div className="block">
       {label && (
         <label
           htmlFor={selectId}
-          className="mb-2 block text-sm font-medium text-[#D6CFC2]"
+          className={`mb-2 block text-sm ${labelClass}`}
         >
           {label}
         </label>
@@ -36,8 +45,8 @@ function Select({
         aria-required={required || undefined}
         aria-invalid={error ? true : ariaInvalid}
         aria-describedby={describedBy || undefined}
-        className={`w-full rounded-2xl border border-[rgba(243,238,228,0.24)] bg-[#1B1B19] px-4 py-3 text-[#F3EEE4] outline-none transition focus:border-[#C4A77D] ${className}`}
-        style={{ colorScheme: "dark", ...style }}
+        className={`w-full border px-4 py-3 outline-none transition ${selectClass} ${className}`}
+        style={{ colorScheme: isLight ? "light" : "dark", ...style }}
         {...props}
       >
         {children}
@@ -46,7 +55,7 @@ function Select({
       {error && (
         <p
           id={errorId}
-          className="mt-2 text-sm text-[#C4A77D]"
+          className={`mt-2 text-sm ${errorClass}`}
         >
           {error}
         </p>

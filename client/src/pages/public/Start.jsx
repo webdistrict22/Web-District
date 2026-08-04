@@ -1,78 +1,69 @@
 import { useState } from "react";
 import Container from "../../components/common/Container";
-import SectionHeader from "../../components/common/SectionHeader";
-import Button from "../../components/common/Button";
-import Card from "../../components/common/Card";
 import PageMeta from "../../components/common/PageMeta";
 import StartOptions from "../../components/start/StartOptions";
 import WebsiteRequestForm from "../../components/start/WebsiteRequestForm";
 import BookCallForm from "../../components/start/BookCallForm";
-import useAuth from "../../hooks/useAuth";
+import WhatsappAlternative from "../../components/start/WhatsappAlternative";
 import useLanguage from "../../hooks/useLanguage";
+import "./Start.css";
 
 function Start() {
   const [activeOption, setActiveOption] = useState("request");
-  const { isAuthenticated, user } = useAuth();
   const { t } = useLanguage();
+  const isRequestMode = activeOption === "request";
 
   return (
-    <>
+    <div className="wd-start-page">
       <PageMeta
         title={t("start.hero.eyebrow")}
         description={t("start.hero.description")}
         canonical="/start"
       />
 
-      <section className="wd-section-black pt-32 pb-6 md:pb-8">
+      <section className="wd-start-hero">
         <Container>
-        <SectionHeader
-          as="h1"
-          eyebrow={t("start.hero.eyebrow")}
-          title={t("start.hero.title")}
-          description={t("start.hero.description")}
-        />
+          <div className="wd-start-hero__copy">
+            <p>{t("start.hero.eyebrow")}</p>
+            <h1>{t("start.hero.title")}</h1>
+            <span>{t("start.hero.description")}</span>
+          </div>
         </Container>
       </section>
 
-      <section className="wd-section-black pt-6 pb-16 md:pt-8 md:pb-20">
+      <section className="wd-start-paths">
         <Container>
-        {isAuthenticated && (
-          <Card className="wd-card-on-black mb-8 border-[#C4A77D]/25 p-5">
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-              <div>
-                <p className="font-semibold text-[#F8F7F4]">
-                  {t("start.loggedIn.title", undefined, { name: user?.name })}
-                </p>
-                <p className="mt-1 text-sm text-[#D9D4CC]">
-                  {t("start.loggedIn.description")}
-                </p>
-              </div>
-
-              <Button to="/account/requests" variant="secondary">
-                {t("start.loggedIn.button")}
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        <div className="grid gap-6 lg:grid-cols-[340px_1fr] lg:items-start">
           <StartOptions
             activeOption={activeOption}
             setActiveOption={setActiveOption}
-            cardClassName="wd-card-on-black"
           />
-
-          <div>
-            {activeOption === "request" ? (
-              <WebsiteRequestForm className="wd-card-on-black" />
-            ) : (
-              <BookCallForm className="wd-card-on-black" />
-            )}
-          </div>
-        </div>
         </Container>
       </section>
-    </>
+
+      <section className="wd-start-workspace">
+        <Container>
+          <div
+            key={activeOption}
+            id="start-active-panel"
+            role="tabpanel"
+            aria-labelledby={`start-path-${activeOption}`}
+            className="wd-start-active-panel"
+          >
+            {isRequestMode ? (
+              <WebsiteRequestForm />
+            ) : (
+              <BookCallForm />
+            )}
+          </div>
+        </Container>
+      </section>
+
+      <section className="wd-start-whatsapp" aria-label={t("start.whatsapp.ariaLabel")}>
+        <Container>
+          <WhatsappAlternative />
+        </Container>
+      </section>
+    </div>
   );
 }
 

@@ -118,8 +118,14 @@
     display: none;
   }
 
-  .wd-pill-nav .pill:hover,
   .wd-pill-nav .pill:focus-visible {
+    background: #d6a75d;
+    color: #171411;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+  .wd-pill-nav .pill:hover {
     background: #d6a75d;
     color: #171411;
   }

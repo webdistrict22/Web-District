@@ -26,6 +26,12 @@
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.wd-home-hero__background.is-ready img {
+  opacity: 1;
 }
 
 .wd-home-hero__overlay {

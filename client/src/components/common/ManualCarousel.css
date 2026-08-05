@@ -38,28 +38,10 @@
   height: 1.15rem;
 }
 
-.wd-manual-carousel-controls > button:hover {
-  border-color: var(--wd-signature-gold);
-  background: var(--wd-signature-gold);
-  color: var(--wd-dark-ink);
-  transform: translateY(-1px);
-}
-
-.wd-manual-carousel-controls > button:active {
-  transform: translateY(1px);
-}
-
 .wd-manual-carousel-controls--light > button,
 .wd-manual-carousel-controls--ink > button {
   border-color: rgb(23 20 17 / 0.34);
   color: var(--wd-dark-ink);
-}
-
-.wd-manual-carousel-controls--light > button:hover,
-.wd-manual-carousel-controls--ink > button:hover {
-  border-color: var(--wd-dark-ink);
-  background: var(--wd-dark-ink);
-  color: var(--wd-primary-off-white);
 }
 
 .wd-manual-carousel-controls__dots {
@@ -101,6 +83,39 @@
 .wd-manual-carousel-controls--ink .wd-manual-carousel-controls__dots button.is-active span,
 .wd-manual-carousel-controls--light .wd-manual-carousel-controls__dots button.is-active span {
   background: var(--wd-signature-gold);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wd-manual-carousel-controls > button:hover {
+    border-color: var(--wd-signature-gold);
+    background: var(--wd-signature-gold);
+    color: var(--wd-dark-ink);
+    transform: translateY(-1px);
+  }
+
+  .wd-manual-carousel-controls--light > button:hover,
+  .wd-manual-carousel-controls--ink > button:hover {
+    border-color: var(--wd-dark-ink);
+    background: var(--wd-dark-ink);
+    color: var(--wd-primary-off-white);
+  }
+
+  .wd-manual-carousel-controls__dots button:hover span {
+    transform: scale(1.18);
+  }
+
+  .wd-manual-carousel-controls__dots button.is-active:hover span {
+    transform: scale(1.42);
+  }
+}
+
+.wd-manual-carousel-controls > button:active {
+  transform: translateY(1px);
+}
+
+.wd-manual-carousel-controls__dots button:active span,
+.wd-manual-carousel-controls__dots button.is-active:active span {
+  transform: scale(0.86);
 }
 
 @media (prefers-reduced-motion: reduce) {

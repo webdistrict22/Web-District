@@ -6,6 +6,7 @@ import useManualCarousel from "../common/useManualCarousel";
 import useLanguage from "../../hooks/useLanguage";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { trackCustomEvent } from "../../lib/metaPixel";
+import { servicesPageSections } from "../../data/servicesData";
 
 function ServicesPreview() {
   const { effectiveLanguage, isRtl, t } = useLanguage();
@@ -70,7 +71,7 @@ function ServicesPreview() {
                 <Link
                   className="wd-service-panel-link"
                   key={`${service.title}-${index}`}
-                  to="/services"
+                  to={`/services#${servicesPageSections[logicalIndex].id}`}
                   aria-label={`${service.title} - ${t("common.buttons.viewServices")}`}
                   aria-hidden={duplicate || undefined}
                   tabIndex={duplicate ? -1 : undefined}

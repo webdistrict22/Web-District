@@ -1,9 +1,7 @@
 import {
   useEffect,
   useId,
-  useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
@@ -21,6 +19,7 @@ import useLanguage from "../../hooks/useLanguage";
 import { workProjects } from "../../data/demoProjects";
 import ProjectCard from "./ProjectCard";
 import useMediaQuery from "../../hooks/useMediaQuery";
+import useRestorableAccordion from "../../hooks/useRestorableAccordion";
 import "./CaseStudySection.css";
 
 const QUALITY_KEYS = [
@@ -330,51 +329,11 @@ function SecurityProtections({ security, t, isRtl }) {
 function QualitiesAccordion({ project, qualities, t, isRtl }) {
   const accordionId = useId().replaceAll(":", "");
   const [openKey, setOpenKey] = useState(null);
-  const panelPointerRef = useRef(null);
-  const openingScrollPositionsRef = useRef(new Map());
-  const pendingRestoreRef = useRef(null);
-
-  useLayoutEffect(() => {
-    if (openKey !== null || pendingRestoreRef.current === null) return;
-
-    const restoreTop = pendingRestoreRef.current;
-    pendingRestoreRef.current = null;
-    const maxScroll = Math.max(
-      0,
-      document.documentElement.scrollHeight - window.innerHeight,
-    );
-    window.scrollTo({
-      top: Math.min(Math.max(restoreTop, 0), maxScroll),
-      left: 0,
-      behavior: "auto",
-    });
-  }, [openKey]);
-
-  const toggleTopic = (key) => {
-    if (openKey === key) {
-      pendingRestoreRef.current =
-        openingScrollPositionsRef.current.get(key) ?? window.scrollY;
-      setOpenKey(null);
-      return;
-    }
-
-    pendingRestoreRef.current = null;
-    openingScrollPositionsRef.current.set(key, window.scrollY);
-    setOpenKey(key);
-  };
-
-  const handlePanelClick = (event, key) => {
-    if (event.target.closest("a, button, input, textarea, select, summary, [role='button'], [contenteditable='true']")) {
-      return;
-    }
-
-    const pointer = panelPointerRef.current;
-    const moved = pointer && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 5;
-    const selection = window.getSelection();
-
-    if (moved || (selection && !selection.isCollapsed && selection.toString().trim())) return;
-    if (openKey === key) toggleTopic(key);
-  };
+  const {
+    handlePanelClick,
+    handlePanelPointerDown,
+    toggleItem: toggleTopic,
+  } = useRestorableAccordion({ openKey, setOpenKey });
 
   return (
     <div className="wd-case-study-accordion">
@@ -418,9 +377,7 @@ function QualitiesAccordion({ project, qualities, t, isRtl }) {
               role="region"
               aria-labelledby={buttonId}
               aria-hidden={!isOpen}
-              onPointerDown={(event) => {
-                panelPointerRef.current = { x: event.clientX, y: event.clientY };
-              }}
+              onPointerDown={handlePanelPointerDown}
               onClick={(event) => handlePanelClick(event, key)}
             >
               <div>
@@ -746,7 +703,7 @@ function CaseStudySection({ project }) {
             <Button
               to="/start"
               icon={false}
-              className="wd-case-study-cta__light-button"
+              className="wd-case-study-cta__light-button wd-final-cta-action--primary"
             >
               {t("common.buttons.startProject")}
             </Button>
@@ -754,7 +711,7 @@ function CaseStudySection({ project }) {
               to="/process#faq"
               variant="secondary"
               icon={false}
-              className="wd-case-study-cta__dark-button"
+              className="wd-case-study-cta__dark-button wd-final-cta-action--secondary"
             >
               {t("work.caseStudy.haveQuestions")}
             </Button>

@@ -7,6 +7,7 @@ import LanguageProvider from "./context/LanguageProvider.jsx";
 import SettingsProvider from "./context/SettingsProvider.jsx";
 import AppRoutes from "./routes/AppRoutes";
 import useLanguage from "./hooks/useLanguage";
+import "./components/common/FinalCtaActions.css";
 
 function SkipLink() {
   const { t } = useLanguage();

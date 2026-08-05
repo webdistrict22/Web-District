@@ -3,6 +3,7 @@ import RotatingText from "../reactbits/RotatingText/RotatingText";
 import useLanguage from "../../hooks/useLanguage";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import useSettings from "../../hooks/useSettings";
+import useSessionImage from "../../hooks/useSessionImage";
 import { trackCustomEvent } from "../../lib/metaPixel";
 import "./HomeOpening.css";
 
@@ -17,6 +18,12 @@ function HeroSection() {
   const { settings } = useSettings();
   const { effectiveLanguage, isArabic, t } = useLanguage();
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const isMobileHero = useMediaQuery("(max-width: 767px)");
+  const heroImageUrl = isMobileHero
+    ? "/images/home/phone-home-hero.webp"
+    : "/images/home/desktop-home-hero.webp";
+  const { handleLoad: handleHeroLoad, isLoaded: isHeroLoaded } =
+    useSessionImage(heroImageUrl);
 
   const englishSubline =
     settings.heroSubtext &&
@@ -36,19 +43,19 @@ function HeroSection() {
 
   return (
     <section className="wd-home-hero" aria-labelledby="home-hero-title">
-      <picture className="wd-home-hero__background" aria-hidden="true">
-        <source
-          media="(max-width: 767px)"
-          srcSet="/images/home/phone-home-hero.webp"
-        />
+      <picture
+        className={`wd-home-hero__background${isHeroLoaded ? " is-ready" : " is-loading"}`}
+        aria-hidden="true"
+      >
         <img
-          src="/images/home/desktop-home-hero.webp"
+          src={heroImageUrl}
           alt=""
           width="1680"
           height="945"
           loading="eager"
           fetchPriority="high"
           decoding="async"
+          onLoad={handleHeroLoad}
         />
       </picture>
       <div className="wd-home-hero__overlay" aria-hidden="true" />

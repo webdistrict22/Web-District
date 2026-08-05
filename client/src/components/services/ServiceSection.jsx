@@ -73,6 +73,8 @@ function ServiceSection({
   isMobile,
   isExpanded,
   onToggle,
+  onPanelPointerDown,
+  onPanelClick,
 }) {
   const headingId = `${service.id}-title`;
   const panelId = `${service.id}-details`;
@@ -123,6 +125,8 @@ function ServiceSection({
                 role="region"
                 aria-labelledby={headingId}
                 aria-hidden={!isExpanded}
+                onPointerDown={onPanelPointerDown}
+                onClick={onPanelClick}
               >
                 <div className="wd-service-section__mobile-panel-inner">
                   <BestFor service={service} labels={labels} />

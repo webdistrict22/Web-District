@@ -185,6 +185,10 @@
   overflow: visible;
 }
 
+.wd-work-viewport {
+  padding-top: 3px;
+}
+
 .wd-work-track::-webkit-scrollbar,
 .wd-snap-track::-webkit-scrollbar { display: none; }
 
@@ -210,7 +214,7 @@
 .wd-work-card-link:hover .wd-work-card,
 .wd-work-card-link:focus-visible .wd-work-card {
   border-color: rgb(214 167 93 / 0.72);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .wd-work-card__image {
@@ -602,8 +606,7 @@
   .wd-services-controls {
     margin-top: 28px;
   }
-  .wd-manual-carousel-controls--ink.wd-services-controls > button,
-  .wd-manual-carousel-controls--ink.wd-services-controls > button:hover {
+  .wd-manual-carousel-controls--ink.wd-services-controls > button {
     position: relative;
     width: 44px;
     height: 44px;
@@ -627,10 +630,6 @@
     z-index: 1;
     width: 15px;
     height: 15px;
-  }
-  .wd-services-controls > button:hover::before {
-    border-color: #050505;
-    background: #050505;
   }
   .wd-manual-carousel-controls--ink.wd-services-controls .wd-manual-carousel-controls__dots span {
     background: rgb(247 242 236 / 0.8);
@@ -678,4 +677,11 @@
   .wd-work-card-link:hover .wd-work-card,
   .wd-work-card-link:focus-visible .wd-work-card,
   .wd-work-card-link:hover img { transform: none; }
+}
+
+@media (max-width: 767px) and (hover: hover) and (pointer: fine) {
+  .wd-services-controls > button:hover::before {
+    border-color: #050505;
+    background: #050505;
+  }
 }

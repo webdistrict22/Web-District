@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
@@ -7,6 +7,7 @@ import ServiceSection from "../../components/services/ServiceSection";
 import { servicesPageSections } from "../../data/servicesData";
 import useLanguage from "../../hooks/useLanguage";
 import useMediaQuery from "../../hooks/useMediaQuery";
+import useRestorableAccordion from "../../hooks/useRestorableAccordion";
 import { trackCustomEvent } from "../../lib/metaPixel";
 import "./Services.css";
 
@@ -50,12 +51,21 @@ function Services() {
       language: effectiveLanguage,
     });
 
-  const toggleService = (serviceId) => {
+  const setOpenServiceId = useCallback((openServiceId) => {
     setMobileAccordion({
       locationKey,
-      openServiceId: openServiceId === serviceId ? null : serviceId,
+      openServiceId,
     });
-  };
+  }, [locationKey]);
+  const {
+    handlePanelClick,
+    handlePanelPointerDown,
+    rememberOpenPosition,
+    toggleItem: toggleService,
+  } = useRestorableAccordion({
+    openKey: openServiceId,
+    setOpenKey: setOpenServiceId,
+  });
 
   useLayoutEffect(() => {
     if (!isMobile || !hashedServiceId) return undefined;
@@ -65,10 +75,11 @@ function Services() {
         behavior: "auto",
         block: "start",
       });
+      rememberOpenPosition(hashedServiceId, window.scrollY);
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [hashedServiceId, isMobile, locationKey]);
+  }, [effectiveLanguage, hashedServiceId, isMobile, locationKey, rememberOpenPosition]);
 
   return (
     <div className="wd-services-page">
@@ -126,6 +137,8 @@ function Services() {
           isMobile={isMobile}
           isExpanded={openServiceId === service.id}
           onToggle={() => toggleService(service.id)}
+          onPanelPointerDown={handlePanelPointerDown}
+          onPanelClick={(event) => handlePanelClick(event, service.id)}
         />
       ))}
 
@@ -148,7 +161,7 @@ function Services() {
             <div className="wd-services-cta__actions">
               <Button
                 to="/start"
-                className="wd-services-cta__primary"
+                className="wd-services-cta__primary wd-final-cta-action--primary"
                 onClick={trackStartProject}
               >
                 {t("common.buttons.startProject")}
@@ -156,7 +169,7 @@ function Services() {
               <Button
                 to="/process#faq"
                 variant="secondaryLight"
-                className="wd-services-cta__secondary"
+                className="wd-services-cta__secondary wd-final-cta-action--secondary"
               >
                 {t("common.buttons.viewQuestions")}
               </Button>

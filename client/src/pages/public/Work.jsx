@@ -70,10 +70,10 @@ function Work() {
           <h2 id="work-cta-title" className="font-display">{t("work.finalCta.title")}</h2>
           <p>{t("work.finalCta.description")}</p>
           <div className="wd-work-cta__actions">
-            <Button to="/start" icon={false} className="wd-work-cta__primary">
+            <Button to="/start" icon={false} className="wd-work-cta__primary wd-final-cta-action--primary">
               {t("common.buttons.startProject")}
             </Button>
-            <Button to="/services" variant="secondary" icon={false} className="wd-work-cta__secondary">
+            <Button to="/services" variant="secondary" icon={false} className="wd-work-cta__secondary wd-final-cta-action--secondary">
               {t("common.buttons.viewServices")}
             </Button>
           </div>

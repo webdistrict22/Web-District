@@ -3,6 +3,14 @@ import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import "./PillNav.css";
 
+const canUsePointerHover = () =>
+  window.matchMedia?.("(hover: hover) and (pointer: fine)")?.matches;
+
+const itemIsActive = (activeHref, href) =>
+  href === "/"
+    ? activeHref === "/"
+    : activeHref === href || activeHref.startsWith(`${href}/`);
+
 function PillNav({
   items,
   activeHref,
@@ -116,9 +124,24 @@ function PillNav({
     };
   }, [ease, initialLoadAnimation, items]);
 
-  const handleEnter = (index) => {
+  useEffect(() => {
+    items.forEach((item, index) => {
+      if (!itemIsActive(activeHref, item.href)) return;
+      activeTweenRefs.current[index]?.kill();
+      timelineRefs.current[index]?.progress(0).pause();
+    });
+  }, [activeHref, items]);
+
+  const handleEnter = (index, isActive, isPointerEvent = false) => {
     const timeline = timelineRefs.current[index];
     if (!timeline) return;
+    if (isPointerEvent && !canUsePointerHover()) return;
+
+    if (isActive) {
+      activeTweenRefs.current[index]?.kill();
+      timeline.progress(0).pause();
+      return;
+    }
 
     activeTweenRefs.current[index]?.kill();
     activeTweenRefs.current[index] = timeline.tweenTo(timeline.duration(), {
@@ -128,9 +151,16 @@ function PillNav({
     });
   };
 
-  const handleLeave = (index) => {
+  const handleLeave = (index, isActive, isPointerEvent = false) => {
     const timeline = timelineRefs.current[index];
     if (!timeline) return;
+    if (isPointerEvent && !canUsePointerHover()) return;
+
+    if (isActive) {
+      activeTweenRefs.current[index]?.kill();
+      timeline.progress(0).pause();
+      return;
+    }
 
     activeTweenRefs.current[index]?.kill();
     activeTweenRefs.current[index] = timeline.tweenTo(0, {
@@ -157,10 +187,7 @@ function PillNav({
         <div className="pill-nav-items" ref={navItemsRef}>
           <ul className="pill-list" role="menubar">
             {items.map((item, index) => {
-              const isActive =
-                item.href === "/"
-                  ? activeHref === "/"
-                  : activeHref === item.href || activeHref.startsWith(`${item.href}/`);
+              const isActive = itemIsActive(activeHref, item.href);
 
               return (
                 <li key={item.href} role="none">
@@ -171,10 +198,10 @@ function PillNav({
                     aria-label={item.ariaLabel || item.label}
                     aria-current={isActive ? "page" : undefined}
                     onClick={item.onSelect}
-                    onMouseEnter={() => handleEnter(index)}
-                    onMouseLeave={() => handleLeave(index)}
-                    onFocus={() => handleEnter(index)}
-                    onBlur={() => handleLeave(index)}
+                    onMouseEnter={() => handleEnter(index, isActive, true)}
+                    onMouseLeave={() => handleLeave(index, isActive, true)}
+                    onFocus={() => handleEnter(index, isActive)}
+                    onBlur={() => handleLeave(index, isActive)}
                   >
                     <span
                       className="hover-circle"

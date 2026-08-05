@@ -735,6 +735,10 @@
   overflow: visible;
 }
 
+.wd-case-study-other-projects__viewport {
+  padding-top: 3px;
+}
+
 .wd-case-study-other-projects__track::-webkit-scrollbar {
   display: none;
 }
@@ -772,7 +776,7 @@
 .wd-case-study-other-projects .wd-work-project-link:hover .wd-work-project-card,
 .wd-case-study-other-projects .wd-work-project-link:focus-visible .wd-work-project-card {
   border-color: var(--wd-signature-gold);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .wd-case-study-other-projects .wd-work-project-link:focus-visible {

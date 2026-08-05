@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import useLanguage from "../../hooks/useLanguage";
+import useRestorableAccordion from "../../hooks/useRestorableAccordion";
 
 function FAQTabs({ categories }) {
   const [activeCategory, setActiveCategory] = useState(0);
@@ -9,12 +10,21 @@ function FAQTabs({ categories }) {
   const baseId = useId().replaceAll(":", "");
   const { isRtl } = useLanguage();
   const active = categories[activeCategory];
+  const {
+    handlePanelClick,
+    handlePanelPointerDown,
+    resetOpenItem,
+    toggleItem,
+  } = useRestorableAccordion({
+    openKey: openQuestion,
+    setOpenKey: setOpenQuestion,
+  });
 
   if (!active) return null;
 
   const selectCategory = (index, focus = false) => {
     setActiveCategory(index);
-    setOpenQuestion(null);
+    resetOpenItem();
     if (focus) {
       window.requestAnimationFrame(() => tabRefs.current[index]?.focus());
     }
@@ -85,19 +95,27 @@ function FAQTabs({ categories }) {
                 type="button"
                 aria-expanded={isOpen}
                 aria-controls={panelId}
-                onClick={() => setOpenQuestion(isOpen ? null : index)}
+                onClick={() => toggleItem(index)}
               >
                 <span>{item.question}</span>
                 <span className="wd-faq-row__icon" aria-hidden="true">
-                  {isOpen ? <Minus /> : <Plus />}
+                  <ChevronDown />
                 </span>
               </button>
 
-              {isOpen ? (
-                <div id={panelId} role="region" aria-labelledby={buttonId}>
+              <div
+                id={panelId}
+                className="wd-faq-row__panel"
+                role="region"
+                aria-labelledby={buttonId}
+                aria-hidden={!isOpen}
+                onPointerDown={handlePanelPointerDown}
+                onClick={(event) => handlePanelClick(event, index)}
+              >
+                <div>
                   <p>{item.answer}</p>
                 </div>
-              ) : null}
+              </div>
             </article>
           );
         })}

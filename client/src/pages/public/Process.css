@@ -404,6 +404,7 @@
   border: 1px solid rgb(23 20 17 / 0.22);
   border-radius: 50%;
   color: #8b642a;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .wd-faq-row__icon svg {
@@ -411,14 +412,37 @@
   height: 0.95rem;
 }
 
-.wd-faq-row > div {
-  border-top: 1px solid rgb(109 104 98 / 0.18);
-  padding: 1rem 1.25rem 1.25rem;
+.wd-faq-row.is-open .wd-faq-row__icon {
+  transform: rotate(180deg);
 }
 
-.wd-faq-row > div p {
+.wd-faq-row__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  border-top: 1px solid transparent;
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    grid-template-rows 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.wd-faq-row.is-open .wd-faq-row__panel {
+  grid-template-rows: 1fr;
+  border-top-color: rgb(109 104 98 / 0.18);
+  opacity: 1;
+}
+
+.wd-faq-row__panel > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wd-faq-row__panel p {
   max-width: 47rem;
   margin: 0;
+  padding: 1rem 1.25rem 1.25rem;
   color: var(--wd-warm-taupe);
   line-height: 1.75;
 }
@@ -553,7 +577,7 @@
   }
   .wd-faq-tabs__panel.is-closed { min-height: 44rem; }
   .wd-faq-row > button { padding: 1rem; }
-  .wd-faq-row > div { padding: 0.9rem 1rem 1.1rem; }
+  .wd-faq-row__panel p { padding: 0.9rem 1rem 1.1rem; }
   .wd-process-cta { padding: 4.75rem 0 5rem; }
   .wd-process-cta__inner { grid-template-columns: 1fr; gap: 1.75rem; }
   .wd-process-cta__actions { display: grid; grid-template-columns: 1fr; }
@@ -579,4 +603,6 @@
 @media (prefers-reduced-motion: reduce) {
   .wd-process-stepper__panel { animation: none; }
   .wd-process-stepper__node:not(:last-child)::after { transition: none; }
+  .wd-faq-row__icon,
+  .wd-faq-row__panel { transition: none; }
 }

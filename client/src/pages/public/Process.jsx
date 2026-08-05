@@ -54,10 +54,10 @@ function Process() {
             </div>
 
             <div className="wd-process-cta__actions">
-              <Button to="/start" variant="secondary" className="wd-process-cta__primary">
+              <Button to="/start" variant="secondary" className="wd-process-cta__primary wd-final-cta-action--primary">
                 {t("common.buttons.startProject")}
               </Button>
-              <Button to="/work" variant="secondaryLight" className="wd-process-cta__secondary">
+              <Button to="/work" variant="secondaryLight" className="wd-process-cta__secondary wd-final-cta-action--secondary">
                 {t("common.buttons.viewWork")}
               </Button>
             </div>

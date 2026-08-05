@@ -20,6 +20,13 @@ const integer = (name, fallback, min, max) => {
   return value;
 };
 
+const boolean = (name, fallback) => {
+  const raw = process.env[name];
+  if (raw === undefined || raw === "") return fallback;
+  if (!['true', 'false'].includes(String(raw).toLowerCase())) throw new Error(`${name} must be true or false`);
+  return String(raw).toLowerCase() === "true";
+};
+
 const validateEnvironment = () => {
   const production = process.env.NODE_ENV === "production";
   if (!['development', 'test', 'production'].includes(process.env.NODE_ENV || "development")) throw new Error("NODE_ENV is invalid");
@@ -27,7 +34,11 @@ const validateEnvironment = () => {
   for (const name of required) {
     const value = String(process.env[name] || "");
     if (!value) throw new Error(`${name} is required`);
-    if (["JWT_SECRET", "REFRESH_TOKEN_SECRET", "OUTBOX_ENCRYPTION_KEY"].includes(name) && value.length < 32) throw new Error(`${name} must contain at least 32 characters`);
+    if (["JWT_SECRET", "REFRESH_TOKEN_SECRET"].includes(name) && value.length < 32) throw new Error(`${name} must contain at least 32 characters`);
+  }
+  if (!/^[a-f0-9]{64}$/i.test(process.env.OUTBOX_ENCRYPTION_KEY)) throw new Error("OUTBOX_ENCRYPTION_KEY must contain exactly 64 hexadecimal characters");
+  if (new Set([process.env.JWT_SECRET, process.env.REFRESH_TOKEN_SECRET, process.env.OUTBOX_ENCRYPTION_KEY]).size !== 3) {
+    throw new Error("JWT_SECRET, REFRESH_TOKEN_SECRET, and OUTBOX_ENCRYPTION_KEY must be independent values");
   }
   const ownerEmail = String(process.env.OWNER_EMAIL || process.env.EMAIL_USER || "").trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail)) {
@@ -46,9 +57,20 @@ const validateEnvironment = () => {
   const timezone = process.env.BUSINESS_TIMEZONE || "Africa/Cairo";
   if (!validateTimezone(timezone)) throw new Error("BUSINESS_TIMEZONE is invalid");
   integer("BOOKING_WINDOW_DAYS", 7, 1, 31);
+  integer("SLOT_MAINTENANCE_INTERVAL_MS", 6 * 60 * 60 * 1000, 60000, 24 * 60 * 60 * 1000);
   integer("EMAIL_OUTBOX_POLL_MS", 5000, 1000, 300000);
   integer("EMAIL_OUTBOX_LEASE_MS", 60000, 10000, 600000);
+  integer("EMAIL_OUTBOX_BATCH_SIZE", 10, 1, 50);
   integer("REFRESH_TOKEN_DAYS", 30, 1, 90);
+  boolean("EMAIL_OUTBOX_ENABLED", true);
+  boolean("EMAIL_ALLOW_SELF_SIGNED", false);
+  if (process.env.ACCESS_TOKEN_EXPIRES_IN && !/^\d+[smhd]$/i.test(process.env.ACCESS_TOKEN_EXPIRES_IN)) {
+    throw new Error("ACCESS_TOKEN_EXPIRES_IN must use a duration such as 15m");
+  }
+  if (process.env.ALLOW_MAINTENANCE_APPLY && !["NO", "YES"].includes(process.env.ALLOW_MAINTENANCE_APPLY)) {
+    throw new Error("ALLOW_MAINTENANCE_APPLY must be NO or YES");
+  }
+  if (production && process.env.ALLOW_MAINTENANCE_APPLY === "YES") throw new Error("ALLOW_MAINTENANCE_APPLY must be NO during normal production startup");
   if (production && /localhost|127\.0\.0\.1/i.test(clientOrigin)) throw new Error("CLIENT_URL cannot use localhost in production");
   const degraded = [];
   if (!isEmailConfigured()) degraded.push("email");
@@ -56,4 +78,4 @@ const validateEnvironment = () => {
   return { valid: true, clientOrigin, timezone, degraded };
 };
 
-module.exports = { validateEnvironment, integer };
+module.exports = { validateEnvironment, integer, boolean };

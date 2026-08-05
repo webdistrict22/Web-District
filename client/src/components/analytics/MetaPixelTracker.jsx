@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router";
 import useLanguage from "../../hooks/useLanguage";
 import {
@@ -7,7 +7,6 @@ import {
   trackPageView,
   trackViewContent,
 } from "../../lib/metaPixel";
-import { ANALYTICS_CONSENT_EVENT, getAnalyticsConsent } from "../../lib/analyticsConsent";
 
 const trackedPublicPaths = new Set([
   "/",
@@ -73,18 +72,10 @@ const getCaseStudyConfig = (path) => {
 };
 
 function MetaPixelTracker() {
-  const [consent, setConsent] = useState(getAnalyticsConsent);
   const location = useLocation();
   const { effectiveLanguage } = useLanguage();
 
   useEffect(() => {
-    const update = (event) => setConsent(event.detail || getAnalyticsConsent());
-    window.addEventListener(ANALYTICS_CONSENT_EVENT, update);
-    return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, update);
-  }, []);
-
-  useEffect(() => {
-    if (consent !== "accepted") return undefined;
     const path = normalizePath(location.pathname);
     const caseStudyConfig = getCaseStudyConfig(path);
     const isCaseStudyPath = /^\/work\/[^/]+$/.test(path);
@@ -133,7 +124,7 @@ function MetaPixelTracker() {
     }, 0);
 
     return () => window.clearTimeout(timerId);
-  }, [consent, effectiveLanguage, location.pathname]);
+  }, [effectiveLanguage, location.pathname]);
 
   return null;
 }

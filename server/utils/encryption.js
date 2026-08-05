@@ -2,8 +2,8 @@ const crypto = require("crypto");
 
 const getKey = () => {
   const secret = String(process.env.OUTBOX_ENCRYPTION_KEY || "");
-  if (secret.length < 32) {
-    const error = new Error("OUTBOX_ENCRYPTION_KEY must contain at least 32 characters");
+  if (!/^[a-f0-9]{64}$/i.test(secret)) {
+    const error = new Error("OUTBOX_ENCRYPTION_KEY must contain exactly 64 hexadecimal characters");
     error.code = "OUTBOX_ENCRYPTION_KEY_INVALID";
     throw error;
   }

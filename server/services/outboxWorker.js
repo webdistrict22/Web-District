@@ -29,8 +29,7 @@ const isPermanentError = (error) =>
   ["EAUTH", "EENVELOPE", "INVALID_RECIPIENT", "UNKNOWN_EMAIL_TEMPLATE", "EMAIL_NOT_CONFIGURED"].includes(error?.code) ||
   [500, 501, 503, 504, 550, 551, 552, 553, 554].includes(Number(error?.responseCode));
 
-const claimNext = async () => {
-  const now = new Date();
+const claimNext = async (now = new Date()) => {
   const leaseMs = intEnv("EMAIL_OUTBOX_LEASE_MS", DEFAULT_LEASE_MS, 10000, 10 * 60 * 1000);
   const lockToken = crypto.randomUUID();
 
@@ -54,7 +53,7 @@ const claimNext = async () => {
   ).select("+encryptedRecipient +encryptedPayload +lockToken");
 };
 
-const processOne = async () => {
+const processOne = async ({ send = sendEmail } = {}) => {
   const event = await claimNext();
   if (!event) return false;
 
@@ -62,7 +61,7 @@ const processOne = async () => {
     const { recipient } = decryptJson(event.encryptedRecipient);
     const sensitivePayload = event.encryptedPayload ? decryptJson(event.encryptedPayload) : {};
     const rendered = renderEmailTemplate(event.template, { ...event.templatePayload, ...sensitivePayload });
-    const result = await sendEmail({
+    const result = await send({
       to: recipient,
       ...rendered,
       messageId: deterministicMessageId(event.idempotencyKey),
@@ -144,4 +143,4 @@ const stopOutboxWorker = async () => {
 
 const getOutboxWorkerStatus = () => ({ initialized: Boolean(timer) || process.env.NODE_ENV === "test", running, lastRunAt, lastSuccessAt });
 
-module.exports = { startOutboxWorker, stopOutboxWorker, getOutboxWorkerStatus, processOne, getBackoffMs, isPermanentError };
+module.exports = { startOutboxWorker, stopOutboxWorker, getOutboxWorkerStatus, claimNext, processOne, getBackoffMs, isPermanentError };

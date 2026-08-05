@@ -44,7 +44,7 @@ test("environment validation separates core requirements from degraded integrati
     MONGO_URI: "mongodb://localhost:27017/web_district_test",
     JWT_SECRET: "j".repeat(32),
     REFRESH_TOKEN_SECRET: "r".repeat(32),
-    OUTBOX_ENCRYPTION_KEY: "o".repeat(32),
+    OUTBOX_ENCRYPTION_KEY: "a".repeat(64),
     OWNER_EMAIL: "owner@example.com",
     CLIENT_URL: "https://www.example.com",
     ALLOWED_ORIGINS: "https://example.com",
@@ -59,6 +59,12 @@ test("environment validation separates core requirements from degraded integrati
   assert.deepEqual(result.degraded.sort(), ["cloudinary", "email"]);
   process.env.JWT_SECRET = "short";
   assert.throws(() => validateEnvironment(), /32 characters/);
+  process.env.JWT_SECRET = "j".repeat(32);
+  process.env.OUTBOX_ENCRYPTION_KEY = "not-hex";
+  assert.throws(() => validateEnvironment(), /64 hexadecimal/);
+  process.env.JWT_SECRET = "a".repeat(64);
+  process.env.OUTBOX_ENCRYPTION_KEY = "a".repeat(64);
+  assert.throws(() => validateEnvironment(), /independent values/);
   for (const key of Object.keys(process.env)) if (!(key in previous)) delete process.env[key];
   Object.assign(process.env, previous);
 });

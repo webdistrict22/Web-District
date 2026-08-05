@@ -1,70 +1,126 @@
 # Web District Production Runbook
 
-This runbook is deliberately staged. Back up MongoDB first, deploy the backend before the frontend, and keep the previous release available for rollback. Never point maintenance scripts at production until their dry-run output has been reviewed.
+This runbook uses the existing Atlas database and the existing Render service. Maintenance commands are read-only unless both `--apply` and `ALLOW_MAINTENANCE_APPLY=YES` are present. Never expose connection strings in logs or release notes.
 
-## 1. Preflight and backup
+## Current migration state
 
-1. Confirm Node.js 22.22 or newer and npm 10.
-2. Take and verify an Atlas snapshot.
-3. Confirm the MongoDB deployment supports multi-document transactions (Atlas replica set/sharded cluster).
-4. Configure every required variable in `server/.env.example`; generate separate values for `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, and `OUTBOX_ENCRYPTION_KEY`.
-5. Keep `ALLOW_MAINTENANCE_APPLY=NO`, `QA_SEND_TEST_EMAIL=false`, and all production-write QA flags false.
-6. Run `npm ci`, backend syntax/unit tests, frontend lint/build, sitemap generation, and the bundle check in a staging checkout.
+- The production hardening code is prepared but not deployed by this local verification task.
+- The production audit reported 707 legacy `CallSlot` documents without authoritative `startsAt`/`endsAt`. All 707 parsed successfully in dry-run; none were modified.
+- Reconciliation classifies missing authoritative timestamps as malformed before backfill. This is a structural classification, not evidence that the legacy `date`, `startTime`, or `endTime` strings are invalid.
+- The CallSlot audit reported no missing index and one extra legacy index. Repository history identifies it as `unique_call_slot_time`, the original non-partial unique `{ date: 1, startTime: 1, endTime: 1 }` index. Keep it during backfill; it still prevents duplicate legacy wall-clock slots.
+- The Review audit reported one missing and one extra index. The desired additive public-query index is `{ archivedAt: 1, status: 1, isVisible: 1, createdAt: -1 }`, named `public_reviews_active`. Re-read live definitions with `maintenance:index-details` before applying; the guarded index command will not drop extras or overwrite a conflicting name.
+- Three clients are unverified. Unverified clients are retained and cannot claim guest records. Seeded admins are created verified; a legacy admin becomes verified only after a successful password login. Do not bulk-verify clients.
+- `ACCESS_TOKEN_EXPIRES_IN` is authoritative. `JWT_EXPIRES_IN` is legacy and unused.
 
-## 2. Read-only database audits
+## A-E. Exact database preparation order
 
-From `server`, using the intended database URI:
+Run from `server` against the intended production `MONGO_URI`. Do not begin until an Atlas backup has completed and restore access has been checked.
 
-```powershell
-npm.cmd run maintenance:indexes
-npm.cmd run maintenance:slot-backfill
-npm.cmd run maintenance:slot-reconcile
-npm.cmd run maintenance:claim-audit
+1. **Atlas backup:** create and verify an on-demand Atlas snapshot. Record its timestamp and restore target.
+2. **Backfill dry-run:** keep `ALLOW_MAINTENANCE_APPLY=NO`, then run:
+
+   ```powershell
+   npm.cmd run maintenance:slot-backfill
+   ```
+
+3. **Guarded backfill:** review the counts, then run:
+
+   ```powershell
+   $env:ALLOW_MAINTENANCE_APPLY="YES"
+   npm.cmd run maintenance:slot-backfill -- --apply
+   ```
+
+4. **First reconciliation:**
+
+   ```powershell
+   npm.cmd run maintenance:slot-reconcile
+   ```
+
+5. **Additive indexes:** inspect exact definitions, dry-run, then create only missing non-conflicting indexes:
+
+   ```powershell
+   npm.cmd run maintenance:index-details
+   npm.cmd run maintenance:indexes
+   npm.cmd run maintenance:indexes -- --apply
+   ```
+
+   Do not drop `unique_call_slot_time` or any Review index in this rollout. If `nameConflicts` is non-empty, stop and review that named index; the script intentionally refuses to replace it.
+
+6. **Second reconciliation:**
+
+   ```powershell
+   npm.cmd run maintenance:slot-reconcile
+   ```
+
+7. **Slot-maintenance dry-run:**
+
+   ```powershell
+   npm.cmd run maintenance:slots
+   ```
+
+8. **Review candidates:** confirm every expired candidate is unbooked, has no `bookedBy`, is not protected, and is not referenced by an appointment. Preserve historical booked/referenced slots.
+9. **Guarded cleanup:**
+
+   ```powershell
+   npm.cmd run maintenance:slots -- --apply
+   ```
+
+10. **Final reconciliation:**
+
+    ```powershell
+    npm.cmd run maintenance:slot-reconcile
+    npm.cmd run maintenance:slot-backfill
+    npm.cmd run maintenance:indexes
+    ```
+
+11. **Close the maintenance window:**
+
+    ```powershell
+    $env:ALLOW_MAINTENANCE_APPLY="NO"
+    ```
+
+The backfill is additive and batched. It writes only `startsAt`, `endsAt`, and normalized `timezone`; it preserves the legacy wall-clock fields, booking state, appointment ownership, and documents themselves. Re-running it is safe because already-converted documents no longer match its candidate query.
+
+## F-J. Environment and domains
+
+Configure these on the current Render service: `NODE_ENV`, `MONGO_URI`, `JWT_SECRET`, `ACCESS_TOKEN_EXPIRES_IN`, `REFRESH_TOKEN_SECRET`, `REFRESH_TOKEN_DAYS`, `CLIENT_URL`, `ALLOWED_ORIGINS`, `BUSINESS_TIMEZONE`, `BOOKING_WINDOW_DAYS`, `SLOT_MAINTENANCE_INTERVAL_MS`, `OUTBOX_ENCRYPTION_KEY`, `EMAIL_OUTBOX_ENABLED`, `EMAIL_OUTBOX_POLL_MS`, `EMAIL_OUTBOX_LEASE_MS`, `EMAIL_OUTBOX_BATCH_SIZE`, `EMAIL_USER`, `EMAIL_PASS`, `OWNER_EMAIL`, `EMAIL_FROM_NAME`, `EMAIL_ALLOW_SELF_SIGNED`, the three `CLOUDINARY_*` values, and `ALLOW_MAINTENANCE_APPLY=NO`.
+
+- Use independent token secrets. `OUTBOX_ENCRYPTION_KEY` must be exactly 64 hexadecimal characters.
+- Keep `EMAIL_ALLOW_SELF_SIGNED=false` and `ALLOW_MAINTENANCE_APPLY=NO` during normal runtime.
+- Add `api.web-district.com` to the existing Render service, copy Render's required DNS target into the DNS provider, and wait for Render-managed TLS to become valid. Do not create another backend service.
+- Set Vercel `VITE_API_URL` to `https://api.web-district.com/api` for the production build.
+- Set `CLIENT_URL` to the canonical HTTPS frontend origin. Set `ALLOWED_ORIGINS` to the exact canonical and intentionally supported frontend origins only; never use `*` with credentialed requests.
+- Production refresh and CSRF cookies are HttpOnly/Secure as applicable, credentialed, and configured for the frontend/API cross-origin deployment. Verify `Access-Control-Allow-Credentials: true` and exact-origin reflection.
+
+## K-L. Deployment order
+
+1. Deploy the hardening-compatible backend to the current Render service first.
+2. Verify liveness/readiness and compatibility with the still-current frontend.
+3. Deploy the frontend from the verified production build.
+4. Verify public routes, login/registration/verification, session restoration, logout, admin/client guards, pagination, requests, and booking in English and Arabic.
+5. Meta Pixel initializes automatically only when a valid Pixel ID is built in. Vercel Analytics and Speed Insights load automatically. Admin and authenticated account routes remain excluded from nonessential analytics; no consent popup or privacy-choice control exists.
+
+## M. One authorized SMTP verification
+
+After deployment and only with an authorized recipient, first inspect protected email diagnostics and transporter verification. Then submit one controlled workflow that queues one email. Confirm the outbox moves from pending/processing to delivered and record only event status/message metadata—never recipient data or payload content. This is the only live-send verification in the rollout.
+
+## N. Health and readiness
+
+Check, in order:
+
+```text
+GET https://api.web-district.com/api/health/live
+GET https://api.web-district.com/api/health/ready
+GET https://api.web-district.com/api/health/diagnostics   (authorized admin)
+GET https://api.web-district.com/api/settings/email-diagnostics   (authorized admin)
 ```
 
-These commands are read-only without `--apply`. Save the count-only output with the release record; it contains IDs for inconsistent slot samples but no customer contact data.
+Confirm MongoDB is connected, both workers are initialized, outbox backlog is understood, reconciliation has no unexpected conflicts, and no elevated 5xx/429 rate appears. Confirm an ad blocker can block Meta Pixel without affecting navigation or forms.
 
-## 3. Apply database preparation
-
-After reviewing the backup and dry runs, set `ALLOW_MAINTENANCE_APPLY=YES` only in the controlled maintenance shell:
-
-```powershell
-$env:ALLOW_MAINTENANCE_APPLY="YES"
-npm.cmd run maintenance:slot-backfill -- --apply
-npm.cmd run maintenance:indexes -- --apply
-npm.cmd run maintenance:slots -- --apply
-npm.cmd run maintenance:slot-reconcile
-```
-
-The index script only creates missing indexes. It reports obsolete indexes but never drops them. After confirming no duplicate active slots, manually remove the legacy `unique_call_slot_time` index so the partial `unique_active_call_slot_time` policy can govern active records. Treat any other index drop as a separate reviewed operation.
-
-Unset `ALLOW_MAINTENANCE_APPLY` when finished.
-
-## 4. Backend rollout
-
-1. Deploy one backend instance with the complete environment.
-2. Check `/api/health/live`, then `/api/health/ready`.
-3. Authenticate as an admin and inspect `/api/health/diagnostics` and `/api/settings/email-diagnostics`.
-4. Confirm outbox and slot workers report initialized and the reconciliation counts are zero or understood.
-5. Scale to the desired instance count. MongoDB leases make worker polling multi-instance safe.
-6. Do not use the email-send diagnostic until a recipient and maintenance window are explicitly approved; SMTP verification is available without sending mail.
-
-## 5. Frontend rollout
-
-1. Generate `client/public/sitemap.xml` and build the exact release artifact.
-2. Deploy with `VITE_API_URL` pointing to the production API `/api` base.
-3. Verify navigation, refresh survival, logout, email verification, client lists, admin pagination, and Cairo-labelled booking slots.
-4. Confirm analytics requests occur only after consent and do not fire on account/admin routes.
-
-## 6. Rollback
+## O. Rollback
 
 - Frontend: restore the previous Vercel deployment.
-- Backend: restore the previous Render release. Keep the new secrets available while any new refresh sessions/outbox documents remain; a rollback that cannot read them will force sign-in and pause email delivery but must not delete them.
-- Database: do not reverse data migrations blindly. The slot backfill is additive, archive fields are backward-compatible, and new collections can remain. Restore the snapshot only for confirmed data corruption, with an outage declared.
-- If email delivery misbehaves, set `EMAIL_OUTBOX_ENABLED=false`, redeploy the backend, and retain queued events for investigation.
-
-## 7. Ongoing checks
-
-- Alert on readiness failures, elevated 5xx/429 rates, growing failed/retry outbox counts, and non-zero slot reconciliation counts.
-- Run `maintenance:slot-reconcile` after scheduling incidents and `maintenance:indexes` after schema releases.
-- Rotate secrets independently. Rotating `JWT_SECRET` invalidates access tokens; rotating `REFRESH_TOKEN_SECRET` invalidates refresh sessions; rotating `OUTBOX_ENCRYPTION_KEY` requires draining or migrating pending encrypted events first.
+- Backend: restore the previous release on the current Render service. Keep new secrets available while new refresh sessions or encrypted outbox documents exist; otherwise users may need to sign in again and queued email processing must remain paused.
+- Email incident: set `EMAIL_OUTBOX_ENABLED=false`, redeploy, and retain queued records for investigation.
+- Database: do not reverse the additive timestamp backfill or drop indexes blindly. Restore the verified snapshot only for confirmed data corruption under an incident window.
+- After rollback, run read-only reconciliation and health checks. Keep `ALLOW_MAINTENANCE_APPLY=NO`.

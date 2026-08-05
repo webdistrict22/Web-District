@@ -72,7 +72,7 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-reviewSchema.index({ archivedAt: 1, status: 1, isVisible: 1, createdAt: -1 }, { name: "public_reviews" });
+reviewSchema.index({ archivedAt: 1, status: 1, isVisible: 1, createdAt: -1 }, { name: "public_reviews_active" });
 reviewSchema.index({ client: 1, createdAt: -1 }, { name: "reviews_owner_created" });
 
 reviewSchema.index(

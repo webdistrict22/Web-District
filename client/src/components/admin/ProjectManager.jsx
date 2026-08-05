@@ -73,7 +73,7 @@ function ProjectManager() {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get("/projects");
+      const { data } = await api.get("/projects", { params: { limit: 100 } });
 
       setProjects(data.projects || []);
     } catch (error) {

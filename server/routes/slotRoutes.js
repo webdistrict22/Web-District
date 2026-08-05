@@ -5,6 +5,7 @@ const {
   getAllSlots,
   updateCallSlot,
   deleteCallSlot,
+  maintainSlots,
 } = require("../controllers/slotController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -17,6 +18,7 @@ router.get("/available", getAvailableSlots);
 router.get("/", protect, adminOnly, getAllSlots);
 
 router.post("/", protect, adminOnly, createCallSlot);
+router.post("/maintenance", protect, adminOnly, maintainSlots);
 
 router.put("/:id", protect, adminOnly, updateCallSlot);
 

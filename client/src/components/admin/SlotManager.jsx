@@ -11,6 +11,7 @@ import Loader from "../common/Loader";
 import EmptyState from "../common/EmptyState";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 const initialForm = {
   date: "",
@@ -27,6 +28,7 @@ function SlotManager() {
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
   const [filter, setFilter] = useState("All");
+  const [pagination, setPagination] = useState(null);
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -35,11 +37,16 @@ function SlotManager() {
     }));
   };
 
-  const fetchSlots = async () => {
+  const fetchSlots = async (page = 1, selectedFilter = filter) => {
     try {
       setIsLoading(true);
-      const { data } = await api.get("/slots");
+      const params = { page, limit: 20 };
+      if (selectedFilter === "Available") Object.assign(params, { isActive: true, isBooked: false });
+      if (selectedFilter === "Booked") params.isBooked = true;
+      if (selectedFilter === "Inactive") params.isActive = false;
+      const { data } = await api.get("/slots", { params });
       setSlots(data.slots || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load call slots.");
     } finally {
@@ -48,22 +55,6 @@ function SlotManager() {
   };
 
   useInitialLoad(fetchSlots);
-
-  const filteredSlots = useMemo(() => {
-    if (filter === "Available") {
-      return slots.filter((slot) => slot.isActive && !slot.isBooked);
-    }
-
-    if (filter === "Booked") {
-      return slots.filter((slot) => slot.isBooked);
-    }
-
-    if (filter === "Inactive") {
-      return slots.filter((slot) => !slot.isActive);
-    }
-
-    return slots;
-  }, [slots, filter]);
 
   const stats = useMemo(() => {
     return {
@@ -273,7 +264,11 @@ function SlotManager() {
           <Select
             label="Filter"
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onChange={(e) => {
+              const nextFilter = e.target.value;
+              setFilter(nextFilter);
+              fetchSlots(1, nextFilter);
+            }}
           >
             <option>All</option>
             <option>Available</option>
@@ -285,9 +280,9 @@ function SlotManager() {
 
       {isLoading ? (
         <Loader text="Loading call slots..." />
-      ) : filteredSlots.length ? (
+      ) : slots.length ? (
         <div className="grid gap-5 md:grid-cols-2">
-          {filteredSlots.map((slot) => (
+          {slots.map((slot) => (
             <SlotCard
               key={slot._id}
               slot={slot}
@@ -297,6 +292,13 @@ function SlotManager() {
               isDeleting={deletingId === slot._id}
             />
           ))}
+          <div className="md:col-span-2">
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={(page) => fetchSlots(page, filter)}
+              disabled={isLoading}
+            />
+          </div>
         </div>
       ) : (
         <EmptyState

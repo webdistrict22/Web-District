@@ -4,8 +4,12 @@
 
 ### Public Settings
 
-Use `/admin/control` to update agency contact values, hero copy, CTA text, and
-footer text. Verify the Home, Contact, and footer areas after saving.
+The current `/admin/settings` destination redirects to `/admin/control`, whose
+UI manages slots, FAQ, packages, and projects. Public settings remain available
+through the protected settings API but do not currently have an editor in the
+control workspace. Treat settings changes as an operator/API task until a
+minimal editor is deliberately restored; verify Home, Contact, and footer after
+any such change.
 
 ### Projects And Work
 
@@ -71,7 +75,9 @@ group when localized descriptions or labels are expected.
 
 ## Email Operations
 
-Email uses Gmail SMTP through Nodemailer.
+Email uses a reusable Gmail SMTP transport behind an encrypted MongoDB outbox.
+Normal request, appointment, contract, verification, and review workflows only
+report `queued`; the worker owns delivery and retry state.
 
 Before testing:
 
@@ -154,9 +160,16 @@ Do not log environment values or user tokens while troubleshooting.
 
 ## MongoDB Index Verification
 
-Required named indexes:
+Run the safe read-only index diff first:
 
-- `unique_call_slot_time`
+```powershell
+cd server
+npm.cmd run maintenance:indexes
+```
+
+Required named indexes include:
+
+- `unique_active_call_slot_time`
 - `unique_settings_singleton`
 - `unique_client_contract_review`
 
@@ -173,7 +186,9 @@ duplicates and create a backup.
 
 ## JWT Secret Rotation
 
-Changing `JWT_SECRET` immediately invalidates all existing sessions.
+Changing `JWT_SECRET` immediately invalidates access tokens. Changing
+`REFRESH_TOKEN_SECRET` invalidates refresh sessions and requires every user to
+sign in again.
 
 Safe rotation:
 

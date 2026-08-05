@@ -20,6 +20,11 @@ const contractSchema = new mongoose.Schema(
       default: null,
     },
 
+    claimedAt: { type: Date, default: null },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    claimMethod: { type: String, default: "", maxlength: 40 },
+    claimAuditKey: { type: String, default: "", maxlength: 160 },
+
     title: {
       type: String,
       required: [true, "Contract title is required"],
@@ -125,6 +130,7 @@ const contractSchema = new mongoose.Schema(
       ],
       default: "Draft",
     },
+    statusVersion: { type: Number, default: 0, min: 0 },
 
     adminNotes: {
       type: String,
@@ -135,10 +141,25 @@ const contractSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    archivedAt: { type: Date, default: null },
+    archivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    archiveReason: { type: String, default: "", maxlength: 500 },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
+);
+
+contractSchema.index({ client: 1, archivedAt: 1, createdAt: -1 }, { name: "contracts_owner_created" });
+contractSchema.index({ status: 1, archivedAt: 1, createdAt: -1 }, { name: "contracts_status_created" });
+contractSchema.index(
+  { request: 1 },
+  { unique: true, partialFilterExpression: { request: { $type: "objectId" }, archivedAt: null }, name: "unique_active_request_contract" }
+);
+contractSchema.index(
+  { appointment: 1 },
+  { unique: true, partialFilterExpression: { appointment: { $type: "objectId" }, archivedAt: null }, name: "unique_active_appointment_contract" }
 );
 
 contractSchema.pre("save", function (next) {

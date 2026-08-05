@@ -14,7 +14,7 @@ import Button from "../common/Button";
 import ManualCarouselControls from "../common/ManualCarousel";
 import useManualCarousel from "../common/useManualCarousel";
 import LogoLoop from "../reactbits/LogoLoop/LogoLoop";
-import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
+import { getPublicReviews } from "../../lib/publicContentApi";
 import useLanguage from "../../hooks/useLanguage";
 import { workProjects } from "../../data/demoProjects";
 import ProjectCard from "./ProjectCard";
@@ -457,17 +457,14 @@ function ProjectReview({ project, name, logoImage, t }) {
   const [review, setReview] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
     const timerId = window.setTimeout(async () => {
       try {
-        const { data } = await api.get("/reviews/public", {
-          timeout: PUBLIC_CONTENT_TIMEOUT,
-          signal: controller.signal,
-        });
+        const reviews = await getPublicReviews();
         const aliases = (project.reviewAliases || [name]).map(
           normalizeReviewValue,
         );
-        const match = (data.reviews || []).find((item) => {
+        const match = reviews.find((item) => {
           const businessName = normalizeReviewValue(item.businessName);
           return aliases.some(
             (alias) =>
@@ -476,15 +473,15 @@ function ProjectReview({ project, name, logoImage, t }) {
           );
         });
 
-        setReview(match || null);
+        if (active) setReview(match || null);
       } catch {
-        if (!controller.signal.aborted) setReview(null);
+        if (active) setReview(null);
       }
     }, 0);
 
     return () => {
       window.clearTimeout(timerId);
-      controller.abort();
+      active = false;
     };
   }, [name, project.reviewAliases]);
 

@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
-import { STORAGE_KEYS } from "../../lib/constants";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
-import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 import { focusFirstInvalidControl } from "../../lib/a11y";
 
@@ -26,7 +24,6 @@ function ResetPassword() {
 
   const { token } = useParams();
   const navigate = useNavigate();
-  const { setUser } = useAuth();
   const { getErrorMessage, t } = useLanguage();
 
   const updateField = (field, value) => {
@@ -64,7 +61,7 @@ function ResetPassword() {
       return;
     }
 
-    if (form.password.length < 6) {
+    if (form.password.length < 12) {
       const message = t("auth.reset.passwordLength");
       setFieldErrors({ password: message });
       setFormError(message);
@@ -76,17 +73,11 @@ function ResetPassword() {
       setIsLoading(true);
       setFormError("");
 
-      const { data } = await api.put(`/auth/reset-password/${token}`, form);
-
-      localStorage.setItem(STORAGE_KEYS.token, data.token);
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
-      setUser(data.user);
+      await api.put(`/auth/reset-password/${token}`, form, { skipAuthRefresh: true });
 
       toast.success(t("auth.reset.success"));
 
-      navigate(data.user.role === "admin" ? "/admin" : "/account", {
-        replace: true,
-      });
+      navigate("/login", { replace: true });
     } catch (error) {
       const message = getErrorMessage(error, "auth.reset.error");
       setFormError(message);

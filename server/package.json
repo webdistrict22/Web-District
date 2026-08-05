@@ -4,6 +4,8 @@
   "description": "Backend API for Web District agency platform",
   "main": "server.js",
   "type": "commonjs",
+  "engines": { "node": ">=22.22.0" },
+  "packageManager": "npm@10.9.8",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
@@ -14,7 +16,16 @@
     "qa:admin": "node scripts/qa/adminSmoke.js",
     "qa:write": "node scripts/qa/writeSmoke.js",
     "qa:guest-claim": "node scripts/qa/guestClaimSmoke.js",
-    "qa": "node scripts/qa/runAll.js"
+    "qa": "node scripts/qa/runAll.js",
+    "syntax": "node scripts/checkSyntax.js",
+    "test": "node --test test/unit/*.test.js",
+    "test:unit": "node --test test/unit/*.test.js",
+    "test:integration": "node --test test/integration/*.test.js",
+    "maintenance:indexes": "node scripts/maintenance/indexes.js",
+    "maintenance:slot-backfill": "node scripts/maintenance/slotBackfill.js",
+    "maintenance:slot-reconcile": "node scripts/maintenance/slotReconcile.js",
+    "maintenance:slots": "node scripts/maintenance/slotMaintenance.js",
+    "maintenance:claim-audit": "node scripts/maintenance/claimAudit.js"
   },
   "keywords": [],
   "author": "Web District",
@@ -28,11 +39,16 @@
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.4",
+    "mongoose": "8.24.2",
     "multer": "^2.1.1",
     "nodemailer": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "overrides": {
+    "body-parser": "2.3.0",
+    "brace-expansion": "5.0.9",
+    "ip-address": "10.4.0"
   }
 }

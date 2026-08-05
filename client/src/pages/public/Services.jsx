@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
 import Button from "../../components/common/Button";

@@ -22,6 +22,7 @@ import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 const appointmentStatuses = ["Pending", "Accepted", "Cancelled", "Rescheduled", "Done"];
 
@@ -31,6 +32,7 @@ function AppointmentManager() {
   const [loadError, setLoadError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
+  const [pagination, setPagination] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -39,12 +41,12 @@ function AppointmentManager() {
 
   const [drafts, setDrafts] = useState({});
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const params = {};
+      const params = { page, limit: 20 };
 
       if (filters.status !== "All") {
         params.status = filters.status;
@@ -58,6 +60,7 @@ function AppointmentManager() {
 
       const loadedAppointments = data.appointments || [];
       setAppointments(loadedAppointments);
+      setPagination(data.pagination || null);
 
       const nextDrafts = {};
 
@@ -109,7 +112,7 @@ function AppointmentManager() {
   };
 
   const handleApplyFilters = () => {
-    fetchAppointments();
+    fetchAppointments(1);
   };
 
   const handleResetFilters = () => {
@@ -119,7 +122,7 @@ function AppointmentManager() {
     });
 
     setTimeout(() => {
-      fetchAppointments();
+      fetchAppointments(1);
     }, 0);
   };
 
@@ -155,10 +158,10 @@ function AppointmentManager() {
 
   const handleDeleteAppointment = async (appointmentId) => {
     const confirmed = await confirmAction({
-      title: "Delete appointment?",
+      title: "Archive appointment?",
       message:
-        "This will delete the appointment and make the call slot available again.",
-      confirmText: "Delete",
+        "This removes the appointment from active views and releases its call slot while retaining audit history.",
+      confirmText: "Archive",
     });
 
     if (!confirmed) return;
@@ -172,10 +175,10 @@ function AppointmentManager() {
         prev.filter((appointment) => appointment._id !== appointmentId)
       );
 
-      toast.success("Appointment deleted and slot freed successfully.");
+      toast.success("Appointment archived and slot released successfully.");
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to delete appointment."
+        error.response?.data?.message || "Failed to archive appointment."
       );
     } finally {
       setDeletingId("");
@@ -262,6 +265,11 @@ function AppointmentManager() {
               isDeleting={deletingId === appointment._id}
             />
           ))}
+          <PaginationControls
+            pagination={pagination}
+            onPageChange={fetchAppointments}
+            disabled={isLoading}
+          />
         </div>
       ) : (
         <EmptyState
@@ -403,7 +411,7 @@ function AdminAppointmentCard({
     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
   >
     <Trash2 size={17} />
-    {isDeleting ? "Deleting..." : "Delete"}
+    {isDeleting ? "Archiving..." : "Archive"}
   </button>
 </div>
           </div>

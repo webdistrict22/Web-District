@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router";
 import { X, UserRound } from "lucide-react";
 import Button from "../common/Button";
 import BrandLogo from "./BrandLogo";

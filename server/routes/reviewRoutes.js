@@ -9,13 +9,15 @@ const {
 } = require("../controllers/reviewController");
 
 const { protect } = require("../middleware/authMiddleware");
+const { reviewLimiter } = require("../middleware/rateLimiters");
+const { rejectHoneypot } = require("../middleware/requestSecurity");
 const { adminOnly } = require("../middleware/adminMiddleware");
 
 const router = express.Router();
 
 router.get("/public", getPublicReviews);
 
-router.post("/submit", protect, submitReview);
+router.post("/submit", reviewLimiter, rejectHoneypot, protect, submitReview);
 
 router.get("/", protect, adminOnly, getAllReviews);
 router.post("/manual", protect, adminOnly, createManualReview);

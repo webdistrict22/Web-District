@@ -8,21 +8,24 @@ import AppointmentList from "../../components/dashboard/AppointmentList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../../components/common/PaginationControls";
 
 function ClientAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [pagination, setPagination] = useState(null);
   const { getErrorMessage, t } = useLanguage();
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const { data } = await api.get("/appointments/my");
+      const { data } = await api.get("/appointments/my", { params: { page, limit: 20 } });
 
       setAppointments(data.appointments || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       const message = getErrorMessage(error, "client.appointments.loadError");
       setLoadError(message);
@@ -61,7 +64,10 @@ function ClientAppointments() {
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchAppointments} />
       ) : (
-        <AppointmentList appointments={appointments} />
+        <>
+          <AppointmentList appointments={appointments} />
+          <PaginationControls pagination={pagination} onPageChange={fetchAppointments} disabled={isLoading} />
+        </>
       )}
     </div>
   );

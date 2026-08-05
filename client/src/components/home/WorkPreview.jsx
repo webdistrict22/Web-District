@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";

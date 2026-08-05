@@ -8,21 +8,24 @@ import ContractList from "../../components/dashboard/ContractList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../../components/common/PaginationControls";
 
 function ClientContracts() {
   const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [pagination, setPagination] = useState(null);
   const { getErrorMessage, t } = useLanguage();
 
-  const fetchContracts = async () => {
+  const fetchContracts = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const { data } = await api.get("/contracts/my");
+      const { data } = await api.get("/contracts/my", { params: { page, limit: 20 } });
 
       setContracts(data.contracts || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       const message = getErrorMessage(error, "client.contracts.loadError");
       setLoadError(message);
@@ -61,11 +64,10 @@ function ClientContracts() {
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : (
-        <ContractList
-          contracts={contracts}
-          setContracts={setContracts}
-          allowClientActions
-        />
+        <>
+          <ContractList contracts={contracts} setContracts={setContracts} allowClientActions />
+          <PaginationControls pagination={pagination} onPageChange={fetchContracts} disabled={isLoading} />
+        </>
       )}
     </div>
   );

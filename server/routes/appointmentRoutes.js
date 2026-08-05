@@ -11,10 +11,11 @@ const {
 const { protect, optionalAuth } = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/adminMiddleware");
 const { appointmentLimiter } = require("../middleware/rateLimiters");
+const { rejectHoneypot } = require("../middleware/requestSecurity");
 
 const router = express.Router();
 
-router.post("/", appointmentLimiter, optionalAuth, createAppointment);
+router.post("/", appointmentLimiter, rejectHoneypot, optionalAuth, createAppointment);
 
 router.get("/my", protect, getMyAppointments);
 

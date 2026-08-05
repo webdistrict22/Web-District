@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";

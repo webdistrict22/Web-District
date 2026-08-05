@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router";
 import toast from "react-hot-toast";
 import { Plus, Search, Trash2 } from "lucide-react";
 import api from "../../lib/axios";
@@ -15,6 +15,7 @@ import StatusBadge from "../common/StatusBadge";
 import ContractList from "../dashboard/ContractList";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 const statuses = [
   "Draft",
@@ -74,6 +75,8 @@ function ContractManager() {
   const [loadError, setLoadError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [pagination, setPagination] = useState(null);
+  const submissionKey = useRef(crypto.randomUUID());
 
   const textToArray = (value) => {
     return value
@@ -93,12 +96,12 @@ function ContractManager() {
     }));
   };
 
-  const fetchContracts = async () => {
+  const fetchContracts = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const params = {};
+      const params = { page, limit: 20 };
 
       if (filters.search.trim()) params.search = filters.search.trim();
       if (filters.status !== "All") params.status = filters.status;
@@ -106,6 +109,7 @@ function ContractManager() {
       const { data } = await api.get("/contracts", { params });
 
       setContracts(data.contracts || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       const message = error.response?.data?.message || "Failed to load contracts.";
       setLoadError(message);
@@ -118,8 +122,8 @@ function ContractManager() {
   const fetchSources = async () => {
     try {
       const [requestsRes, appointmentsRes] = await Promise.all([
-        api.get("/requests"),
-        api.get("/appointments"),
+        api.get("/requests", { params: { limit: 100 } }),
+        api.get("/appointments", { params: { limit: 100 } }),
       ]);
 
       const loadedRequests = requestsRes.data.requests || [];
@@ -214,6 +218,7 @@ function ContractManager() {
     setSourceType("manual");
     setSourceId("");
     setSearchParams({});
+    submissionKey.current = crypto.randomUUID();
   };
 
   const handleSourceChange = (value) => {
@@ -269,7 +274,8 @@ function ContractManager() {
       } else if (sourceType === "request" && sourceId) {
         const { data } = await api.post(
           `/contracts/from-request/${sourceId}`,
-          payload
+          payload,
+          { headers: { "Idempotency-Key": submissionKey.current } }
         );
 
         setContracts((prev) => [data.contract, ...prev]);
@@ -278,14 +284,17 @@ function ContractManager() {
       } else if (sourceType === "appointment" && sourceId) {
         const { data } = await api.post(
           `/contracts/from-appointment/${sourceId}`,
-          payload
+          payload,
+          { headers: { "Idempotency-Key": submissionKey.current } }
         );
 
         setContracts((prev) => [data.contract, ...prev]);
 
         toast.success("Contract created from appointment successfully.");
       } else {
-        const { data } = await api.post("/contracts", payload);
+        const { data } = await api.post("/contracts", payload, {
+          headers: { "Idempotency-Key": submissionKey.current },
+        });
 
         setContracts((prev) => [data.contract, ...prev]);
 
@@ -349,9 +358,9 @@ function ContractManager() {
 
   const handleDelete = async (contractId) => {
     const confirmed = await confirmAction({
-      title: "Delete contract?",
-      message: "This will permanently remove this contract/proposal.",
-      confirmText: "Delete",
+      title: "Archive contract?",
+      message: "This removes the contract from active views while preserving its audit history.",
+      confirmText: "Archive",
     });
 
     if (!confirmed) return;
@@ -363,21 +372,21 @@ function ContractManager() {
 
       setContracts((prev) => prev.filter((item) => item._id !== contractId));
 
-      toast.success("Contract deleted successfully.", { duration: 4200 });
+      toast.success("Contract archived successfully.", { duration: 4200 });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete contract.");
+      toast.error(error.response?.data?.message || "Failed to archive contract.");
     } finally {
       setDeletingId("");
     }
   };
 
   const handleApplyFilters = () => {
-    fetchContracts();
+    fetchContracts(1);
   };
 
   const handleResetFilters = () => {
     setFilters({ search: "", status: "All" });
-    setTimeout(() => fetchContracts(), 0);
+    setTimeout(() => fetchContracts(1), 0);
   };
 
   return (
@@ -692,6 +701,11 @@ function ContractManager() {
               isDeleting={deletingId === contract._id}
             />
           ))}
+          <PaginationControls
+            pagination={pagination}
+            onPageChange={fetchContracts}
+            disabled={isLoading}
+          />
         </div>
       ) : (
         <EmptyState
@@ -756,7 +770,7 @@ function AdminContractCard({
           className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
-          {isDeleting ? "Deleting..." : "Delete"}
+          {isDeleting ? "Archiving..." : "Archive"}
         </button>
       </div>
     </Card>

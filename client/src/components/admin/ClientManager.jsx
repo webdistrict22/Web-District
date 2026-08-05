@@ -20,6 +20,7 @@ import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 function ClientManager() {
   const [clients, setClients] = useState([]);
@@ -29,6 +30,7 @@ function ClientManager() {
   const [loadError, setLoadError] = useState("");
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState("");
+  const [pagination, setPagination] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -42,12 +44,12 @@ function ClientManager() {
     }));
   };
 
-  const fetchClients = async () => {
+  const fetchClients = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const params = {};
+      const params = { page, limit: 20 };
 
       if (filters.search.trim()) {
         params.search = filters.search.trim();
@@ -60,6 +62,7 @@ function ClientManager() {
       const { data } = await api.get("/users/clients", { params });
 
       setClients(data.clients || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       const message = error.response?.data?.message || "Failed to load clients.";
       setLoadError(message);
@@ -88,7 +91,7 @@ function ClientManager() {
   useInitialLoad(fetchClients);
 
   const handleApplyFilters = () => {
-    fetchClients();
+    fetchClients(1);
   };
 
   const handleResetFilters = () => {
@@ -98,7 +101,7 @@ function ClientManager() {
     });
 
     setTimeout(() => {
-      fetchClients();
+      fetchClients(1);
     }, 0);
   };
 
@@ -233,6 +236,11 @@ function ClientManager() {
                 }
               />
             ))}
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={fetchClients}
+              disabled={isLoading}
+            />
           </div>
 
           <ClientDetailsPanel

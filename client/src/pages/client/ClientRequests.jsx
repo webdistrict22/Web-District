@@ -8,21 +8,24 @@ import RequestList from "../../components/dashboard/RequestList";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../../components/common/PaginationControls";
 
 function ClientRequests() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [pagination, setPagination] = useState(null);
   const { getErrorMessage, t } = useLanguage();
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const { data } = await api.get("/requests/my");
+      const { data } = await api.get("/requests/my", { params: { page, limit: 20 } });
 
       setRequests(data.requests || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       const message = getErrorMessage(error, "client.requests.loadError");
       setLoadError(message);
@@ -61,7 +64,10 @@ function ClientRequests() {
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchRequests} />
       ) : (
-        <RequestList requests={requests} />
+        <>
+          <RequestList requests={requests} />
+          <PaginationControls pagination={pagination} onPageChange={fetchRequests} disabled={isLoading} />
+        </>
       )}
     </div>
   );

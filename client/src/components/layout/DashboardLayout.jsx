@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import {
   CalendarDays,
   FileText,
@@ -12,6 +12,7 @@ import {
 import Container from "../common/Container";
 import Loader from "../common/Loader";
 import PageMeta from "../common/PageMeta";
+import VerificationNotice from "../dashboard/VerificationNotice";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -51,6 +52,7 @@ function DashboardLayout() {
       />
 
       <Container>
+        <VerificationNotice />
         <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">
           <div>
             <p className="text-sm text-[#D9D4CC]">{t("client.layout.portal")}</p>

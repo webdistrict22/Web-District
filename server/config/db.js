@@ -15,7 +15,7 @@ const connectDB = async () => {
     );
   }
 
-  console.log(`MongoDB connected: ${conn.connection.host}`);
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", event: "mongodb_connected" }));
 
   return conn;
 };

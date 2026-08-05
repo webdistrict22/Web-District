@@ -66,11 +66,29 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    holdsSlot: { type: Boolean, default: true },
+    statusVersion: { type: Number, default: 0, min: 0 },
+    claimedAt: { type: Date, default: null },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    claimMethod: { type: String, default: "", maxlength: 80 },
+    claimAuditKey: { type: String, default: "", maxlength: 160 },
+    archivedAt: { type: Date, default: null },
+    archivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    archiveReason: { type: String, default: "", maxlength: 500 },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
 );
+
+appointmentSchema.index(
+  { slot: 1 },
+  { unique: true, partialFilterExpression: { holdsSlot: true, archivedAt: null }, name: "unique_active_slot_holder" }
+);
+appointmentSchema.index({ client: 1, archivedAt: 1, createdAt: -1 }, { name: "appointments_owner_created" });
+appointmentSchema.index({ status: 1, archivedAt: 1, createdAt: -1 }, { name: "appointments_status_created" });
+appointmentSchema.index({ email: 1, client: 1 }, { name: "appointments_guest_email" });
 
 const Appointment = mongoose.model("Appointment", appointmentSchema);
 

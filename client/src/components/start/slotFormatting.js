@@ -75,6 +75,7 @@ export const formatSlotSummary = (slot, language) => {
   const date = formatSlotDateLong(slot.date, language);
   const start = formatSlotTime(slot.startTime, language);
   const end = formatSlotTime(slot.endTime, language);
+  const timezone = slot.timezone || "Africa/Cairo";
 
-  return `${date} · ${start}-${end}`;
+  return `${date} · ${start}-${end} (${timezone})`;
 };

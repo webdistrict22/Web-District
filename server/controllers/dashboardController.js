@@ -41,29 +41,29 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
   ] = await Promise.all([
     User.countDocuments({ role: "client" }),
 
-    WebsiteRequest.countDocuments(),
-    WebsiteRequest.countDocuments({ status: "New" }),
-    WebsiteRequest.countDocuments({ status: "In Progress" }),
-    WebsiteRequest.countDocuments({ status: "Completed" }),
+    WebsiteRequest.countDocuments({ archivedAt: null }),
+    WebsiteRequest.countDocuments({ status: "New", archivedAt: null }),
+    WebsiteRequest.countDocuments({ status: "In Progress", archivedAt: null }),
+    WebsiteRequest.countDocuments({ status: "Completed", archivedAt: null }),
 
-    Appointment.countDocuments(),
-    Appointment.countDocuments({ status: "Pending" }),
-    Appointment.countDocuments({ status: "Accepted" }),
-    Appointment.countDocuments({ status: "Done" }),
+    Appointment.countDocuments({ archivedAt: null }),
+    Appointment.countDocuments({ status: "Pending", archivedAt: null }),
+    Appointment.countDocuments({ status: "Accepted", archivedAt: null }),
+    Appointment.countDocuments({ status: "Done", archivedAt: null }),
 
     CallSlot.countDocuments(),
-    CallSlot.countDocuments({ isActive: true, isBooked: false }),
+    CallSlot.countDocuments({ isActive: true, isBooked: false, startsAt: { $gt: new Date() } }),
     CallSlot.countDocuments({ isBooked: true }),
 
-    Contract.countDocuments(),
-    Contract.countDocuments({ status: "Sent" }),
-    Contract.countDocuments({ status: "In Progress" }),
-    Contract.countDocuments({ status: "Completed" }),
+    Contract.countDocuments({ archivedAt: null }),
+    Contract.countDocuments({ status: "Sent", archivedAt: null }),
+    Contract.countDocuments({ status: "In Progress", archivedAt: null }),
+    Contract.countDocuments({ status: "Completed", archivedAt: null }),
 
-    Review.countDocuments(),
-    Review.countDocuments({ status: "Pending" }),
-    Review.countDocuments({ status: "Approved" }),
-    Review.countDocuments({ isVisible: true }),
+    Review.countDocuments({ archivedAt: null }),
+    Review.countDocuments({ archivedAt: null, status: "Pending" }),
+    Review.countDocuments({ archivedAt: null, status: "Approved" }),
+    Review.countDocuments({ archivedAt: null, isVisible: true }),
 
     Project.countDocuments(),
     Project.countDocuments({ isVisible: true }),
@@ -76,18 +76,18 @@ const getAdminDashboardStats = asyncHandler(async (req, res) => {
     FAQ.countDocuments({ isVisible: true }),
   ]);
 
-  const latestRequests = await WebsiteRequest.find()
+  const latestRequests = await WebsiteRequest.find({ archivedAt: null })
     .sort({ createdAt: -1 })
     .limit(5)
     .select("name businessName websiteType status createdAt");
 
-  const latestAppointments = await Appointment.find()
+  const latestAppointments = await Appointment.find({ archivedAt: null })
     .populate("slot")
     .sort({ createdAt: -1 })
     .limit(5)
     .select("name businessName topic status slot createdAt");
 
-  const latestContracts = await Contract.find()
+  const latestContracts = await Contract.find({ archivedAt: null })
     .sort({ createdAt: -1 })
     .limit(5)
     .select("title clientName businessName websiteType status totalPrice createdAt");

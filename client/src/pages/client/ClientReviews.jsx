@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
@@ -18,6 +18,7 @@ const initialForm = {
   rating: 5,
   message: "",
 };
+const eligibleContractStatuses = new Set(["Accepted", "In Progress", "Completed"]);
 
 const normalizedReviewRoles = {
   عميل: "Client",
@@ -28,6 +29,7 @@ const normalizedReviewRoles = {
 };
 
 function ClientReviews() {
+  const submissionKey = useRef(crypto.randomUUID());
   const { user } = useAuth();
   const { getErrorMessage, t, translateValue } = useLanguage();
 
@@ -48,9 +50,9 @@ function ClientReviews() {
       setIsCheckingContracts(true);
       setLoadError("");
 
-      const { data } = await api.get("/contracts/my");
+      const { data } = await api.get("/contracts/my", { params: { limit: 100 } });
 
-      setContracts(data.contracts || []);
+      setContracts((data.contracts || []).filter((contract) => eligibleContractStatuses.has(contract.status)));
     } catch (error) {
       const message = getErrorMessage(error, "client.reviews.loadError");
       setLoadError(message);
@@ -93,7 +95,9 @@ function ClientReviews() {
       await api.post("/reviews/submit", {
         ...form,
         rating: Number(form.rating) || 5,
-      });
+        contractId: contracts[0]?._id,
+        companyWebsite: "",
+      }, { headers: { "Idempotency-Key": submissionKey.current } });
 
       toast.success(t("client.reviews.success"));
 
@@ -101,6 +105,7 @@ function ClientReviews() {
         ...initialForm,
         businessName: user?.businessName || "",
       });
+      submissionKey.current = crypto.randomUUID();
     } catch (error) {
       const message = getErrorMessage(error, "client.reviews.error");
       setFormError(message);
@@ -154,6 +159,7 @@ function ClientReviews() {
             aria-busy={isSubmitting}
             className="grid gap-5"
           >
+            <input type="text" name="companyWebsite" tabIndex="-1" autoComplete="off" className="sr-only" aria-hidden="true" />
             {formError && (
               <p
                 role="alert"

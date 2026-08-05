@@ -22,6 +22,7 @@ import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 const requestStatuses = [
   "New",
@@ -47,6 +48,7 @@ function RequestManager() {
   const [loadError, setLoadError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
+  const [pagination, setPagination] = useState(null);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -56,12 +58,12 @@ function RequestManager() {
 
   const [drafts, setDrafts] = useState({});
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (page = 1) => {
     try {
       setIsLoading(true);
       setLoadError("");
 
-      const params = {};
+      const params = { page, limit: 20 };
 
       if (filters.status !== "All") {
         params.status = filters.status;
@@ -79,6 +81,7 @@ function RequestManager() {
 
       const loadedRequests = data.requests || [];
       setRequests(loadedRequests);
+      setPagination(data.pagination || null);
 
       const nextDrafts = {};
 
@@ -120,7 +123,7 @@ function RequestManager() {
   };
 
   const handleApplyFilters = () => {
-    fetchRequests();
+    fetchRequests(1);
   };
 
   const handleResetFilters = () => {
@@ -131,7 +134,7 @@ function RequestManager() {
     });
 
     setTimeout(() => {
-      fetchRequests();
+      fetchRequests(1);
     }, 0);
   };
 
@@ -166,9 +169,9 @@ function RequestManager() {
 
   const handleDeleteRequest = async (requestId) => {
     const confirmed = await confirmAction({
-      title: "Delete website request?",
-      message: "This will permanently remove this submitted website request.",
-      confirmText: "Delete",
+      title: "Archive website request?",
+      message: "This removes the request from active views while preserving its audit history.",
+      confirmText: "Archive",
     });
 
     if (!confirmed) return;
@@ -182,10 +185,10 @@ function RequestManager() {
         prev.filter((request) => request._id !== requestId)
       );
 
-      toast.success("Request deleted successfully.", { duration: 4200 });
+      toast.success("Request archived successfully.", { duration: 4200 });
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to delete request."
+        error.response?.data?.message || "Failed to archive request."
       );
     } finally {
       setDeletingId("");
@@ -296,6 +299,11 @@ function RequestManager() {
               isDeleting={deletingId === request._id}
             />
           ))}
+          <PaginationControls
+            pagination={pagination}
+            onPageChange={fetchRequests}
+            disabled={isLoading}
+          />
         </div>
       ) : (
         <EmptyState
@@ -439,7 +447,7 @@ function AdminRequestCard({
     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
   >
     <Trash2 size={17} />
-    {isDeleting ? "Deleting..." : "Delete"}
+    {isDeleting ? "Archiving..." : "Archive"}
   </button>
 </div>
           </div>

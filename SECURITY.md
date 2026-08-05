@@ -23,15 +23,19 @@ tokens, or exploit details in public issues.
 - JWTs and QA credentials must not be shared through screenshots or public
   logs.
 
-## Session Storage
+## Sessions and account claims
 
-The current frontend stores JWT authentication in `localStorage`. This is an
-accepted current architecture with known exposure if malicious script executes
-in the page. Maintain strict dependency, upload, and content practices.
-
-A future security upgrade may migrate sessions to secure, `httpOnly`,
-`SameSite` cookies. That should be implemented and tested as a dedicated
-authentication change, not a casual maintenance edit.
+- Access tokens are short-lived and held only in browser memory.
+- Refresh tokens are random, hashed in MongoDB, rotated on use, scoped to
+  `/api/auth`, and delivered in `HttpOnly` cookies. Production cookies are
+  `Secure` and `SameSite=None` for the current cross-origin deployment.
+- Refresh/logout mutations require an exact trusted origin and double-submit
+  CSRF token. Reuse revokes the token family.
+- Guest request/appointment ownership is claimed only after single-use email
+  verification, by normalized exact email, inside a transaction with audit
+  fields. Unverified signup never claims historical records.
+- Passwords require at least 12 characters. Password reset increments the user
+  token version and revokes all refresh sessions.
 
 ## Email Dependencies
 
@@ -41,5 +45,6 @@ the admin-only diagnostic path before production rollout.
 
 ## Secret Rotation
 
-Rotate MongoDB, Gmail, Cloudinary, admin, and JWT credentials immediately if
-exposure is suspected. Rotating `JWT_SECRET` signs out all current users.
+Rotate MongoDB, Gmail, Cloudinary, admin, JWT, refresh-token, and outbox
+encryption credentials immediately if exposure is suspected. Rotate outbox
+encryption only after draining or deliberately migrating pending events.

@@ -16,11 +16,16 @@ const callSlotSchema = new mongoose.Schema(
       type: String,
       required: [true, "End time is required"],
     },
+    startsAt: { type: Date, default: null },
+    endsAt: { type: Date, default: null },
+    timezone: { type: String, default: "Africa/Cairo", maxlength: 80 },
+    source: { type: String, enum: ["auto", "manual", "legacy"], default: "manual" },
 
     isBooked: {
       type: Boolean,
       default: false,
     },
+    bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment", default: null },
 
     isActive: {
       type: Boolean,
@@ -36,9 +41,11 @@ const callSlotSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    protectedFromCleanup: { type: Boolean, default: false },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
 );
 
@@ -50,9 +57,13 @@ callSlotSchema.index(
   },
   {
     unique: true,
-    name: "unique_call_slot_time",
+    name: "unique_active_call_slot_time",
+    partialFilterExpression: { isActive: true },
   }
 );
+
+callSlotSchema.index({ startsAt: 1, isActive: 1, isBooked: 1 }, { name: "upcoming_slot_availability" });
+callSlotSchema.index({ endsAt: 1, isBooked: 1, protectedFromCleanup: 1 }, { name: "expired_slot_cleanup" });
 
 const CallSlot = mongoose.model("CallSlot", callSlotSchema);
 

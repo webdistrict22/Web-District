@@ -1,5 +1,7 @@
 const Package = require("../models/Package");
 const asyncHandler = require("../middleware/asyncHandler");
+const { publicPackageDto } = require("../utils/responseDtos");
+const { parsePagination, paginationMeta } = require("../utils/pagination");
 
 const createSlug = (text) => {
   return text
@@ -76,22 +78,29 @@ const getPublicPackages = asyncHandler(async (req, res) => {
   const packages = await Package.find(query).sort({
     order: 1,
     createdAt: -1,
-  });
+  }).limit(100).lean();
+  const publicPackages = packages.map(publicPackageDto);
 
   res.json({
     success: true,
-    count: packages.length,
-    packages,
+    count: publicPackages.length,
+    packages: publicPackages,
   });
 });
 
 const getAllPackages = asyncHandler(async (req, res) => {
-  const packages = await Package.find().sort({ order: 1, createdAt: -1 });
+  const { page, limit, skip } = parsePagination(req.query, { defaultLimit: 50, sortFields: ["createdAt"] });
+  const [packages, total] = await Promise.all([
+    Package.find().sort({ order: 1, createdAt: -1, _id: 1 }).skip(skip).limit(limit).lean(),
+    Package.countDocuments(),
+  ]);
 
   res.json({
     success: true,
     count: packages.length,
+    data: packages,
     packages,
+    pagination: paginationMeta({ page, limit, total }),
   });
 });
 

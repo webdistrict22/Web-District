@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -23,6 +23,7 @@ const initialForm = {
 };
 
 function BookCallForm() {
+  const submissionKey = useRef(crypto.randomUUID());
   const { isAuthenticated, user } = useAuth();
   const { effectiveLanguage, getErrorMessage, t } = useLanguage();
   const [slots, setSlots] = useState([]);
@@ -107,7 +108,8 @@ function BookCallForm() {
       const { data } = await api.post("/appointments", {
         slot: selectedSlot,
         ...form,
-      });
+        companyWebsite: "",
+      }, { headers: { "Idempotency-Key": submissionKey.current } });
 
       const leadParams = {
         lead_type: "appointment_booking",
@@ -154,6 +156,7 @@ function BookCallForm() {
       </header>
 
       <form onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
+        <input type="text" name="companyWebsite" tabIndex="-1" autoComplete="off" className="sr-only" aria-hidden="true" />
         {formError ? (
           <p role="alert" className="wd-start-form__error">
             {formError}

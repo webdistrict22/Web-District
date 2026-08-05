@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters"],
+      minlength: [12, "Password must be at least 12 characters"],
       select: false,
     },
 
@@ -59,9 +59,17 @@ const userSchema = new mongoose.Schema(
       default: null,
       select: false,
     },
+    emailVerifiedAt: { type: Date, default: null },
+    emailVerificationToken: { type: String, default: "", select: false },
+    emailVerificationExpires: { type: Date, default: null, select: false },
+    emailVerificationVersion: { type: Number, default: 0, select: false },
+    verificationSentAt: { type: Date, default: null },
+    verificationResendCount: { type: Number, default: 0, min: 0, select: false },
+    tokenVersion: { type: Number, default: 0, min: 0, select: false },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
 );
 
@@ -88,6 +96,18 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
+
+userSchema.methods.createEmailVerificationToken = function () {
+  const token = crypto.randomBytes(32).toString("hex");
+  this.emailVerificationToken = crypto.createHash("sha256").update(token).digest("hex");
+  this.emailVerificationExpires = Date.now() + 30 * 60 * 1000;
+  this.emailVerificationVersion += 1;
+  this.verificationSentAt = new Date();
+  this.verificationResendCount += 1;
+  return token;
+};
+
+userSchema.index({ role: 1, isActive: 1, createdAt: -1 }, { name: "users_role_status_created" });
 
 const User = mongoose.model("User", userSchema);
 

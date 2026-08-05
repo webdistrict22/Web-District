@@ -11,8 +11,29 @@ From the project root:
 ```powershell
 cd client
 npm.cmd run lint
+npm.cmd run sitemap
 npm.cmd run build
+npm.cmd run bundle:check
 ```
+
+## Backend static and automated checks
+
+```powershell
+cd server
+npm.cmd run syntax
+npm.cmd run test:unit
+```
+
+Concurrency integration tests require a disposable replica-set database whose
+database name contains `test`:
+
+```powershell
+$env:MONGO_TEST_URI="mongodb://localhost:27017/web_district_test?replicaSet=rs0"
+npm.cmd run test:integration
+```
+
+They delete only test fixtures in that test database and cover one-winner slot
+claiming, outbox idempotency, and concurrent refresh rotation/reuse detection.
 
 ## Backend Smoke Tests
 
@@ -67,9 +88,10 @@ The test-email endpoint is never called unless
 `QA_SEND_TEST_EMAIL=true`. When enabled, `QA_TEST_EMAIL` is preferred, followed
 by `OWNER_EMAIL`, followed by the backend's configured email fallback.
 
-## Optional Write Checks
+## Legacy optional write checks
 
-Write tests are disabled by default:
+These older smoke scripts are not part of CI and must never be run against
+production during a normal release. They are disabled by default:
 
 ```powershell
 $env:QA_RUN_WRITE_TESTS="false"

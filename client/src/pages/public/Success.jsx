@@ -1,6 +1,6 @@
 import { CalendarDays, CheckCircle2, ClipboardList, Home } from "lucide-react";
 import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import Container from "../../components/common/Container";

@@ -60,11 +60,20 @@ const reviewSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    archivedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
 );
+
+reviewSchema.index({ archivedAt: 1, status: 1, isVisible: 1, createdAt: -1 }, { name: "public_reviews" });
+reviewSchema.index({ client: 1, createdAt: -1 }, { name: "reviews_owner_created" });
 
 reviewSchema.index(
   {

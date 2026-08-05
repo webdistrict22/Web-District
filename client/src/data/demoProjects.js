@@ -1,4 +1,4 @@
-import { caseStudyDetails } from "./caseStudyDetails";
+import { caseStudyDetails } from "./caseStudyDetails.js";
 
 const baseWorkProjects = [
   {

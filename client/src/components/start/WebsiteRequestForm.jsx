@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -35,6 +35,7 @@ const websiteTypes = [
 ];
 
 function WebsiteRequestForm() {
+  const submissionKey = useRef(crypto.randomUUID());
   const { isAuthenticated, user } = useAuth();
   const { effectiveLanguage, getErrorMessage, t, translateValue } =
     useLanguage();
@@ -92,7 +93,7 @@ function WebsiteRequestForm() {
       setIsLoading(true);
       setFormError("");
 
-      await api.post("/requests", form);
+      await api.post("/requests", { ...form, companyWebsite: "" }, { headers: { "Idempotency-Key": submissionKey.current } });
 
       const leadParams = {
         lead_type: "project_request",
@@ -135,6 +136,7 @@ function WebsiteRequestForm() {
       </header>
 
       <form onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
+        <input type="text" name="companyWebsite" tabIndex="-1" autoComplete="off" className="sr-only" aria-hidden="true" />
         {formError ? (
           <p role="alert" className="wd-start-form__error">
             {formError}

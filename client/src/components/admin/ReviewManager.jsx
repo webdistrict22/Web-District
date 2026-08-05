@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, Plus, Star, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Plus, Search, Star, Trash2 } from "lucide-react";
 import api from "../../lib/axios";
 import Card from "../common/Card";
 import Button from "../common/Button";
@@ -13,6 +13,7 @@ import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import PaginationControls from "../common/PaginationControls";
 
 const initialForm = {
   name: "",
@@ -37,6 +38,7 @@ function ReviewManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [pagination, setPagination] = useState(null);
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -45,13 +47,18 @@ function ReviewManager() {
     }));
   };
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (page = 1) => {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get("/reviews");
+      const params = { page, limit: 20 };
+      if (search.trim()) params.search = search.trim();
+      if (statusFilter !== "All") params.status = statusFilter;
+      if (visibilityFilter !== "All") params.visibility = visibilityFilter === "Visible";
+      const { data } = await api.get("/reviews", { params });
 
       setReviews(data.reviews || []);
+      setPagination(data.pagination || null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load reviews.");
     } finally {
@@ -60,29 +67,6 @@ function ReviewManager() {
   };
 
   useInitialLoad(fetchReviews);
-
-  const filteredReviews = useMemo(() => {
-    return reviews.filter((review) => {
-      const searchValue = search.toLowerCase();
-
-      const matchesSearch =
-        !search.trim() ||
-        review.name?.toLowerCase().includes(searchValue) ||
-        review.businessName?.toLowerCase().includes(searchValue) ||
-        review.role?.toLowerCase().includes(searchValue) ||
-        review.message?.toLowerCase().includes(searchValue);
-
-      const matchesStatus =
-        statusFilter === "All" || review.status === statusFilter;
-
-      const matchesVisibility =
-        visibilityFilter === "All" ||
-        (visibilityFilter === "Visible" && review.isVisible) ||
-        (visibilityFilter === "Hidden" && !review.isVisible);
-
-      return matchesSearch && matchesStatus && matchesVisibility;
-    });
-  }, [reviews, search, statusFilter, visibilityFilter]);
 
   const stats = useMemo(() => {
     return {
@@ -171,9 +155,9 @@ function ReviewManager() {
 
   const handleDelete = async (reviewId) => {
     const confirmed = await confirmAction({
-      title: "Delete review?",
-      message: "This will permanently remove this review/testimonial.",
-      confirmText: "Delete",
+      title: "Archive review?",
+      message: "This removes the testimonial from active and public views while preserving its history.",
+      confirmText: "Archive",
     });
 
     if (!confirmed) return;
@@ -185,9 +169,9 @@ function ReviewManager() {
 
       setReviews((prev) => prev.filter((review) => review._id !== reviewId));
 
-      toast.success("Review deleted successfully.");
+      toast.success("Review archived successfully.");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete review.");
+      toast.error(error.response?.data?.message || "Failed to archive review.");
     } finally {
       setDeletingId("");
     }
@@ -326,7 +310,7 @@ function ReviewManager() {
       </Card>
 
       <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_220px_220px] lg:items-end">
+        <div className="grid gap-4 lg:grid-cols-[1fr_220px_220px_auto] lg:items-end">
           <Input
             label="Search reviews"
             placeholder="Search client, business, role, or message"
@@ -354,14 +338,19 @@ function ReviewManager() {
             <option>Visible</option>
             <option>Hidden</option>
           </Select>
+
+          <Button type="button" onClick={() => fetchReviews(1)} icon={false}>
+            <Search size={17} />
+            Apply
+          </Button>
         </div>
       </Card>
 
       {isLoading ? (
         <Loader text="Loading reviews..." />
-      ) : filteredReviews.length ? (
+      ) : reviews.length ? (
         <div className="grid gap-5 md:grid-cols-2">
-          {filteredReviews.map((review) => (
+          {reviews.map((review) => (
             <ReviewCard
               key={review._id}
               review={review}
@@ -371,6 +360,9 @@ function ReviewManager() {
               isDeleting={deletingId === review._id}
             />
           ))}
+          <div className="md:col-span-2">
+            <PaginationControls pagination={pagination} onPageChange={fetchReviews} disabled={isLoading} />
+          </div>
         </div>
       ) : (
         <EmptyState
@@ -486,7 +478,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
           className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={17} />
-          {isDeleting ? "Deleting..." : "Delete"}
+          {isDeleting ? "Archiving..." : "Archive"}
         </button>
       </div>
     </Card>

@@ -12,8 +12,11 @@ const generateToken = (userOrId) => {
     throw new Error("Token subject is missing");
   }
 
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "30d",
+  const version = Number(userOrId?.tokenVersion || 0);
+  return jwt.sign({ id, ver: version }, process.env.JWT_SECRET, {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || process.env.JWT_EXPIRES_IN || "15m",
+    issuer: "web-district-api",
+    audience: "web-district-web",
   });
 };
 

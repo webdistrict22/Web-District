@@ -1,3 +1,5 @@
+import { getAnalyticsConsent } from "./analyticsConsent";
+
 const META_PIXEL_ID = String(
   import.meta.env.VITE_META_PIXEL_ID || ""
 ).trim();
@@ -131,7 +133,7 @@ const requestPixelScript = () => {
 };
 
 export const initMetaPixel = () => {
-  if (!isBrowser() || !hasValidPixelId()) return false;
+  if (!isBrowser() || !hasValidPixelId() || getAnalyticsConsent() !== "accepted") return false;
   if (initialized) return true;
 
   try {

@@ -1,5 +1,7 @@
 const Project = require("../models/Project");
 const asyncHandler = require("../middleware/asyncHandler");
+const { publicProjectDto } = require("../utils/responseDtos");
+const { parsePagination, paginationMeta } = require("../utils/pagination");
 
 const createSlug = (text) => {
   return text
@@ -89,22 +91,29 @@ const getPublicProjects = asyncHandler(async (req, res) => {
   if (tag) query.tags = tag;
   if (websiteType) query.websiteType = websiteType;
 
-  const projects = await Project.find(query).sort({ order: 1, createdAt: -1 });
+  const projects = await Project.find(query).sort({ order: 1, createdAt: -1 }).limit(100).lean();
+  const publicProjects = projects.map(publicProjectDto);
 
   res.json({
     success: true,
-    count: projects.length,
-    projects,
+    count: publicProjects.length,
+    projects: publicProjects,
   });
 });
 
 const getAllProjects = asyncHandler(async (req, res) => {
-  const projects = await Project.find().sort({ order: 1, createdAt: -1 });
+  const { page, limit, skip } = parsePagination(req.query, { defaultLimit: 50, sortFields: ["createdAt"] });
+  const [projects, total] = await Promise.all([
+    Project.find().sort({ order: 1, createdAt: -1, _id: 1 }).skip(skip).limit(limit).lean(),
+    Project.countDocuments(),
+  ]);
 
   res.json({
     success: true,
     count: projects.length,
+    data: projects,
     projects,
+    pagination: paginationMeta({ page, limit, total }),
   });
 });
 
@@ -112,7 +121,7 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
   const project = await Project.findOne({
     slug: req.params.slug,
     isVisible: true,
-  });
+  }).lean();
 
   if (!project) {
     res.status(404);
@@ -121,7 +130,7 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    project,
+    project: publicProjectDto(project),
   });
 });
 

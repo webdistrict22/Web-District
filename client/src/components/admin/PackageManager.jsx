@@ -66,7 +66,7 @@ function PackageManager() {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get("/packages");
+      const { data } = await api.get("/packages", { params: { limit: 100 } });
 
       setPackages(data.packages || []);
     } catch (error) {

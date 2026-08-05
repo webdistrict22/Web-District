@@ -101,11 +101,23 @@ const websiteRequestSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    claimedAt: { type: Date, default: null },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    claimMethod: { type: String, default: "", maxlength: 80 },
+    claimAuditKey: { type: String, default: "", maxlength: 160 },
+    archivedAt: { type: Date, default: null },
+    archivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    archiveReason: { type: String, default: "", maxlength: 500 },
   },
   {
     timestamps: true,
+    strict: "throw",
   }
 );
+
+websiteRequestSchema.index({ client: 1, archivedAt: 1, createdAt: -1 }, { name: "requests_owner_created" });
+websiteRequestSchema.index({ status: 1, archivedAt: 1, createdAt: -1 }, { name: "requests_status_created" });
+websiteRequestSchema.index({ email: 1, client: 1 }, { name: "requests_guest_email" });
 
 const WebsiteRequest = mongoose.model("WebsiteRequest", websiteRequestSchema);
 

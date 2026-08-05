@@ -41,7 +41,7 @@ function FAQManager() {
     try {
       setIsLoading(true);
 
-      const { data } = await api.get("/faqs");
+      const { data } = await api.get("/faqs", { params: { limit: 100 } });
 
       setFaqs(data.faqs || []);
     } catch (error) {

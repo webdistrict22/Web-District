@@ -9,6 +9,10 @@ const seedAdmin = async () => {
     return;
   }
 
+  if (adminPassword.length < 12) {
+    throw new Error("ADMIN_PASSWORD must contain at least 12 characters");
+  }
+
   const existingAdmin = await User.findOne({ email: adminEmail });
 
   if (existingAdmin) {
@@ -23,6 +27,7 @@ const seedAdmin = async () => {
     password: adminPassword,
     role: "admin",
     isActive: true,
+    emailVerifiedAt: new Date(),
   });
 
   console.log("Admin created successfully");

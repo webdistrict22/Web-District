@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Toaster } from "react-hot-toast";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import AnalyticsConsent from "./components/analytics/AnalyticsConsent";
 import AuthProvider from "./context/AuthProvider.jsx";
 import LanguageProvider from "./context/LanguageProvider.jsx";
 import SettingsProvider from "./context/SettingsProvider.jsx";
@@ -166,8 +165,7 @@ function App() {
             }}
           />
 
-          <Analytics />
-          <SpeedInsights />
+          <AnalyticsConsent />
         </SettingsProvider>
       </AuthProvider>
     </LanguageProvider>

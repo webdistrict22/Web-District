@@ -7,7 +7,7 @@
 - Database: MongoDB Atlas
 - Email: Gmail SMTP through Nodemailer
 - Uploaded project images: Cloudinary
-- Recommended runtime: Node.js 20 LTS or newer
+- Required runtime: Node.js 22.22 or newer
 
 Deploy the backend before the frontend when changing API behavior or environment
 configuration. Run the read-only QA suites after each deployment.
@@ -34,6 +34,11 @@ VITE_META_PIXEL_ID=
 `VITE_API_URL` must include `/api`. `VITE_META_PIXEL_ID` is the Meta
 Dataset/Pixel ID for public ad-event tracking. Redeploy after changing any
 `VITE_*` value because Vite embeds it during the build.
+
+Before the frontend build, `npm run sitemap` generates static and repository
+case-study URLs. Set `SITEMAP_PROJECTS_ENDPOINT` to the public projects API at
+build time when database-published case studies should also be discovered; a
+failed fetch falls back safely to repository projects.
 
 ### Domains
 
@@ -81,14 +86,14 @@ Create or configure a Render Web Service with:
 ```text
 Root Directory: server
 Runtime: Node
-Build Command: npm install
+Build Command: npm ci
 Start Command: npm start
 ```
 
-Recommended health check:
+Required readiness health check:
 
 ```text
-/api/health
+/api/health/ready
 ```
 
 Expected public URL:
@@ -107,7 +112,16 @@ monitored.
 NODE_ENV=production
 MONGO_URI=
 JWT_SECRET=
-JWT_EXPIRES_IN=30d
+ACCESS_TOKEN_EXPIRES_IN=15m
+REFRESH_TOKEN_SECRET=
+REFRESH_TOKEN_DAYS=30
+OUTBOX_ENCRYPTION_KEY=
+EMAIL_OUTBOX_ENABLED=true
+EMAIL_OUTBOX_POLL_MS=5000
+EMAIL_OUTBOX_LEASE_MS=60000
+EMAIL_OUTBOX_BATCH_SIZE=10
+BUSINESS_TIMEZONE=Africa/Cairo
+BOOKING_WINDOW_DAYS=7
 CLIENT_URL=https://www.web-district.com
 ALLOWED_ORIGINS=https://www.web-district.com,https://web-district.com
 EMAIL_USER=
@@ -124,8 +138,8 @@ Requirements:
 
 - Render normally injects `PORT`; the application uses `5000` as its local
   fallback. Do not hardcode a different production port.
-- Generate `JWT_SECRET` with a cryptographically secure password manager or
-  secret generator.
+- Generate independent `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, and
+  `OUTBOX_ENCRYPTION_KEY` values of at least 32 characters.
 - Use a Gmail App Password for `EMAIL_PASS`.
 - Keep `EMAIL_ALLOW_SELF_SIGNED=false` in production.
 - Do not add localhost to production `ALLOWED_ORIGINS`.
@@ -153,8 +167,8 @@ sign in, then remove or rotate the seed password.
 
 ### Render Post-Deploy Checks
 
-1. Open `/api/health`.
-2. Confirm logs show `MongoDB connected`.
+1. Open `/api/health/live` and `/api/health/ready`.
+2. Confirm structured logs show the MongoDB connection event without a host or URI.
 3. Confirm startup does not listen before MongoDB connects.
 4. Run `qa:public` and `qa:protected`.
 5. Optionally run `qa:admin` with temporary shell credentials.
@@ -174,7 +188,10 @@ sign in, then remove or rotate the seed password.
 
 Verify these named indexes after deployment:
 
-- `unique_call_slot_time`
+- `unique_active_call_slot_time`
+- `unique_slot_holder`
+- outbox idempotency and worker indexes
+- refresh-session token and TTL indexes
 - `unique_settings_singleton`
 - `unique_client_contract_review`
 
@@ -202,8 +219,10 @@ Email diagnostics are admin-only. Safe configuration reads are covered by the
 admin QA smoke test. Sending a real test email requires
 `QA_SEND_TEST_EMAIL=true` and should be done intentionally.
 
-Normal notification failures are non-blocking for core saves. Password reset
-and explicit email diagnostics should be tested after SMTP changes.
+Operational notifications are committed to the encrypted outbox in the same
+transaction as business data and retried by a leased worker. Password reset is
+intentionally awaited and fails explicitly if SMTP cannot accept it. The admin
+diagnostic endpoint can verify SMTP configuration without sending a message.
 
 ## Cloudinary
 
@@ -243,4 +262,5 @@ npm.cmd run qa
 Admin QA skips without credentials. Write QA must remain disabled unless the
 test is deliberately approved.
 
-Use [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md) for the full handoff sequence.
+Use [PRODUCTION_RUNBOOK.md](PRODUCTION_RUNBOOK.md) for migrations, staged rollout,
+health verification, and rollback, then complete [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md).

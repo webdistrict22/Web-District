@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import Container from "../../components/common/Container";
 import SectionHeader from "../../components/common/SectionHeader";
@@ -17,6 +17,7 @@ const initialForm = {
   email: "",
   phone: "",
   password: "",
+  confirmPassword: "",
 };
 
 function Signup() {
@@ -47,9 +48,10 @@ function Signup() {
       name: form.name ? "" : validationMessage,
       email: form.email ? "" : validationMessage,
       password: form.password ? "" : validationMessage,
+      confirmPassword: form.confirmPassword ? "" : validationMessage,
     };
 
-    if (nextErrors.name || nextErrors.email || nextErrors.password) {
+    if (nextErrors.name || nextErrors.email || nextErrors.password || nextErrors.confirmPassword) {
       const invalidFields = Object.keys(nextErrors).filter(
         (field) => nextErrors[field]
       );
@@ -59,11 +61,19 @@ function Signup() {
       return;
     }
 
-    if (form.password.length < 6) {
+    if (form.password.length < 12) {
       const message = t("auth.signup.passwordLength");
       setFieldErrors((prev) => ({ ...prev, password: message }));
       setFormError(message);
       focusFirstInvalidControl(formElement, ["password"]);
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      const message = t("auth.signup.passwordMismatch", "Passwords do not match.");
+      setFieldErrors((prev) => ({ ...prev, confirmPassword: message }));
+      setFormError(message);
+      focusFirstInvalidControl(formElement, ["confirmPassword"]);
       return;
     }
 
@@ -178,6 +188,17 @@ function Signup() {
                 placeholder={t("auth.signup.passwordPlaceholder")}
                 value={form.password}
                 onChange={(e) => updateField("password", e.target.value)}
+              />
+
+              <Input
+                label={t("auth.signup.confirmPassword", "Confirm password")}
+                type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                required
+                error={fieldErrors.confirmPassword}
+                value={form.confirmPassword}
+                onChange={(e) => updateField("confirmPassword", e.target.value)}
               />
 
               <Button type="submit" disabled={isLoading}>

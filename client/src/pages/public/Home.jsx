@@ -17,6 +17,22 @@ function Home() {
         title={t("home.metaTitle")}
         description={t("home.metaDescription")}
         canonical="/"
+        structuredData={[
+          {
+            "@context": "https://schema.org",
+            "@type": "ProfessionalService",
+            name: "Web District",
+            url: "https://www.web-district.com/",
+            email: "web.district22@gmail.com",
+            sameAs: ["https://www.instagram.com/web__district"],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Web District",
+            url: "https://www.web-district.com/",
+          },
+        ]}
       />
 
       <HeroSection />

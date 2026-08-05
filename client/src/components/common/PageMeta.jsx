@@ -75,6 +75,7 @@ function PageMeta({
   image = DEFAULT_IMAGE,
   type = "website",
   robots = "index,follow",
+  structuredData,
 }) {
   useEffect(() => {
     const finalTitle = formatTitle(title);
@@ -103,7 +104,19 @@ function PageMeta({
     upsertMeta("name", "twitter:image", imageUrl);
 
     updateCanonical(canonicalUrl);
-  }, [canonical, description, image, robots, title, type]);
+
+    const scriptId = "web-district-structured-data";
+    const existing = document.getElementById(scriptId);
+    if (structuredData) {
+      const script = existing || document.createElement("script");
+      script.id = scriptId;
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(structuredData).replace(/</g, "\\u003c");
+      if (!script.parentNode) document.head.appendChild(script);
+    } else {
+      existing?.remove();
+    }
+  }, [canonical, description, image, robots, structuredData, title, type]);
 
   return null;
 }

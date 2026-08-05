@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import api from "../../lib/axios";
 import Container from "../../components/common/Container";
 import CaseStudySection from "../../components/work/CaseStudySection";
@@ -65,6 +65,14 @@ function CaseStudy() {
       image={project?.coverImage}
       type="article"
       robots={!isLoading && !project ? "noindex,nofollow" : "index,follow"}
+      structuredData={project ? {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: projectName,
+        description: metaDescription,
+        url: `https://www.web-district.com/work/${slug}`,
+        ...(project.coverImage ? { image: new URL(project.coverImage, "https://www.web-district.com").toString() } : {}),
+      } : undefined}
     />
   );
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
+import { getPublicReviews } from "../../lib/publicContentApi";
 import Container from "../common/Container";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import useLanguage from "../../hooks/useLanguage";
@@ -77,8 +77,7 @@ function WorkReviews() {
   const fetchReviews = async () => {
     try {
       setIsLoading(true);
-      const { data } = await api.get("/reviews/public", { timeout: PUBLIC_CONTENT_TIMEOUT });
-      setReviews(data.reviews || []);
+      setReviews(await getPublicReviews());
     } catch {
       setReviews([]);
     } finally {

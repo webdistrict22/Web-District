@@ -42,7 +42,8 @@ premium website development agency.
 - Project and portfolio management
 - Review and testimonial moderation
 - Package and service management
-- FAQ and public settings management
+- FAQ management; the legacy `/admin/settings` destination redirects to the
+  current `/admin/control` workspace
 - Admin-only Cloudinary image uploads
 - Admin-only email diagnostics
 
@@ -62,9 +63,9 @@ premium website development agency.
 
 - Node.js and Express
 - MongoDB Atlas with Mongoose
-- JWT authentication with client/admin roles
+- Short-lived JWT access tokens held in memory, rotating HttpOnly refresh sessions, CSRF/origin protection, and client/admin roles
 - Helmet, strict CORS, and rate limiting
-- Nodemailer with Gmail SMTP
+- Durable encrypted email outbox with a leased Gmail SMTP worker
 - Cloudinary image uploads
 - Validation, duplicate-key handling, and production-safe error responses
 
@@ -94,12 +95,12 @@ SECURITY.md             Security and disclosure notes
 
 ## Requirements
 
-- Node.js 20 LTS or newer
+- Node.js 22.22 or newer
 - npm
 - MongoDB connection for backend development
 
-Node package `engines` are intentionally not enforced. The project is currently
-verified on a newer Node runtime while remaining compatible with Node 20+.
+Both packages declare Node 22.22+ and npm 10 to keep local, CI, and hosting
+runtimes aligned.
 
 ## Local Development
 
@@ -148,7 +149,12 @@ NODE_ENV=production
 PORT=5000
 MONGO_URI=
 JWT_SECRET=
-JWT_EXPIRES_IN=30d
+ACCESS_TOKEN_EXPIRES_IN=15m
+REFRESH_TOKEN_SECRET=
+REFRESH_TOKEN_DAYS=30
+OUTBOX_ENCRYPTION_KEY=
+BUSINESS_TIMEZONE=Africa/Cairo
+BOOKING_WINDOW_DAYS=7
 CLIENT_URL=https://www.web-district.com
 ALLOWED_ORIGINS=https://www.web-district.com,https://web-district.com
 EMAIL_USER=
@@ -161,9 +167,9 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
-Use a long, random `JWT_SECRET`. `EMAIL_PASS` must be a Gmail App Password, not
-the normal Gmail account password. Keep `EMAIL_ALLOW_SELF_SIGNED=false` in
-production.
+Use independent random values of at least 32 characters for all three secrets.
+`EMAIL_PASS` must be a Gmail App Password, not the normal account password.
+Keep `EMAIL_ALLOW_SELF_SIGNED=false` in production.
 
 The admin seed command also supports seed-only variables documented in
 `server/.env.example`. Do not leave seed credentials enabled unnecessarily.
@@ -177,13 +183,17 @@ Never commit `.env` files or real credentials.
 ```powershell
 cd client
 npm.cmd run lint
+npm.cmd run sitemap
 npm.cmd run build
+npm.cmd run bundle:check
 ```
 
-### Backend API
+### Backend
 
 ```powershell
 cd server
+npm.cmd run syntax
+npm.cmd run test:unit
 npm.cmd run qa:public
 npm.cmd run qa:protected
 npm.cmd run qa
@@ -201,3 +211,4 @@ See [QA.md](QA.md) and [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md).
 - [Launch checklist](LAUNCH_CHECKLIST.md)
 - [Maintenance guide](MAINTENANCE.md)
 - [Security notes](SECURITY.md)
+- [Production hardening runbook](PRODUCTION_RUNBOOK.md)

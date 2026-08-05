@@ -24,15 +24,15 @@ const protect = asyncHandler(async (req, res, next) => {
   let decoded;
 
   try {
-    decoded = jwt.verify(token, process.env.JWT_SECRET);
+    decoded = jwt.verify(token, process.env.JWT_SECRET, { issuer: "web-district-api", audience: "web-district-web" });
   } catch (error) {
     res.status(401);
     throw new Error("Not authorized, invalid token");
   }
 
-  const user = await User.findById(decoded.id).select("-password");
+  const user = await User.findById(decoded.id).select("-password +tokenVersion");
 
-  if (!user || !user.isActive) {
+  if (!user || !user.isActive || Number(decoded.ver || 0) !== Number(user.tokenVersion || 0)) {
     res.status(401);
     throw new Error("Not authorized, user not found");
   }
@@ -60,11 +60,11 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { issuer: "web-district-api", audience: "web-district-web" });
 
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id).select("-password +tokenVersion");
 
-    if (user && user.isActive) {
+    if (user && user.isActive && Number(decoded.ver || 0) === Number(user.tokenVersion || 0)) {
       req.user = user;
     }
   } catch (error) {

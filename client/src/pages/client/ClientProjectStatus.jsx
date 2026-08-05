@@ -30,7 +30,7 @@ function ClientProjectStatus() {
       setIsLoading(true);
       setLoadError("");
 
-      const { data } = await api.get("/contracts/my");
+      const { data } = await api.get("/contracts/my", { params: { limit: 100 } });
 
       setContracts(data.contracts || []);
     } catch (error) {

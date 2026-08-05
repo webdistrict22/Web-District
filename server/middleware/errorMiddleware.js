@@ -17,7 +17,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.code === 11000) {
-    statusCode = 400;
+    statusCode = 409;
 
     if (err.keyPattern?.client && err.keyPattern?.contract) {
       message = "A review has already been submitted for this contract";
@@ -62,7 +62,9 @@ const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({
     success: false,
+    code: err.code || (statusCode >= 500 ? "SERVER_ERROR" : "REQUEST_ERROR"),
     message: responseMessage,
+    requestId: req.requestId,
     stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
   });
 };

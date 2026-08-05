@@ -1,4 +1,6 @@
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const objectIdPattern = /^[a-f\d]{24}$/i;
+const unsafeKeyPattern = /(^|\.)\$|\./;
 
 const createValidationError = (message) => {
   const error = new Error(message);
@@ -105,6 +107,63 @@ const cleanRating = (value) => {
   return rating;
 };
 
+const assertSafeObject = (value, field = "Request body") => {
+  if (value === undefined || value === null) return;
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => assertSafeObject(item, field));
+    return;
+  }
+
+  if (typeof value !== "object") return;
+
+  for (const [key, nestedValue] of Object.entries(value)) {
+    if (unsafeKeyPattern.test(key)) {
+      throw createValidationError(`${field} contains an unsupported field`);
+    }
+
+    assertSafeObject(nestedValue, field);
+  }
+};
+
+const escapeRegex = (value) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const cleanSearch = (value, field = "Search", { max = 100 } = {}) => {
+  const search = cleanText(value, field, { max });
+  return search ? escapeRegex(search.normalize("NFKC")) : "";
+};
+
+const cleanObjectId = (value, field = "ID", { required = true } = {}) => {
+  const id = cleanText(value, field, { required, max: 24 });
+
+  if (id && !objectIdPattern.test(id)) {
+    throw createValidationError(`${field} is invalid`);
+  }
+
+  return id;
+};
+
+const cleanEnum = (value, field, allowed, { required = false } = {}) => {
+  const cleaned = cleanText(value, field, { required, max: 80 });
+
+  if (cleaned && !allowed.includes(cleaned)) {
+    throw createValidationError(`${field} is invalid`);
+  }
+
+  return cleaned;
+};
+
+const cleanBoolean = (value, field) => {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (typeof value !== "boolean") {
+    throw createValidationError(`${field} must be true or false`);
+  }
+
+  return value;
+};
+
 module.exports = {
   createValidationError,
   cleanText,
@@ -112,4 +171,10 @@ module.exports = {
   cleanPhone,
   cleanPassword,
   cleanRating,
+  assertSafeObject,
+  escapeRegex,
+  cleanSearch,
+  cleanObjectId,
+  cleanEnum,
+  cleanBoolean,
 };

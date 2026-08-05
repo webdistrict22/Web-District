@@ -1,5 +1,7 @@
 const FAQ = require("../models/FAQ");
 const asyncHandler = require("../middleware/asyncHandler");
+const { publicFaqDto } = require("../utils/responseDtos");
+const { parsePagination, paginationMeta } = require("../utils/pagination");
 
 const createFAQ = asyncHandler(async (req, res) => {
   const { question, answer, category, order, isVisible } = req.body;
@@ -25,22 +27,29 @@ const createFAQ = asyncHandler(async (req, res) => {
 });
 
 const getPublicFAQs = asyncHandler(async (req, res) => {
-  const faqs = await FAQ.find({ isVisible: true }).sort({ order: 1, createdAt: -1 });
+  const faqs = await FAQ.find({ isVisible: true }).sort({ order: 1, createdAt: -1 }).limit(100).lean();
+  const publicFaqs = faqs.map(publicFaqDto);
 
   res.json({
     success: true,
-    count: faqs.length,
-    faqs,
+    count: publicFaqs.length,
+    faqs: publicFaqs,
   });
 });
 
 const getAllFAQs = asyncHandler(async (req, res) => {
-  const faqs = await FAQ.find().sort({ order: 1, createdAt: -1 });
+  const { page, limit, skip } = parsePagination(req.query, { defaultLimit: 50, sortFields: ["createdAt"] });
+  const [faqs, total] = await Promise.all([
+    FAQ.find().sort({ order: 1, createdAt: -1, _id: 1 }).skip(skip).limit(limit).lean(),
+    FAQ.countDocuments(),
+  ]);
 
   res.json({
     success: true,
     count: faqs.length,
+    data: faqs,
     faqs,
+    pagination: paginationMeta({ page, limit, total }),
   });
 });
 

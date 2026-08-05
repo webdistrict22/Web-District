@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import RotatingText from "../reactbits/RotatingText/RotatingText";
 import useLanguage from "../../hooks/useLanguage";
 import useMediaQuery from "../../hooks/useMediaQuery";

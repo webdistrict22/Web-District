@@ -1,5 +1,6 @@
 const Settings = require("../models/Settings");
 const asyncHandler = require("../middleware/asyncHandler");
+const { publicSettingsDto } = require("../utils/responseDtos");
 const sendEmail = require("../utils/sendEmail");
 const {
   cleanText,
@@ -93,11 +94,13 @@ const getOrCreateSettings = async () => {
 };
 
 const getPublicSettings = asyncHandler(async (req, res) => {
-  const settings = await getOrCreateSettings();
+  const settings =
+    (await Settings.findOne({ singletonKey: "primary" }).lean()) ||
+    new Settings().toObject();
 
   res.json({
     success: true,
-    settings,
+    settings: publicSettingsDto(settings),
   });
 });
 

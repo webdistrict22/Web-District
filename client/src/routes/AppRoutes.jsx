@@ -5,26 +5,13 @@ import {
   Route,
   Routes,
   useLocation,
-} from "react-router-dom";
+} from "react-router";
 
 import PublicLayout from "../components/layout/PublicLayout";
 import Loader from "../components/common/Loader";
 import ScrollToTop from "../components/common/ScrollToTop";
 import MetaPixelTracker from "../components/analytics/MetaPixelTracker";
 import Home from "../pages/public/Home";
-import Services from "../pages/public/Services";
-import Work from "../pages/public/Work";
-import CaseStudy from "../pages/public/CaseStudy";
-import Process from "../pages/public/Process";
-import Start from "../pages/public/Start";
-import Success from "../pages/public/Success";
-import Terms from "../pages/public/Terms";
-import Privacy from "../pages/public/Privacy";
-import Login from "../pages/auth/Login";
-import Signup from "../pages/auth/Signup";
-import ForgotPassword from "../pages/auth/ForgotPassword";
-import ResetPassword from "../pages/auth/ResetPassword";
-import NotFound from "../pages/NotFound";
 import useLanguage from "../hooks/useLanguage";
 
 import ProtectedRoute from "./ProtectedRoute";
@@ -35,6 +22,20 @@ const DashboardLayout = lazy(() =>
   import("../components/layout/DashboardLayout")
 );
 const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
+const Services = lazy(() => import("../pages/public/Services"));
+const Work = lazy(() => import("../pages/public/Work"));
+const CaseStudy = lazy(() => import("../pages/public/CaseStudy"));
+const Process = lazy(() => import("../pages/public/Process"));
+const Start = lazy(() => import("../pages/public/Start"));
+const Success = lazy(() => import("../pages/public/Success"));
+const Terms = lazy(() => import("../pages/public/Terms"));
+const Privacy = lazy(() => import("../pages/public/Privacy"));
+const Login = lazy(() => import("../pages/auth/Login"));
+const Signup = lazy(() => import("../pages/auth/Signup"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
+const VerifyEmail = lazy(() => import("../pages/auth/VerifyEmail"));
+const NotFound = lazy(() => import("../pages/NotFound"));
 
 const ClientDashboard = lazy(() => import("../pages/client/ClientDashboard"));
 const ClientRequests = lazy(() => import("../pages/client/ClientRequests"));
@@ -79,6 +80,7 @@ function AppRoutes() {
       <ScrollToTop />
       <MetaPixelTracker />
 
+      <Suspense fallback={<Loader page text={t("common.loading.page")} />}>
       <Routes>
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<Home />} />
@@ -112,6 +114,7 @@ function AppRoutes() {
           />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password/:token" element={<ResetPassword />} />
+          <Route path="verify-email/:token" element={<VerifyEmail />} />
         </Route>
 
         <Route
@@ -205,6 +208,7 @@ function AppRoutes() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

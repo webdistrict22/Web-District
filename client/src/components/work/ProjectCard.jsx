@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
 import useLanguage from "../../hooks/useLanguage";
 

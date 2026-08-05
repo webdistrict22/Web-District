@@ -113,6 +113,21 @@
   transform: translateY(1px);
 }
 
+.wd-manual-carousel-controls > button.is-touch-pressed {
+  border-color: var(--wd-signature-gold);
+  background: var(--wd-signature-gold);
+  color: var(--wd-dark-ink);
+  transform: scale(0.96);
+  transition-duration: 120ms;
+}
+
+.wd-manual-carousel-controls--light > button.is-touch-pressed,
+.wd-manual-carousel-controls--ink > button.is-touch-pressed {
+  border-color: var(--wd-dark-ink);
+  background: var(--wd-dark-ink);
+  color: var(--wd-primary-off-white);
+}
+
 .wd-manual-carousel-controls__dots button:active span,
 .wd-manual-carousel-controls__dots button.is-active:active span {
   transform: scale(0.86);

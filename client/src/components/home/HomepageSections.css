@@ -625,6 +625,12 @@
     pointer-events: none;
     transition: border-color 180ms ease, background-color 180ms ease;
   }
+
+  .wd-services-controls > button.is-touch-pressed::before {
+    border-color: #050505;
+    background: #050505;
+    transition-duration: 120ms;
+  }
   .wd-services-controls > button svg {
     position: relative;
     z-index: 1;

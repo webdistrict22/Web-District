@@ -17,6 +17,7 @@ function FAQTabs({ categories }) {
     toggleItem,
   } = useRestorableAccordion({
     openKey: openQuestion,
+    restoreScrollOnClose: false,
     setOpenKey: setOpenQuestion,
   });
 

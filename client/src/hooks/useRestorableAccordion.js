@@ -3,12 +3,21 @@ import { useCallback, useLayoutEffect, useRef } from "react";
 const interactiveSelector =
   "a, button, input, textarea, select, summary, [role='button'], [contenteditable='true']";
 
-function useRestorableAccordion({ openKey, setOpenKey }) {
+function useRestorableAccordion({
+  openKey,
+  restoreScrollOnClose = true,
+  setOpenKey,
+}) {
   const panelPointerRef = useRef(null);
   const openingScrollPositionsRef = useRef(new Map());
   const pendingRestoreRef = useRef(null);
 
   useLayoutEffect(() => {
+    if (!restoreScrollOnClose) {
+      pendingRestoreRef.current = null;
+      return;
+    }
+
     if (openKey !== null || pendingRestoreRef.current === null) return;
 
     const restoreTop = pendingRestoreRef.current;
@@ -23,16 +32,18 @@ function useRestorableAccordion({ openKey, setOpenKey }) {
       left: 0,
       behavior: "auto",
     });
-  }, [openKey]);
+  }, [openKey, restoreScrollOnClose]);
 
   const rememberOpenPosition = useCallback((key, scrollTop = window.scrollY) => {
+    if (!restoreScrollOnClose) return;
     openingScrollPositionsRef.current.set(key, scrollTop);
-  }, []);
+  }, [restoreScrollOnClose]);
 
   const toggleItem = useCallback((key) => {
     if (openKey === key) {
-      pendingRestoreRef.current =
-        openingScrollPositionsRef.current.get(key) ?? window.scrollY;
+      pendingRestoreRef.current = restoreScrollOnClose
+        ? openingScrollPositionsRef.current.get(key) ?? window.scrollY
+        : null;
       setOpenKey(null);
       return;
     }
@@ -40,7 +51,7 @@ function useRestorableAccordion({ openKey, setOpenKey }) {
     pendingRestoreRef.current = null;
     rememberOpenPosition(key);
     setOpenKey(key);
-  }, [openKey, rememberOpenPosition, setOpenKey]);
+  }, [openKey, rememberOpenPosition, restoreScrollOnClose, setOpenKey]);
 
   const resetOpenItem = useCallback(() => {
     pendingRestoreRef.current = null;

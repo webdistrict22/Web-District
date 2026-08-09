@@ -11,6 +11,12 @@ const validateTimezone = (timezone) => {
   try { new Intl.DateTimeFormat("en", { timeZone: timezone }).format(); return true; } catch { return false; }
 };
 
+const validDate = (value) => {
+  if (!datePattern.test(String(value))) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+};
+
 const partsInZone = (date, timezone = getBusinessTimezone()) => {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
@@ -39,6 +45,24 @@ const zonedDateTimeToUtc = (date, time, timezone = getBusinessTimezone()) => {
   return `${check.year}-${check.month}-${check.day}` === date && `${check.hour}:${check.minute}` === time ? guess : null;
 };
 
+const buildCanonicalSlotFields = ({ date, startTime, endTime, timezone = getBusinessTimezone() }) => {
+  if (!validDate(date)) {
+    throw Object.assign(new Error("Date must be a valid YYYY-MM-DD date"), { statusCode: 400 });
+  }
+  if (!timePattern.test(String(startTime)) || !timePattern.test(String(endTime))) {
+    throw Object.assign(new Error("Start and end time must use HH:mm format"), { statusCode: 400 });
+  }
+  if (!validateTimezone(timezone)) {
+    throw Object.assign(new Error("Timezone must be a valid IANA timezone"), { statusCode: 400 });
+  }
+  const startsAt = zonedDateTimeToUtc(date, startTime, timezone);
+  const endsAt = zonedDateTimeToUtc(date, endTime, timezone);
+  if (!startsAt || !endsAt || endsAt <= startsAt) {
+    throw Object.assign(new Error("End time must be after start time"), { statusCode: 400 });
+  }
+  return { date, startTime, endTime, startsAt, endsAt, timezone };
+};
+
 const addCalendarDays = (dateString, days) => {
   const [year, month, day] = dateString.split("-").map(Number);
   const value = new Date(Date.UTC(year, month - 1, day + days));
@@ -55,6 +79,6 @@ const isFutureSlot = (slot, now = new Date()) => Boolean(slot?.startsAt && new D
 
 module.exports = {
   datePattern, timePattern, getBusinessTimezone, getBookingWindowDays, validateTimezone,
-  formatDateInZone, zonedDateTimeToUtc, addCalendarDays, bookingWindowEnd,
+  formatDateInZone, zonedDateTimeToUtc, buildCanonicalSlotFields, addCalendarDays, bookingWindowEnd,
   getFutureSlotQuery, isFutureSlot,
 };

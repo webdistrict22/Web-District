@@ -49,6 +49,7 @@ test("environment validation separates core requirements from degraded integrati
     CLIENT_URL: "https://www.example.com",
     ALLOWED_ORIGINS: "https://example.com",
     BUSINESS_TIMEZONE: "Africa/Cairo",
+    SLOT_MAINTENANCE_ENABLED: "true",
     EMAIL_USER: "",
     EMAIL_PASS: "",
     CLOUDINARY_CLOUD_NAME: "",
@@ -57,6 +58,9 @@ test("environment validation separates core requirements from degraded integrati
   });
   const result = validateEnvironment();
   assert.deepEqual(result.degraded.sort(), ["cloudinary", "email"]);
+  process.env.SLOT_MAINTENANCE_ENABLED = "false";
+  assert.throws(() => validateEnvironment(), /must be true in production/);
+  process.env.SLOT_MAINTENANCE_ENABLED = "true";
   process.env.JWT_SECRET = "short";
   assert.throws(() => validateEnvironment(), /32 characters/);
   process.env.JWT_SECRET = "j".repeat(32);

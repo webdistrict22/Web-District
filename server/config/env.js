@@ -58,6 +58,7 @@ const validateEnvironment = () => {
   if (!validateTimezone(timezone)) throw new Error("BUSINESS_TIMEZONE is invalid");
   integer("BOOKING_WINDOW_DAYS", 7, 1, 31);
   integer("SLOT_MAINTENANCE_INTERVAL_MS", 6 * 60 * 60 * 1000, 60000, 24 * 60 * 60 * 1000);
+  const slotMaintenanceEnabled = boolean("SLOT_MAINTENANCE_ENABLED", false);
   integer("EMAIL_OUTBOX_POLL_MS", 5000, 1000, 300000);
   integer("EMAIL_OUTBOX_LEASE_MS", 60000, 10000, 600000);
   integer("EMAIL_OUTBOX_BATCH_SIZE", 10, 1, 50);
@@ -71,11 +72,12 @@ const validateEnvironment = () => {
     throw new Error("ALLOW_MAINTENANCE_APPLY must be NO or YES");
   }
   if (production && process.env.ALLOW_MAINTENANCE_APPLY === "YES") throw new Error("ALLOW_MAINTENANCE_APPLY must be NO during normal production startup");
+  if (production && !slotMaintenanceEnabled) throw new Error("SLOT_MAINTENANCE_ENABLED must be true in production");
   if (production && /localhost|127\.0\.0\.1/i.test(clientOrigin)) throw new Error("CLIENT_URL cannot use localhost in production");
   const degraded = [];
   if (!isEmailConfigured()) degraded.push("email");
   if (!["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"].every((name) => process.env[name])) degraded.push("cloudinary");
-  return { valid: true, clientOrigin, timezone, degraded };
+  return { valid: true, clientOrigin, timezone, slotMaintenanceEnabled, degraded };
 };
 
 module.exports = { validateEnvironment, integer, boolean };

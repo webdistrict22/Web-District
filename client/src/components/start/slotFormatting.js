@@ -69,6 +69,48 @@ export const formatSlotTime = (time, language) => {
   }).format(parsedTime);
 };
 
+export const formatSlotDisplayParts = (slot, language) => {
+  if (!slot) {
+    return { date: "", timeRange: "", timezoneLabel: "" };
+  }
+
+  const timezone = slot.timezone || "Africa/Cairo";
+  const startsAt = new Date(slot.startsAt);
+  const endsAt = new Date(slot.endsAt);
+  const hasCanonicalRange =
+    slot.startsAt &&
+    slot.endsAt &&
+    !Number.isNaN(startsAt.getTime()) &&
+    !Number.isNaN(endsAt.getTime());
+  const canonicalDateFormatter = new Intl.DateTimeFormat(getDateLocale(language), {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: timezone,
+  });
+  const canonicalTimeFormatter = new Intl.DateTimeFormat(getDateLocale(language), {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: timezone,
+  });
+  const date = hasCanonicalRange
+    ? canonicalDateFormatter.format(startsAt)
+    : formatSlotDateLong(slot.date, language);
+  const start = hasCanonicalRange
+    ? canonicalTimeFormatter.format(startsAt)
+    : formatSlotTime(slot.startTime, language);
+  const end = hasCanonicalRange
+    ? canonicalTimeFormatter.format(endsAt)
+    : formatSlotTime(slot.endTime, language);
+
+  return {
+    date,
+    timeRange: start && end ? `${start}–${end}` : start || end,
+    timezoneLabel: language === "ar" ? "توقيت القاهرة" : "Cairo time",
+  };
+};
+
 export const formatSlotSummary = (slot, language) => {
   if (!slot) return "";
 

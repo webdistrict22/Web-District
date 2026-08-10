@@ -1,9 +1,8 @@
-import { CalendarDays, Clock, Mail, MessageSquare, Phone } from "lucide-react";
-import Card from "../common/Card";
+import { CalendarDays } from "lucide-react";
+import PortalEmptyState from "../portal/PortalEmptyState";
 import StatusBadge from "../common/StatusBadge";
-import EmptyState from "../common/EmptyState";
 import { formatDate } from "../../lib/helpers";
-import { formatSlotTime } from "../start/slotFormatting";
+import { formatSlotDisplayParts } from "../start/slotFormatting";
 import useLanguage from "../../hooks/useLanguage";
 
 function AppointmentList({ appointments = [] }) {
@@ -11,7 +10,8 @@ function AppointmentList({ appointments = [] }) {
 
   if (!appointments.length) {
     return (
-      <EmptyState
+      <PortalEmptyState
+        icon={CalendarDays}
         title={t("client.appointments.emptyTitle")}
         description={t("client.appointments.emptyDescription")}
         actionText={t("common.buttons.bookCall")}
@@ -21,117 +21,88 @@ function AppointmentList({ appointments = [] }) {
   }
 
   return (
-    <div className="grid gap-5">
-      {appointments.map((appointment) => (
-        <Card key={appointment._id} className="p-6">
-          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-            <div className="min-w-0">
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                <StatusBadge status={appointment.status} />
+    <div className="wd-portal-record-list">
+      {appointments.map((appointment) => {
+        const schedule = formatSlotDisplayParts(appointment.slot, effectiveLanguage);
+        const metadata = [
+          { label: t("common.labels.phone"), value: appointment.phone, ltr: true },
+          { label: t("common.labels.email"), value: appointment.email, ltr: true },
+          {
+            label: t("client.appointments.bookedOn"),
+            value: formatDate(appointment.createdAt, effectiveLanguage),
+          },
+        ].filter((item) => item.value);
 
-                <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-                  {t("common.labels.callAppointment")}
-                </span>
-              </div>
-
-              <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
-                {appointment.businessName || appointment.name}
-              </h3>
-
-              <p className="wd-value-wrap mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
-                {appointment.topic}
-              </p>
-            </div>
-
-            <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#D9D4CC]">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={16} className="text-[#C4A77D]" />
-                {formatDate(appointment.createdAt, effectiveLanguage)}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2 lg:grid-cols-4">
-            <InfoItem
-              icon={CalendarDays}
-              label={t("common.labels.callDate")}
-              value={
-                appointment.slot?.date
-                  ? formatDate(appointment.slot.date, effectiveLanguage)
-                  : "-"
-              }
-            />
-            <InfoItem
-              icon={Clock}
-              label={t("common.labels.time")}
-              value={
-                appointment.slot
-                  ? `${formatSlotTime(appointment.slot.startTime, effectiveLanguage)}–${formatSlotTime(appointment.slot.endTime, effectiveLanguage)}`
-                  : "-"
-              }
-              ltr
-            />
-            <InfoItem
-              icon={Phone}
-              label={t("common.labels.phone")}
-              value={appointment.phone}
-              ltr
-            />
-            <InfoItem
-              icon={Mail}
-              label={t("common.labels.email")}
-              value={appointment.email}
-              ltr
-            />
-          </div>
-
-          {appointment.notes && (
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-              <div className="flex items-start gap-3">
-                <MessageSquare size={17} className="mt-1 shrink-0 text-[#C4A77D]" />
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#F8F7F4]">
-                    {t("common.labels.yourNotes")}
-                  </p>
-                  <p className="wd-value-wrap mt-2 leading-7 text-[#D9D4CC]">
-                    {appointment.notes}
-                  </p>
+        return (
+          <article key={appointment._id} className="wd-portal-record wd-portal-appointment">
+            <div className="wd-portal-record__heading">
+              <div className="min-w-0">
+                <div className="wd-portal-record__topline">
+                  <StatusBadge status={appointment.status} tone="light" />
+                  <span className="wd-portal-record__type">
+                    {t("common.labels.callAppointment")}
+                  </span>
                 </div>
+                <h2 className="wd-portal-record__title wd-value-wrap">
+                  {appointment.businessName || appointment.name}
+                </h2>
+              </div>
+
+              <div className="wd-portal-schedule">
+                <time dateTime={appointment.slot?.startsAt || appointment.slot?.date}>
+                  {schedule.date || t("common.labels.notSet")}
+                </time>
+                <p>
+                  <span dir="ltr" className="wd-ltr">
+                    {schedule.timeRange || t("common.labels.notSet")}
+                  </span>
+                  {schedule.timezoneLabel ? <span>· {schedule.timezoneLabel}</span> : null}
+                </p>
               </div>
             </div>
-          )}
 
-          {appointment.adminNotes && (
-            <div className="mt-5 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
-              <p className="text-sm font-semibold text-[#F8F7F4]">
-                {t("common.labels.adminNote")}
-              </p>
-              <p className="wd-value-wrap mt-2 leading-7 text-[#F8F7F4]/85">
-                {appointment.adminNotes}
-              </p>
-            </div>
-          )}
-        </Card>
-      ))}
+            <p className="wd-portal-record__description wd-value-wrap">
+              {appointment.topic}
+            </p>
+
+            {metadata.length ? (
+              <div className="wd-portal-record__meta wd-portal-record__meta--compact">
+                {metadata.map((item) => (
+                  <MetaItem key={item.label} {...item} />
+                ))}
+              </div>
+            ) : null}
+
+            {appointment.notes ? (
+              <div className="wd-portal-note wd-portal-note--neutral">
+                <p className="wd-portal-note__label">{t("common.labels.yourNotes")}</p>
+                <p className="wd-portal-note__text wd-value-wrap">{appointment.notes}</p>
+              </div>
+            ) : null}
+
+            {appointment.adminNotes ? (
+              <div className="wd-portal-note">
+                <p className="wd-portal-note__label">{t("common.labels.adminNote")}</p>
+                <p className="wd-portal-note__text wd-value-wrap">{appointment.adminNotes}</p>
+              </div>
+            ) : null}
+          </article>
+        );
+      })}
     </div>
   );
 }
 
-function InfoItem({ icon: Icon, label, value, ltr = false }) {
+function MetaItem({ label, value, ltr = false }) {
   return (
-    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div className="min-w-0 max-w-full">
-        <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p
-          dir={ltr ? "ltr" : undefined}
-          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
-            ltr ? "wd-ltr" : ""
-          }`}
-        >
-          {value || "-"}
-        </p>
-      </div>
+    <div className="wd-portal-meta">
+      <p className="wd-portal-meta__label">{label}</p>
+      <p
+        dir={ltr ? "ltr" : undefined}
+        className={`wd-portal-meta__value${ltr ? " wd-ltr" : ""}`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

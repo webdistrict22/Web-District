@@ -1,0 +1,9 @@
+:root {
+  --wd-toast-offset: 92px;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --wd-toast-offset: calc(84px + env(safe-area-inset-top, 0px));
+  }
+}

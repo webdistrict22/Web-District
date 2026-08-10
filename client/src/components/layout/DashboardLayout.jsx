@@ -1,133 +1,48 @@
 import { Suspense } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
-import {
-  CalendarDays,
-  FileText,
-  Home,
-  LogOut,
-  MessageSquare,
-  TrendingUp,
-  UserRound,
-} from "lucide-react";
-import Container from "../common/Container";
+import { Outlet, useLocation } from "react-router";
 import Loader from "../common/Loader";
 import PageMeta from "../common/PageMeta";
 import VerificationNotice from "../dashboard/VerificationNotice";
-import useAuth from "../../hooks/useAuth";
+import ClientPortalNav from "../portal/ClientPortalNav";
+import { clientPortalLinks } from "../portal/portalNavigation";
+import "../portal/PortalRecords.css";
+import "../portal/Portal.css";
 import useLanguage from "../../hooks/useLanguage";
 
-const clientLinks = [
-  { key: "overview", label: "Overview", path: "/account", icon: Home },
-  { key: "requests", label: "Requests", path: "/account/requests", icon: FileText },
-  { key: "appointments", label: "Appointments", path: "/account/appointments", icon: CalendarDays },
-  { key: "contracts", label: "Contracts", path: "/account/contracts", icon: FileText },
-  { key: "projectStatus", label: "Project Status", path: "/account/project-status", icon: TrendingUp },
-  { key: "reviews", label: "Reviews", path: "/account/reviews", icon: MessageSquare },
-  { key: "profile", label: "Profile", path: "/account/profile", icon: UserRound },
-];
-
 function DashboardLayout() {
-  const { user, logout } = useAuth();
-  const { t, toggleLanguage } = useLanguage();
+  const { t } = useLanguage();
   const location = useLocation();
   const activeMeta =
-    clientLinks
+    clientPortalLinks
       .filter((link) =>
         link.path === "/account"
           ? location.pathname === link.path
-          : location.pathname.startsWith(link.path)
+          : location.pathname.startsWith(link.path),
       )
-      .sort((a, b) => b.path.length - a.path.length)[0] || clientLinks[0];
+      .sort((a, b) => b.path.length - a.path.length)[0] || clientPortalLinks[0];
 
   return (
-    <main
-      id="main-content"
-      tabIndex="-1"
-      className="min-h-screen scroll-mt-28 bg-[#080808] pb-20 pt-28"
-    >
+    <div className="wd-portal">
       <PageMeta
         title={t(`client.layout.links.${activeMeta.key}`, activeMeta.label)}
         description={t("client.dashboard.description")}
         robots="noindex,nofollow"
       />
 
-      <Container>
-        <VerificationNotice />
-        <div className="mb-8 flex flex-col justify-between gap-5 rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-5 md:flex-row md:items-center">
-          <div>
-            <p className="text-sm text-[#D9D4CC]">{t("client.layout.portal")}</p>
-            <h1 className="font-display mt-1 text-3xl font-bold tracking-[-0.05em]">
-              {t("client.layout.welcome", undefined, { name: user?.name })}
-            </h1>
-          </div>
+      <ClientPortalNav />
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            <button
-              type="button"
-              onClick={toggleLanguage}
-              aria-label={t("nav.languageSwitchLabel")}
-              className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-bold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
-            >
-              {t("nav.languageToggle")}
-            </button>
-
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/50 hover:text-[#C4A77D]"
-            >
-              <Home size={17} />
-              {t("client.layout.goHome")}
-            </Link>
-
-            <button
-              type="button"
-              onClick={logout}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 hover:text-[#C4A77D]"
-            >
-              <LogOut size={17} />
-              {t("client.layout.logout")}
-            </button>
-          </div>
+      <main id="main-content" tabIndex="-1" className="wd-portal-main">
+        <div className="wd-portal-container">
+          <VerificationNotice />
+          <Suspense
+            key={location.pathname}
+            fallback={<Loader text={t("common.loading.page")} />}
+          >
+            <Outlet />
+          </Suspense>
         </div>
-
-        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-[1.6rem] border border-white/10 bg-white/[0.045] p-3 lg:sticky lg:top-24">
-            <nav className="grid gap-2">
-              {clientLinks.map((link) => {
-                const Icon = link.icon;
-
-                return (
-                  <NavLink
-                    key={link.path}
-                    to={link.path}
-                    end={link.path === "/account"}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                        isActive
-                          ? "border border-[#C4A77D]/30 bg-[#C4A77D]/14 text-[#F8F7F4]"
-                          : "border border-transparent text-[#D9D4CC] hover:bg-white/[0.04] hover:text-[#C4A77D]"
-                      }`
-                    }
-                    >
-                    <Icon size={17} />
-                    {t(`client.layout.links.${link.key}`, link.label)}
-                  </NavLink>
-                );
-              })}
-            </nav>
-          </aside>
-
-          <section>
-            <Suspense
-              key={location.pathname}
-              fallback={<Loader text={t("common.loading.page")} />}
-            >
-              <Outlet />
-            </Suspense>
-          </section>
-        </div>
-      </Container>
-    </main>
+      </main>
+    </div>
   );
 }
 

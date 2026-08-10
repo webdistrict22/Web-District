@@ -7,6 +7,7 @@ import {
   FileText,
   Globe2,
   MessageSquare,
+  ScrollText,
 } from "lucide-react";
 import api from "../../lib/axios";
 import Card from "../common/Card";
@@ -14,6 +15,8 @@ import Button from "../common/Button";
 import StatusBadge from "../common/StatusBadge";
 import EmptyState from "../common/EmptyState";
 import Textarea from "../common/Textarea";
+import PortalButton from "../portal/PortalButton";
+import PortalEmptyState from "../portal/PortalEmptyState";
 import { formatDate, formatMoney } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useLanguage from "../../hooks/useLanguage";
@@ -23,6 +26,7 @@ function ContractList({
   setContracts,
   emptyMode = "client",
   allowClientActions = false,
+  variant = "default",
 }) {
   const [activeNoteId, setActiveNoteId] = useState("");
   const [noteDrafts, setNoteDrafts] = useState({});
@@ -30,6 +34,18 @@ function ContractList({
   const { effectiveLanguage, getErrorMessage, t, translateValue } = useLanguage();
 
   if (!contracts.length) {
+    if (variant === "portal") {
+      return (
+        <PortalEmptyState
+          icon={ScrollText}
+          title={t("client.contracts.emptyTitle")}
+          description={t("client.contracts.emptyClient")}
+          actionText={t("common.buttons.startRequest")}
+          actionTo="/start"
+        />
+      );
+    }
+
     return (
       <EmptyState
         title={t("client.contracts.emptyTitle")}
@@ -111,13 +127,34 @@ function ContractList({
   };
 
   return (
-    <div className="grid gap-5">
+    <div className={variant === "portal" ? "wd-portal-record-list" : "grid gap-5"}>
       {contracts.map((contract) => {
         const canAccept =
           allowClientActions &&
           contract.status === "Sent";
 
         const canSendNote = allowClientActions;
+
+        if (variant === "portal") {
+          return (
+            <PortalContractCard
+              key={contract._id}
+              contract={contract}
+              canAccept={canAccept}
+              canSendNote={canSendNote}
+              activeNoteId={activeNoteId}
+              noteDraft={noteDrafts[contract._id] || ""}
+              isLoading={loadingId === contract._id}
+              onAccept={() => handleAccept(contract)}
+              onOpenNote={() => openNoteBox(contract)}
+              onNoteChange={(value) =>
+                setNoteDrafts((prev) => ({ ...prev, [contract._id]: value }))
+              }
+              onSaveNote={() => handleSaveNote(contract)}
+              onCancelNote={() => setActiveNoteId("")}
+            />
+          );
+        }
 
         return (
           <Card key={contract._id} className="p-6">
@@ -295,6 +332,179 @@ function ContractList({
         );
       })}
     </div>
+  );
+}
+
+function PortalContractCard({
+  contract,
+  canAccept,
+  canSendNote,
+  activeNoteId,
+  noteDraft,
+  isLoading,
+  onAccept,
+  onOpenNote,
+  onNoteChange,
+  onSaveNote,
+  onCancelNote,
+}) {
+  const { effectiveLanguage, t, translateValue } = useLanguage();
+  const financialDetails = [
+    {
+      label: t("common.labels.totalPrice"),
+      value: contract.totalPrice
+        ? formatMoney(contract.totalPrice, "EGP", effectiveLanguage)
+        : t("common.labels.notSet"),
+    },
+    {
+      label: `${t("common.labels.deposit")} (${contract.depositPercent || 70}%)`,
+      value: contract.depositAmount
+        ? formatMoney(contract.depositAmount, "EGP", effectiveLanguage)
+        : t("common.labels.notSet"),
+    },
+    {
+      label: t("common.labels.remaining"),
+      value: contract.remainingAmount
+        ? formatMoney(contract.remainingAmount, "EGP", effectiveLanguage)
+        : t("common.labels.notSet"),
+    },
+  ];
+  const scheduleDetails = [
+    { label: t("common.labels.timeline"), value: contract.timeline },
+    {
+      label: t("common.labels.startDate"),
+      value: contract.startDate
+        ? formatDate(contract.startDate, effectiveLanguage)
+        : "",
+    },
+    {
+      label: t("common.labels.deadline"),
+      value: contract.deadline
+        ? formatDate(contract.deadline, effectiveLanguage)
+        : t("common.labels.notSet"),
+    },
+  ].filter((item) => item.value);
+
+  return (
+    <article className="wd-portal-record wd-portal-contract">
+      <div className="wd-portal-record__heading">
+        <div className="min-w-0">
+          <div className="wd-portal-record__topline">
+            <StatusBadge status={contract.status} tone="light" />
+            <span className="wd-portal-record__type">
+              {translateValue("websiteTypes", contract.websiteType)}
+            </span>
+          </div>
+          <h2 className="wd-portal-record__title wd-value-wrap">{contract.title}</h2>
+          <p className="wd-portal-contract__business wd-value-wrap">
+            {contract.businessName || contract.clientName}
+          </p>
+        </div>
+        <time className="wd-portal-record__date" dateTime={contract.createdAt}>
+          {formatDate(contract.createdAt, effectiveLanguage)}
+        </time>
+      </div>
+
+      <p className="wd-portal-record__description wd-value-wrap">{contract.scopeSummary}</p>
+
+      <div className="wd-portal-contract__financials">
+        {financialDetails.map((item) => (
+          <div key={item.label}>
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
+          </div>
+        ))}
+      </div>
+
+      {scheduleDetails.length ? (
+        <div className="wd-portal-record__meta wd-portal-record__meta--compact">
+          {scheduleDetails.map((item) => (
+            <InfoValue key={item.label} {...item} />
+          ))}
+        </div>
+      ) : null}
+
+      <div className="wd-portal-contract__scope-grid">
+        <PortalListBlock title={t("common.labels.pagesIncluded")} items={contract.pagesIncluded} />
+        <PortalListBlock title={t("common.labels.featuresIncluded")} items={contract.featuresIncluded} />
+      </div>
+
+      {contract.paymentNotes ? (
+        <div className="wd-portal-note">
+          <p className="wd-portal-note__label">{t("common.labels.paymentNotes")}</p>
+          <p className="wd-portal-note__text wd-value-wrap">{contract.paymentNotes}</p>
+        </div>
+      ) : null}
+
+      {contract.clientNotes ? (
+        <div className="wd-portal-note wd-portal-note--neutral">
+          <p className="wd-portal-note__label">{t("common.labels.clientNote")}</p>
+          <p className="wd-portal-note__text wd-value-wrap">{contract.clientNotes}</p>
+        </div>
+      ) : null}
+
+      {canAccept || canSendNote ? (
+        <div className="wd-portal-record__actions">
+          {canAccept ? (
+            <PortalButton type="button" onClick={onAccept} disabled={isLoading} icon={false}>
+              {isLoading ? t("client.contracts.accepting") : t("client.contracts.acceptProposal")}
+            </PortalButton>
+          ) : null}
+          {canSendNote ? (
+            <PortalButton type="button" variant="ink" onClick={onOpenNote} icon={false}>
+              {t("client.contracts.sendNote")}
+            </PortalButton>
+          ) : null}
+        </div>
+      ) : null}
+
+      {activeNoteId === contract._id ? (
+        <div className="wd-portal-contract-note-form">
+          <Textarea
+            tone="light"
+            label={t("client.contracts.noteLabel")}
+            placeholder={t("client.contracts.notePlaceholder")}
+            value={noteDraft}
+            onChange={(event) => onNoteChange(event.target.value)}
+            rows={5}
+          />
+          <div className="wd-portal-record__actions">
+            <PortalButton type="button" onClick={onSaveNote} disabled={isLoading} icon={false}>
+              {isLoading ? t("client.contracts.saving") : t("client.contracts.saveNote")}
+            </PortalButton>
+            <PortalButton type="button" variant="ink" onClick={onCancelNote} icon={false}>
+              {t("common.buttons.cancel")}
+            </PortalButton>
+          </div>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function InfoValue({ label, value }) {
+  return (
+    <div className="wd-portal-meta">
+      <p className="wd-portal-meta__label">{label}</p>
+      <p className="wd-portal-meta__value wd-value-wrap">{value}</p>
+    </div>
+  );
+}
+
+function PortalListBlock({ title, items = [] }) {
+  const { t } = useLanguage();
+
+  return (
+    <section>
+      <h3>{title}</h3>
+      {items.length ? (
+        <ul>
+          {items.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      ) : (
+        <p>{t("common.labels.notAddedYet")}</p>
+      )}
+    </section>
   );
 }
 

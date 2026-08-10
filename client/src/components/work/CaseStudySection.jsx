@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Container from "../common/Container";
 import Button from "../common/Button";
+import FinalCtaLink from "../common/FinalCtaLink";
 import ManualCarouselControls from "../common/ManualCarousel";
 import useManualCarousel from "../common/useManualCarousel";
 import LogoLoop from "../reactbits/LogoLoop/LogoLoop";
@@ -701,13 +702,14 @@ function CaseStudySection({ project }) {
             {t("work.caseStudy.ctaDescription")}
           </p>
           <div className="wd-case-study-cta__actions">
-            <Button
+            <FinalCtaLink
               to="/start"
+              tone="light"
               icon={false}
-              className="wd-case-study-cta__light-button wd-final-cta-action--light"
+              className="wd-case-study-cta__light-button"
             >
               {t("common.buttons.startProject")}
-            </Button>
+            </FinalCtaLink>
             <Button
               to="/process#faq"
               variant="secondary"

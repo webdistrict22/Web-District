@@ -20,16 +20,18 @@ function VerificationNotice() {
   };
 
   return (
-    <div role="status" className="mb-6 rounded-2xl border border-[#C4A77D]/30 bg-[#C4A77D]/10 p-4 text-sm text-[#F8F7F4]">
-      <p>{t("auth.verificationNotice.description")}</p>
-      <p className="mt-2 text-[#D9D4CC]">{t("auth.verificationNotice.spamGuidance")}</p>
-      <button type="button" onClick={resend} disabled={status === "loading"} className="mt-3 font-semibold text-[#C4A77D] underline-offset-4 hover:underline disabled:opacity-60">
+    <div role="status" className="wd-portal-verification">
+      <div>
+        <p>{t("auth.verificationNotice.description")}</p>
+        <p>{t("auth.verificationNotice.spamGuidance")}</p>
+      </div>
+      <button type="button" onClick={resend} disabled={status === "loading"}>
         {status === "sent" ? t("auth.verificationNotice.sent") : t("auth.verificationNotice.resend")}
       </button>
       {status === "sent" ? (
-        <p className="mt-2 text-[#D9D4CC]">{t("auth.verificationNotice.resentGuidance")}</p>
+        <p>{t("auth.verificationNotice.resentGuidance")}</p>
       ) : null}
-      {status === "error" && <p role="alert" className="mt-2 text-red-300">{t("auth.verificationNotice.error")}</p>}
+      {status === "error" ? <p role="alert">{t("auth.verificationNotice.error")}</p> : null}
     </div>
   );
 }

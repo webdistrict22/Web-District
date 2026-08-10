@@ -193,6 +193,13 @@
   opacity: 1;
 }
 
+.wd-password-field__input::-ms-reveal,
+.wd-password-field__input::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .wd-password-field__input:focus {
   border-color: var(--wd-gold-surface);
 }
@@ -203,8 +210,8 @@
   top: 50%;
   right: 0.35rem;
   display: grid;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.75rem;
+  height: 2.75rem;
   place-items: center;
   transform: translateY(-50%);
   border: 1px solid rgb(23 20 17 / 0.22);

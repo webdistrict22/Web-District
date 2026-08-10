@@ -1,10 +1,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Card from "../../components/common/Card";
-import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import ErrorState from "../../components/common/ErrorState";
 import AppointmentList from "../../components/dashboard/AppointmentList";
+import PortalButton from "../../components/portal/PortalButton";
+import PortalPageHeader from "../../components/portal/PortalPageHeader";
 import api from "../../lib/axios";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
@@ -38,26 +38,13 @@ function ClientAppointments() {
   useInitialLoad(fetchAppointments);
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              {t("common.labels.clientPortal")}
-            </p>
-
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              {t("client.appointments.title")}
-            </h2>
-
-            <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              {t("client.appointments.description")}
-            </p>
-          </div>
-
-          <Button to="/start">{t("client.appointments.bookAnother")}</Button>
-        </div>
-      </Card>
+    <div className="wd-portal-page">
+      <PortalPageHeader
+        eyebrow={t("common.labels.clientPortal")}
+        title={t("client.appointments.title")}
+        description={t("client.appointments.description")}
+        action={<PortalButton to="/start">{t("client.appointments.bookAnother")}</PortalButton>}
+      />
 
       {isLoading ? (
         <Loader text={t("client.appointments.loading")} />
@@ -66,7 +53,7 @@ function ClientAppointments() {
       ) : (
         <>
           <AppointmentList appointments={appointments} />
-          <PaginationControls pagination={pagination} onPageChange={fetchAppointments} disabled={isLoading} />
+          <PaginationControls pagination={pagination} onPageChange={fetchAppointments} disabled={isLoading} tone="light" />
         </>
       )}
     </div>

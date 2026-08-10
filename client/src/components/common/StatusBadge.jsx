@@ -23,10 +23,30 @@ const statusStyles = {
   Done: "border-[#D9D4CC]/25 bg-white/[0.04] text-[#F8F7F4]",
 };
 
-function StatusBadge({ status = "New" }) {
+const lightStatusStyles = {
+  New: "border-[#B88A45] bg-[#D6A75D] text-[#171411]",
+  Sent: "border-[#B88A45] bg-[#D6A75D] text-[#171411]",
+  Pending: "border-[#B88A45] bg-[#D6A75D] text-[#171411]",
+  "In Progress": "border-[#B88A45] bg-[#D6A75D] text-[#171411]",
+  Read: "border-[#171411]/20 bg-[#171411]/5 text-[#171411]",
+  Replied: "border-[#171411]/20 bg-[#171411]/5 text-[#171411]",
+  Archived: "border-[#171411]/16 bg-transparent text-[#6D6862]",
+  Reviewed: "border-[#171411]/20 bg-[#171411]/5 text-[#171411]",
+  Accepted: "border-[#171411] bg-[#171411] text-[#F7F2EC]",
+  Rejected: "border-[#171411]/35 bg-transparent text-[#171411]",
+  Draft: "border-[#171411]/16 bg-transparent text-[#6D6862]",
+  Completed: "border-[#171411] bg-[#171411] text-[#F7F2EC]",
+  Cancelled: "border-[#171411]/35 bg-transparent text-[#171411]",
+  Approved: "border-[#171411] bg-[#171411] text-[#F7F2EC]",
+  Rescheduled: "border-[#B88A45] bg-[#D6A75D] text-[#171411]",
+  Done: "border-[#171411] bg-[#171411] text-[#F7F2EC]",
+};
+
+function StatusBadge({ status = "New", tone = "dark" }) {
   const { translateValue } = useLanguage();
-  const style =
-    statusStyles[status] || "border-white/10 bg-white/[0.04] text-[#D9D4CC]";
+  const style = tone === "light"
+    ? lightStatusStyles[status] || "border-[#171411]/20 bg-[#171411]/5 text-[#171411]"
+    : statusStyles[status] || "border-white/10 bg-white/[0.04] text-[#D9D4CC]";
 
   return (
     <span

@@ -1,7 +1,6 @@
-import { CalendarDays, Globe2, Mail, Phone } from "lucide-react";
-import Card from "../common/Card";
+import { FileText } from "lucide-react";
+import PortalEmptyState from "../portal/PortalEmptyState";
 import StatusBadge from "../common/StatusBadge";
-import EmptyState from "../common/EmptyState";
 import { formatDate } from "../../lib/helpers";
 import useLanguage from "../../hooks/useLanguage";
 
@@ -10,7 +9,8 @@ function RequestList({ requests = [] }) {
 
   if (!requests.length) {
     return (
-      <EmptyState
+      <PortalEmptyState
+        icon={FileText}
         title={t("client.requests.emptyTitle")}
         description={t("client.requests.emptyDescription")}
         actionText={t("common.buttons.submitRequest")}
@@ -20,123 +20,81 @@ function RequestList({ requests = [] }) {
   }
 
   return (
-    <div className="grid gap-5">
-      {requests.map((request) => (
-        <Card key={request._id} className="p-6">
-          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
-            <div className="min-w-0">
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                <StatusBadge status={request.status} />
+    <div className="wd-portal-record-list">
+      {requests.map((request) => {
+        const metadata = [
+          { label: t("common.labels.phone"), value: request.phone, ltr: true },
+          { label: t("common.labels.email"), value: request.email, ltr: true },
+          {
+            label: t("common.labels.preferredContact"),
+            value: translateValue("contactMethods", request.preferredContactMethod),
+          },
+          { label: t("common.labels.budget"), value: request.budgetRange },
+          { label: t("common.labels.deadline"), value: request.deadline },
+          {
+            label: t("common.labels.brandIdentity"),
+            value: translateValue("yesNo", request.hasBrandIdentity),
+          },
+          {
+            label: t("common.labels.contentReady"),
+            value: translateValue("yesNo", request.hasContentReady),
+          },
+        ].filter((item) => item.value);
 
-                <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-                  {translateValue("websiteTypes", request.websiteType)}
-                </span>
+        return (
+          <article key={request._id} className="wd-portal-record">
+            <div className="wd-portal-record__heading">
+              <div className="min-w-0">
+                <div className="wd-portal-record__topline">
+                  <StatusBadge status={request.status} tone="light" />
+                  <span className="wd-portal-record__type">
+                    {translateValue("websiteTypes", request.websiteType)}
+                  </span>
+                </div>
+                <h2 className="wd-portal-record__title wd-value-wrap">
+                  {request.businessName || request.name}
+                </h2>
               </div>
-
-              <h3 className="font-display wd-value-wrap text-2xl font-bold tracking-[-0.04em] text-[#F8F7F4]">
-                {request.businessName || request.name}
-              </h3>
-
-              <p className="wd-value-wrap mt-3 max-w-3xl leading-7 text-[#D9D4CC]">
-                {request.projectDetails}
-              </p>
+              <time className="wd-portal-record__date" dateTime={request.createdAt}>
+                {t("client.requests.submittedOn", undefined, {
+                  date: formatDate(request.createdAt, effectiveLanguage),
+                })}
+              </time>
             </div>
 
-            <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#D9D4CC]">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={16} className="text-[#C4A77D]" />
-                {formatDate(request.createdAt, effectiveLanguage)}
+            <p className="wd-portal-record__description wd-value-wrap">
+              {request.projectDetails}
+            </p>
+
+            {metadata.length ? (
+              <div className="wd-portal-record__meta">
+                {metadata.map((item) => (
+                  <MetaItem key={item.label} {...item} />
+                ))}
               </div>
-            </div>
-          </div>
+            ) : null}
 
-          <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2 lg:grid-cols-4">
-            <InfoItem
-              icon={Phone}
-              label={t("common.labels.phone")}
-              value={request.phone}
-              ltr
-            />
-            <InfoItem
-              icon={Mail}
-              label={t("common.labels.email")}
-              value={request.email}
-              ltr
-            />
-            <InfoItem
-              icon={Globe2}
-              label={t("common.labels.brandIdentity")}
-              value={translateValue("yesNo", request.hasBrandIdentity)}
-            />
-            <InfoItem
-              icon={Globe2}
-              label={t("common.labels.contentReady")}
-              value={translateValue("yesNo", request.hasContentReady)}
-            />
-          </div>
-
-          {(request.budgetRange || request.deadline || request.preferredContactMethod) && (
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {request.budgetRange && (
-                <MiniInfo label={t("common.labels.budget")} value={request.budgetRange} />
-              )}
-
-              {request.deadline && (
-                <MiniInfo label={t("common.labels.deadline")} value={request.deadline} />
-              )}
-
-              {request.preferredContactMethod && (
-                <MiniInfo
-                  label={t("common.labels.preferredContact")}
-                  value={translateValue(
-                    "contactMethods",
-                    request.preferredContactMethod
-                  )}
-                />
-              )}
-            </div>
-          )}
-
-          {request.adminNotes && (
-            <div className="mt-5 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4">
-              <p className="text-sm font-semibold text-[#F8F7F4]">
-                {t("common.labels.adminNote")}
-              </p>
-              <p className="wd-value-wrap mt-2 leading-7 text-[#F8F7F4]/85">
-                {request.adminNotes}
-              </p>
-            </div>
-          )}
-        </Card>
-      ))}
+            {request.adminNotes ? (
+              <div className="wd-portal-note">
+                <p className="wd-portal-note__label">{t("common.labels.adminNote")}</p>
+                <p className="wd-portal-note__text wd-value-wrap">{request.adminNotes}</p>
+              </div>
+            ) : null}
+          </article>
+        );
+      })}
     </div>
   );
 }
 
-function InfoItem({ icon: Icon, label, value, ltr = false }) {
+function MetaItem({ label, value, ltr = false }) {
   return (
-    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
-      <div className="min-w-0 max-w-full">
-        <p className="text-xs text-[#D9D4CC]">{label}</p>
-        <p
-          dir={ltr ? "ltr" : undefined}
-          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
-            ltr ? "wd-ltr" : ""
-          }`}
-        >
-          {value || "-"}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function MiniInfo({ label, value }) {
-  return (
-    <div className="min-w-0 max-w-full rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#D9D4CC]">{label}</p>
-      <p className="wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC]">
+    <div className="wd-portal-meta">
+      <p className="wd-portal-meta__label">{label}</p>
+      <p
+        dir={ltr ? "ltr" : undefined}
+        className={`wd-portal-meta__value${ltr ? " wd-ltr" : ""}`}
+      >
         {value}
       </p>
     </div>

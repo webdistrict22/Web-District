@@ -6,6 +6,7 @@ import SettingsProvider from "./context/SettingsProvider.jsx";
 import AppRoutes from "./routes/AppRoutes";
 import useLanguage from "./hooks/useLanguage";
 import "./components/common/FinalCtaActions.css";
+import "./components/common/AppNotifications.css";
 
 const Analytics = lazy(() => import("@vercel/analytics/react").then((module) => ({ default: module.Analytics })));
 const SpeedInsights = lazy(() => import("@vercel/speed-insights/react").then((module) => ({ default: module.SpeedInsights })));
@@ -140,39 +141,43 @@ function App() {
           <Toaster
             position="top-right"
             gutter={12}
+            containerStyle={{ top: "var(--wd-toast-offset)" }}
             toastOptions={{
-              duration: 4200,
+              duration: 4000,
+              removeDelay: 350,
               style: {
-                background:
-                  "linear-gradient(145deg, rgba(11,11,11,0.98), rgba(32,32,32,0.92))",
-                color: "#F8F7F4",
-                border: "1px solid rgba(196,167,125,0.28)",
-                borderRadius: "18px",
-                boxShadow: "0 22px 70px rgba(0,0,0,0.36)",
-                padding: "14px 16px",
+                width: "min(22.5rem, calc(100vw - 2rem))",
+                maxWidth: "min(22.5rem, calc(100vw - 2rem))",
+                background: "#050505",
+                color: "#F7F2EC",
+                border: "1px solid rgba(214,167,93,0.30)",
+                borderRadius: "12px",
+                boxShadow: "0 18px 54px rgba(0,0,0,0.34)",
+                padding: "12px 14px",
                 fontSize: "14px",
-                fontWeight: 700,
+                fontWeight: 650,
+                lineHeight: 1.45,
               },
               success: {
+                duration: 4000,
                 style: {
-                  border: "1px solid rgba(196,167,125,0.42)",
-                  background:
-                    "linear-gradient(145deg, rgba(11,11,11,0.98), rgba(168,135,79,0.16))",
+                  border: "1px solid rgba(214,167,93,0.48)",
+                  background: "#050505",
                 },
                 iconTheme: {
-                  primary: "#A8874F",
-                  secondary: "#080808",
+                  primary: "#D6A75D",
+                  secondary: "#050505",
                 },
               },
               error: {
+                duration: 6000,
                 style: {
-                  border: "1px solid rgba(100,19,26,0.55)",
-                  background:
-                    "linear-gradient(145deg, rgba(11,11,11,0.98), rgba(100,19,26,0.20))",
+                  border: "1px solid rgba(180,35,24,0.66)",
+                  background: "#050505",
                 },
                 iconTheme: {
-                  primary: "#64131A",
-                  secondary: "#F8F7F4",
+                  primary: "#B42318",
+                  secondary: "#F7F2EC",
                 },
               },
             }}

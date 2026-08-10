@@ -450,5 +450,4 @@ function InfoItem({ icon: Icon, label, value, ltr = false }) {
     </div>
   );
 }
-
 export default AppointmentManager;

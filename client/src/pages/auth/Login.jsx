@@ -1,45 +1,36 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import Container from "../../components/common/Container";
-import SectionHeader from "../../components/common/SectionHeader";
-import Card from "../../components/common/Card";
+import AuthShell, { AuthPanel } from "../../components/auth/AuthShell";
+import AuthStatus from "../../components/auth/AuthStatus";
+import PasswordField from "../../components/auth/PasswordField";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
-import PageMeta from "../../components/common/PageMeta";
 import useAuth from "../../hooks/useAuth";
 import useLanguage from "../../hooks/useLanguage";
 import { focusFirstInvalidControl } from "../../lib/a11y";
 
-const initialForm = {
-  email: "",
-  password: "",
-};
+const initialForm = { email: "", password: "" };
 
 function Login() {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
-
   const { login } = useAuth();
   const { getErrorMessage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
   const updateField = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setForm((previous) => ({ ...previous, [field]: value }));
+    setFieldErrors((previous) => ({ ...previous, [field]: "" }));
     setFormError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formElement = e.currentTarget;
-
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formElement = event.currentTarget;
     const validationMessage = t("auth.login.validation");
     const nextErrors = {
       email: form.email ? "" : validationMessage,
@@ -47,9 +38,7 @@ function Login() {
     };
 
     if (nextErrors.email || nextErrors.password) {
-      const invalidFields = Object.keys(nextErrors).filter(
-        (field) => nextErrors[field]
-      );
+      const invalidFields = Object.keys(nextErrors).filter((field) => nextErrors[field]);
       setFieldErrors(nextErrors);
       setFormError(validationMessage);
       focusFirstInvalidControl(formElement, invalidFields);
@@ -60,15 +49,8 @@ function Login() {
       setIsLoading(true);
       setFormError("");
       const result = await login(form);
-
       const from = location.state?.from;
-
-      if (from) {
-        navigate(from, { replace: true });
-        return;
-      }
-
-      navigate(result.user.role === "admin" ? "/admin" : "/account", {
+      navigate(from || (result.user.role === "admin" ? "/admin" : "/account"), {
         replace: true,
       });
     } catch (error) {
@@ -81,99 +63,59 @@ function Login() {
   };
 
   return (
-    <>
-      <PageMeta
-        title={t("auth.login.eyebrow")}
-        description={t("auth.login.description")}
-        robots="noindex,nofollow"
-      />
+    <AuthShell
+      eyebrow={t("auth.login.eyebrow")}
+      title={t("auth.login.title")}
+      description={t("auth.login.description")}
+    >
+      <AuthPanel>
+        <form onSubmit={handleSubmit} noValidate aria-busy={isLoading} className="wd-auth-form">
+          {formError ? <AuthStatus>{formError}</AuthStatus> : null}
 
-      <section className="wd-section-black pt-32 pb-10">
-        <Container>
-        <div className="mx-auto max-w-xl">
-          <SectionHeader
-            as="h1"
-            eyebrow={t("auth.login.eyebrow")}
-            title={t("auth.login.title")}
-            description={t("auth.login.description")}
-            center
+          <Input
+            tone="light"
+            label={t("auth.login.email")}
+            type="email"
+            name="email"
+            autoComplete="email"
+            required
+            error={fieldErrors.email}
+            placeholder="you@example.com"
+            className="wd-ltr"
+            value={form.email}
+            onChange={(event) => updateField("email", event.target.value)}
           />
-        </div>
-        </Container>
-      </section>
 
-      <section className="wd-section-black py-12 md:pb-20">
-        <Container>
-        <div className="mx-auto max-w-xl">
-          <Card className="wd-card-on-black p-6 md:p-8">
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              aria-busy={isLoading}
-              className="grid gap-5"
-            >
-              {formError && (
-                <p
-                  role="alert"
-                  className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
-                >
-                  {formError}
-                </p>
-              )}
+          <PasswordField
+            label={t("auth.login.password")}
+            name="password"
+            autoComplete="current-password"
+            required
+            error={fieldErrors.password}
+            placeholder={t("auth.login.passwordPlaceholder")}
+            value={form.password}
+            onChange={(event) => updateField("password", event.target.value)}
+            showLabel={t("auth.passwordVisibility.show")}
+            hideLabel={t("auth.passwordVisibility.hide")}
+          />
 
-              <Input
-                label={t("auth.login.email")}
-                type="email"
-                name="email"
-                autoComplete="email"
-                required
-                error={fieldErrors.email}
-                placeholder="you@example.com"
-                className="wd-ltr"
-                value={form.email}
-                onChange={(e) => updateField("email", e.target.value)}
-              />
+          <Link to="/forgot-password" className="wd-auth-panel-link">
+            {t("auth.login.forgotPassword")}
+          </Link>
 
-              <Input
-                label={t("auth.login.password")}
-                type="password"
-                name="password"
-                autoComplete="current-password"
-                required
-                error={fieldErrors.password}
-                placeholder={t("auth.login.passwordPlaceholder")}
-                value={form.password}
-                onChange={(e) => updateField("password", e.target.value)}
-              />
+          <Button type="submit" disabled={isLoading} className="wd-auth-submit">
+            {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
+          </Button>
+          <span className="sr-only" aria-live="polite">
+            {isLoading ? t("auth.login.submitting") : ""}
+          </span>
+        </form>
 
-              <div className="-mt-2 text-right">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm font-semibold text-[#D9D4CC] transition hover:text-[#C4A77D]"
-                >
-                  {t("auth.login.forgotPassword")}
-                </Link>
-              </div>
-
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? t("auth.login.submitting") : t("auth.login.submit")}
-              </Button>
-              <span className="sr-only" aria-live="polite">
-                {isLoading ? t("auth.login.submitting") : ""}
-              </span>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-              {t("auth.login.noAccount")}{" "}
-              <Link to="/signup" className="font-semibold text-[#F8F7F4]">
-                {t("auth.login.createOne")}
-              </Link>
-            </p>
-          </Card>
-        </div>
-        </Container>
-      </section>
-    </>
+        <p className="wd-auth-panel-footer">
+          {t("auth.login.noAccount")} <Link to="/signup">{t("auth.login.createOne")}</Link>
+        </p>
+      </AuthPanel>
+    </AuthShell>
   );
 }
 

@@ -333,7 +333,11 @@ function QualitiesAccordion({ project, qualities, t, isRtl }) {
     handlePanelClick,
     handlePanelPointerDown,
     toggleItem: toggleTopic,
-  } = useRestorableAccordion({ openKey, setOpenKey });
+  } = useRestorableAccordion({
+    openKey,
+    restoreBehavior: "smooth",
+    setOpenKey,
+  });
 
   return (
     <div className="wd-case-study-accordion">
@@ -700,7 +704,7 @@ function CaseStudySection({ project }) {
             <Button
               to="/start"
               icon={false}
-              className="wd-case-study-cta__light-button wd-final-cta-action--primary"
+              className="wd-case-study-cta__light-button wd-final-cta-action--light"
             >
               {t("common.buttons.startProject")}
             </Button>
@@ -708,7 +712,7 @@ function CaseStudySection({ project }) {
               to="/process#faq"
               variant="secondary"
               icon={false}
-              className="wd-case-study-cta__dark-button wd-final-cta-action--secondary"
+              className="wd-case-study-cta__dark-button wd-final-cta-action--dark"
             >
               {t("work.caseStudy.haveQuestions")}
             </Button>

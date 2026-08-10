@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -7,9 +8,9 @@ import Button from "../common/Button";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
-import StartSuccessState from "./StartSuccessState";
 import { focusFirstInvalidControl } from "../../lib/a11y";
 import { trackCustomEvent, trackLead } from "../../lib/metaPixel";
+import { submitAndNavigateToSuccess } from "../../lib/successFlow";
 
 const initialForm = {
   name: "",
@@ -36,6 +37,7 @@ const websiteTypes = [
 
 function WebsiteRequestForm() {
   const submissionKey = useRef(crypto.randomUUID());
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { effectiveLanguage, getErrorMessage, t, translateValue } =
     useLanguage();
@@ -47,7 +49,6 @@ function WebsiteRequestForm() {
     email: user?.email || "",
   }));
   const [isLoading, setIsLoading] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
 
@@ -93,23 +94,29 @@ function WebsiteRequestForm() {
       setIsLoading(true);
       setFormError("");
 
-      await api.post("/requests", { ...form, companyWebsite: "" }, { headers: { "Idempotency-Key": submissionKey.current } });
-
-      const leadParams = {
-        lead_type: "project_request",
-        content_name: "Start Project Form",
-        language: effectiveLanguage,
-      };
-
-      trackLead(leadParams);
-      trackCustomEvent("StartProjectSubmitted", leadParams);
-
-      toast.success(
-        isAuthenticated
-          ? t("start.requestForm.successLoggedIn")
-          : t("start.requestForm.success"),
-      );
-      setIsComplete(true);
+      await submitAndNavigateToSuccess({
+        type: "request",
+        navigate,
+        submit: () => api.post(
+          "/requests",
+          { ...form, companyWebsite: "" },
+          { headers: { "Idempotency-Key": submissionKey.current } },
+        ),
+        beforeNavigate: () => {
+          const leadParams = {
+            lead_type: "project_request",
+            content_name: "Start Project Form",
+            language: effectiveLanguage,
+          };
+          trackLead(leadParams);
+          trackCustomEvent("StartProjectSubmitted", leadParams);
+          toast.success(
+            isAuthenticated
+              ? t("start.requestForm.successLoggedIn")
+              : t("start.requestForm.success"),
+          );
+        },
+      });
     } catch (error) {
       const message = getErrorMessage(error, "start.requestForm.error");
       setFormError(message);
@@ -118,10 +125,6 @@ function WebsiteRequestForm() {
       setIsLoading(false);
     }
   };
-
-  if (isComplete) {
-    return <StartSuccessState type="request" />;
-  }
 
   return (
     <div className="wd-start-form">

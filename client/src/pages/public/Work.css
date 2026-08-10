@@ -299,27 +299,6 @@
   white-space: nowrap;
 }
 
-.wd-work-cta__primary {
-  background: #f7f2ec !important;
-  background-image: none !important;
-  color: #171411 !important;
-}
-
-.wd-work-cta__primary:hover { background: #fffaf2 !important; }
-
-.wd-work-cta__secondary,
-.wd-work-cta__secondary:link,
-.wd-work-cta__secondary:visited,
-.wd-work-cta__secondary:hover,
-.wd-work-cta__secondary:active,
-.wd-work-cta__secondary:focus-visible {
-  border-color: #050505 !important;
-  background: #050505 !important;
-  background-image: none !important;
-  color: #f7f2ec !important;
-  -webkit-text-fill-color: #f7f2ec;
-}
-
 .wd-work-cta__primary:focus-visible,
 .wd-work-cta__secondary:focus-visible {
   outline: 3px solid #171411 !important;

@@ -2,84 +2,94 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
-import Container from "../../components/common/Container";
-import SectionHeader from "../../components/common/SectionHeader";
-import Card from "../../components/common/Card";
-import Input from "../../components/common/Input";
+import AuthShell, { AuthPanel } from "../../components/auth/AuthShell";
+import AuthStatus from "../../components/auth/AuthStatus";
+import PasswordField from "../../components/auth/PasswordField";
 import Button from "../../components/common/Button";
-import PageMeta from "../../components/common/PageMeta";
 import useLanguage from "../../hooks/useLanguage";
 import { focusFirstInvalidControl } from "../../lib/a11y";
+import {
+  getPasswordConfirmationIssue,
+  getPasswordPolicyIssue,
+  getPasswordServerIssue,
+  passwordIssueKey,
+} from "../../lib/passwordPolicy";
 
-const initialForm = {
-  password: "",
-  confirmPassword: "",
-};
+const initialForm = { password: "", confirmPassword: "" };
 
 function ResetPassword() {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
-
   const { token } = useParams();
   const navigate = useNavigate();
   const { getErrorMessage, t } = useLanguage();
+  const issueMessage = (issue) => t(passwordIssueKey(issue));
 
   const updateField = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    setForm((previous) => ({ ...previous, [field]: value }));
+    setFieldErrors((previous) => ({ ...previous, [field]: "" }));
     setFormError("");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formElement = e.currentTarget;
+  const showPasswordError = (field, issue) => {
+    const message = issueMessage(issue);
+    setFieldErrors((previous) => ({ ...previous, [field]: message }));
+    setFormError(message);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formElement = event.currentTarget;
 
     if (!form.password || !form.confirmPassword) {
       const message = t("auth.reset.validation");
-      setFieldErrors({
+      const nextErrors = {
         password: form.password ? "" : message,
         confirmPassword: form.confirmPassword ? "" : message,
-      });
+      };
+      setFieldErrors(nextErrors);
       setFormError(message);
       focusFirstInvalidControl(
         formElement,
-        ["password", "confirmPassword"].filter((field) => !form[field])
+        Object.keys(nextErrors).filter((field) => nextErrors[field]),
       );
       return;
     }
 
-    if (form.password !== form.confirmPassword) {
-      const message = t("auth.reset.noMatch");
-      setFieldErrors({ confirmPassword: message });
-      setFormError(message);
-      focusFirstInvalidControl(formElement, ["confirmPassword"]);
+    const passwordIssue = getPasswordPolicyIssue(form.password);
+    if (passwordIssue) {
+      showPasswordError("password", passwordIssue);
+      focusFirstInvalidControl(formElement, ["password"]);
       return;
     }
 
-    if (form.password.length < 12) {
-      const message = t("auth.reset.passwordLength");
-      setFieldErrors({ password: message });
-      setFormError(message);
-      focusFirstInvalidControl(formElement, ["password"]);
+    const confirmationIssue = getPasswordConfirmationIssue(
+      form.password,
+      form.confirmPassword,
+    );
+    if (confirmationIssue) {
+      showPasswordError("confirmPassword", confirmationIssue);
+      focusFirstInvalidControl(formElement, ["confirmPassword"]);
       return;
     }
 
     try {
       setIsLoading(true);
       setFormError("");
-
-      await api.put(`/auth/reset-password/${token}`, form, { skipAuthRefresh: true });
-
+      await api.put(`/auth/reset-password/${token}`, form, {
+        skipAuthRefresh: true,
+      });
       toast.success(t("auth.reset.success"));
-
       navigate("/login", { replace: true });
     } catch (error) {
-      const message = getErrorMessage(error, "auth.reset.error");
+      const serverIssue = getPasswordServerIssue(error?.response?.data?.message);
+      const message = serverIssue
+        ? issueMessage(serverIssue)
+        : getErrorMessage(error, "auth.reset.error");
+      const field = serverIssue === "mismatch" ? "confirmPassword" : "password";
+      if (serverIssue) setFieldErrors((previous) => ({ ...previous, [field]: message }));
       setFormError(message);
       toast.error(message);
     } finally {
@@ -88,91 +98,53 @@ function ResetPassword() {
   };
 
   return (
-    <>
-      <PageMeta
-        title={t("auth.reset.eyebrow")}
-        description={t("auth.reset.description")}
-        robots="noindex,nofollow"
-      />
+    <AuthShell
+      eyebrow={t("auth.reset.eyebrow")}
+      title={t("auth.reset.title")}
+      description={t("auth.reset.description")}
+    >
+      <AuthPanel>
+        <form onSubmit={handleSubmit} noValidate aria-busy={isLoading} className="wd-auth-form">
+          {formError ? <AuthStatus>{formError}</AuthStatus> : null}
+          <PasswordField
+            label={t("auth.reset.newPassword")}
+            name="password"
+            autoComplete="new-password"
+            required
+            error={fieldErrors.password}
+            helper={t("auth.passwordPolicy.helper")}
+            placeholder={t("auth.signup.passwordPlaceholder")}
+            value={form.password}
+            onChange={(event) => updateField("password", event.target.value)}
+            showLabel={t("auth.passwordVisibility.show")}
+            hideLabel={t("auth.passwordVisibility.hide")}
+          />
+          <PasswordField
+            label={t("auth.reset.confirmPassword")}
+            name="confirmPassword"
+            autoComplete="new-password"
+            required
+            error={fieldErrors.confirmPassword}
+            placeholder={t("auth.reset.confirmPlaceholder")}
+            value={form.confirmPassword}
+            onChange={(event) => updateField("confirmPassword", event.target.value)}
+            showLabel={t("auth.passwordVisibility.show")}
+            hideLabel={t("auth.passwordVisibility.hide")}
+          />
 
-      <section className="wd-section-black pt-32 pb-10">
-        <Container>
-          <div className="mx-auto max-w-xl">
-            <SectionHeader
-              as="h1"
-              eyebrow={t("auth.reset.eyebrow")}
-              title={t("auth.reset.title")}
-              description={t("auth.reset.description")}
-              center
-            />
-          </div>
-        </Container>
-      </section>
+          <Button type="submit" disabled={isLoading} className="wd-auth-submit">
+            {isLoading ? t("auth.reset.submitting") : t("auth.reset.submit")}
+          </Button>
+          <span className="sr-only" aria-live="polite">
+            {isLoading ? t("auth.reset.submitting") : ""}
+          </span>
+        </form>
 
-      <section className="wd-section-black py-12 md:pb-20">
-        <Container>
-          <div className="mx-auto max-w-xl">
-            <Card className="wd-card-on-black p-6 md:p-8">
-              <form
-                onSubmit={handleSubmit}
-                noValidate
-                aria-busy={isLoading}
-                className="grid gap-5"
-              >
-                {formError && (
-                  <p
-                    role="alert"
-                    className="rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/8 p-3 text-sm text-[#F8F7F4]"
-                  >
-                    {formError}
-                  </p>
-                )}
-
-                <Input
-                  label={t("auth.reset.newPassword")}
-                  type="password"
-                  name="password"
-                  autoComplete="new-password"
-                  required
-                  error={fieldErrors.password}
-                  placeholder={t("auth.signup.passwordPlaceholder")}
-                  value={form.password}
-                  onChange={(e) => updateField("password", e.target.value)}
-                />
-
-                <Input
-                  label={t("auth.reset.confirmPassword")}
-                  type="password"
-                  name="confirmPassword"
-                  autoComplete="new-password"
-                  required
-                  error={fieldErrors.confirmPassword}
-                  placeholder={t("auth.reset.confirmPlaceholder")}
-                  value={form.confirmPassword}
-                  onChange={(e) =>
-                    updateField("confirmPassword", e.target.value)
-                  }
-                />
-
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? t("auth.reset.submitting") : t("auth.reset.submit")}
-                </Button>
-                <span className="sr-only" aria-live="polite">
-                  {isLoading ? t("auth.reset.submitting") : ""}
-                </span>
-              </form>
-
-              <p className="mt-6 text-center text-sm text-[#D9D4CC]">
-                {t("auth.reset.goBack")}{" "}
-                <Link to="/login" className="font-semibold text-[#F8F7F4]">
-                  {t("auth.signup.login")}
-                </Link>
-              </p>
-            </Card>
-          </div>
-        </Container>
-      </section>
-    </>
+        <p className="wd-auth-panel-footer">
+          {t("auth.reset.goBack")} <Link to="/login">{t("auth.signup.login")}</Link>
+        </p>
+      </AuthPanel>
+    </AuthShell>
   );
 }
 

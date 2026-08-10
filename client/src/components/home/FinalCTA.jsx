@@ -28,14 +28,14 @@ function FinalCTA({ liveUrl = "" }) {
           </h2>
           <p>{t("home.finalCta.description")}</p>
           <div className="wd-final-cta__actions">
-            <Button to="/start" icon={false} onClick={trackStartProject} className="wd-final-cta__primary wd-final-cta-action--primary">
+            <Button to="/start" icon={false} onClick={trackStartProject} className="wd-final-cta__primary wd-final-cta-action--light">
               {t("common.buttons.startProject")}
             </Button>
             <Button
               to="/work"
               variant="secondary"
               onClick={trackSeeWork}
-              className="wd-final-cta__secondary wd-final-cta-action--secondary"
+              className="wd-final-cta__secondary wd-final-cta-action--dark"
             >
               {t("common.buttons.viewWorkShort")}
             </Button>

@@ -3,6 +3,7 @@ import Card from "../common/Card";
 import StatusBadge from "../common/StatusBadge";
 import EmptyState from "../common/EmptyState";
 import { formatDate } from "../../lib/helpers";
+import { formatSlotTime } from "../start/slotFormatting";
 import useLanguage from "../../hooks/useLanguage";
 
 function AppointmentList({ appointments = [] }) {
@@ -65,7 +66,7 @@ function AppointmentList({ appointments = [] }) {
               label={t("common.labels.time")}
               value={
                 appointment.slot
-                  ? `${appointment.slot.startTime} - ${appointment.slot.endTime}`
+                  ? `${formatSlotTime(appointment.slot.startTime, effectiveLanguage)}–${formatSlotTime(appointment.slot.endTime, effectiveLanguage)}`
                   : "-"
               }
               ltr

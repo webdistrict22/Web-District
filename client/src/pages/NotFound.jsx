@@ -1,17 +1,14 @@
-import PageMeta from "../components/common/PageMeta";
-import Container from "../components/common/Container";
 import Button from "../components/common/Button";
+import Container from "../components/common/Container";
+import PageMeta from "../components/common/PageMeta";
+import "../components/public/PublicUtilityPages.css";
 import useLanguage from "../hooks/useLanguage";
 
 function NotFound() {
   const { t } = useLanguage();
 
   return (
-    <main
-      id="main-content"
-      tabIndex="-1"
-      className="wd-section-black flex min-h-screen scroll-mt-8 items-center py-32"
-    >
+    <section className="wd-not-found">
       <PageMeta
         title={t("notFound.metaTitle")}
         description={t("notFound.metaDescription")}
@@ -19,28 +16,23 @@ function NotFound() {
       />
 
       <Container>
-        <div className="wd-card-on-black mx-auto max-w-2xl rounded-[2rem] p-8 text-center md:p-12">
-          <p className="text-sm font-bold uppercase tracking-[0.34em] text-[#C4A77D]">
-            404
-          </p>
-
-          <h1 className="font-display mt-5 text-5xl font-extrabold leading-[1] tracking-[-0.07em] text-[#F8F7F4] md:text-7xl">
-            {t("notFound.title")}
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-xl leading-8 text-[#D9D4CC]">
-            {t("notFound.description")}
-          </p>
-
-          <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button to="/">{t("common.buttons.backHome")}</Button>
-            <Button to="/start" variant="secondary">
-              {t("common.buttons.startProject")}
-            </Button>
+        <div className="wd-not-found__layout">
+          <p className="wd-not-found__code" aria-hidden="true">404</p>
+          <div className="wd-not-found__copy">
+            <h1 className="font-display">{t("notFound.title")}</h1>
+            <p>{t("notFound.description")}</p>
+            <div className="wd-not-found__actions">
+              <Button to="/" className="wd-final-cta-action--light">
+                {t("common.buttons.backHome")}
+              </Button>
+              <Button to="/start" className="wd-final-cta-action--dark">
+                {t("common.buttons.startProject")}
+              </Button>
+            </div>
           </div>
         </div>
       </Container>
-    </main>
+    </section>
   );
 }
 

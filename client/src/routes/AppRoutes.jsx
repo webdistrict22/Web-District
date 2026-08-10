@@ -115,6 +115,7 @@ function AppRoutes() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password/:token" element={<ResetPassword />} />
           <Route path="verify-email/:token" element={<VerifyEmail />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
 
         <Route
@@ -206,7 +207,6 @@ function AppRoutes() {
           element={<Navigate to="/admin" replace />}
         />
 
-        <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
     </BrowserRouter>

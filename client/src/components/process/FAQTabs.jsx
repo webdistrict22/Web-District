@@ -82,7 +82,7 @@ function FAQTabs({ categories }) {
         id={`${baseId}-panel-${active.id}`}
         role="tabpanel"
         aria-labelledby={`${baseId}-tab-${active.id}`}
-        className={`wd-faq-tabs__panel${openQuestion === null ? " is-closed" : " is-open"}`}
+        className="wd-faq-tabs__panel"
       >
         {active.items.map((item, index) => {
           const isOpen = openQuestion === index;

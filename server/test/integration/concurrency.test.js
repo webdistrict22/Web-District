@@ -31,6 +31,7 @@ const MaintenanceLock = require("../../models/MaintenanceLock");
 const RateLimitRecord = require("../../models/RateLimitRecord");
 const RefreshSession = require("../../models/RefreshSession");
 const User = require("../../models/User");
+const WebsiteRequest = require("../../models/WebsiteRequest");
 const { runSlotBackfill } = require("../../services/slotBackfillService");
 const { reconcileSlots } = require("../../services/slotReconciliationService");
 const { previewSlotMaintenance, runSlotMaintenance, safeCleanup } = require("../../services/slotMaintenanceService");
@@ -39,11 +40,12 @@ const { claimNext, processOne } = require("../../services/outboxWorker");
 const { createRefreshSession, rotateRefreshSession } = require("../../services/refreshSessionService");
 const { runIdempotentTransaction } = require("../../services/idempotencyService");
 const { withMongoTransaction } = require("../../services/transactionService");
+const { linkVerifiedGuestRecords } = require("../../utils/linkGuestRecords");
 const { addCalendarDays, bookingWindowEnd, formatDateInZone, zonedDateTimeToUtc } = require("../../utils/slotTime");
 
 const collections = [
   Appointment, CallSlot, Contract, EmailOutbox, IdempotencyRecord,
-  MaintenanceLock, RateLimitRecord, RefreshSession, User,
+  MaintenanceLock, RateLimitRecord, RefreshSession, User, WebsiteRequest,
 ];
 let connected = false;
 
@@ -190,6 +192,79 @@ test("refresh rotation detects reuse and revokes the entire session family", asy
   assert.equal(results.filter((item) => item.token).length, 1);
   assert.equal(results.filter((item) => item.error === "reuse").length, 1);
   assert.equal(await RefreshSession.countDocuments({ sessionFamily: created.refreshSession.sessionFamily, revokedAt: null }), 0);
+});
+
+test("guest records are claimed only by a verified matching client inside a transaction", async () => {
+  const verifiedUser = await User.create({
+    name: "Verified Client", email: "claim@integration.test", phone: "+201000000010",
+    password: "correct horse battery staple", role: "client", emailVerifiedAt: new Date(),
+  });
+  const unverifiedUser = {
+    _id: new mongoose.Types.ObjectId(),
+    email: "claim@integration.test",
+    role: "client",
+    emailVerifiedAt: null,
+  };
+  const matchingRequest = await WebsiteRequest.create({
+    name: "Matching Guest", phone: "+201000000012", email: "claim@integration.test",
+    websiteType: "Business Website", projectDetails: "Verified guest claim fixture",
+  });
+  const otherRequest = await WebsiteRequest.create({
+    name: "Other Guest", phone: "+201000000013", email: "other@integration.test",
+    websiteType: "Business Website", projectDetails: "Must remain unclaimed",
+  });
+  const archivedRequest = await WebsiteRequest.create({
+    name: "Archived Guest", phone: "+201000000014", email: "claim@integration.test",
+    websiteType: "Business Website", projectDetails: "Archived records stay unclaimed",
+    archivedAt: new Date(),
+  });
+  const slot = await CallSlot.create({
+    date: "2030-01-02", startTime: "16:00", endTime: "16:30",
+    startsAt: new Date("2030-01-02T14:00:00Z"), endsAt: new Date("2030-01-02T14:30:00Z"),
+  });
+  const matchingAppointment = await Appointment.create({
+    slot: slot._id, name: "Matching Guest", phone: "+201000000015",
+    email: "claim@integration.test", topic: "Verified guest claim fixture",
+  });
+  const matchingContract = await Contract.create({
+    request: matchingRequest._id,
+    title: "Guest claim contract", clientName: "Matching Guest",
+    clientEmail: "claim@integration.test", websiteType: "Business Website",
+    scopeSummary: "Contract follows its verified matching request",
+  });
+
+  assert.deepEqual(await linkVerifiedGuestRecords(unverifiedUser), {
+    linkedRequests: 0,
+    linkedAppointments: 0,
+    linkedContracts: 0,
+  });
+  await assert.rejects(
+    linkVerifiedGuestRecords(verifiedUser),
+    /require a MongoDB transaction/,
+  );
+
+  const claimed = await withMongoTransaction((session) =>
+    linkVerifiedGuestRecords(verifiedUser, { session, auditKey: "integration:verified-claim" })
+  );
+  assert.deepEqual(claimed, {
+    linkedRequests: 1,
+    linkedAppointments: 1,
+    linkedContracts: 1,
+  });
+  assert.equal(String((await WebsiteRequest.findById(matchingRequest._id).lean()).client), String(verifiedUser._id));
+  assert.equal(String((await Appointment.findById(matchingAppointment._id).lean()).client), String(verifiedUser._id));
+  assert.equal(String((await Contract.findById(matchingContract._id).lean()).client), String(verifiedUser._id));
+  assert.equal((await WebsiteRequest.findById(otherRequest._id).lean()).client, null);
+  assert.equal((await WebsiteRequest.findById(archivedRequest._id).lean()).client, null);
+
+  const repeated = await withMongoTransaction((session) =>
+    linkVerifiedGuestRecords(verifiedUser, { session, auditKey: "integration:verified-claim-repeat" })
+  );
+  assert.deepEqual(repeated, {
+    linkedRequests: 0,
+    linkedAppointments: 0,
+    linkedContracts: 0,
+  });
 });
 
 test("contract creation is idempotent", async () => {

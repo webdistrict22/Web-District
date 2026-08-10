@@ -10,6 +10,7 @@
     "build": "vite build",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "bundle:check": "node scripts/check-bundle-budget.mjs",
+    "test:unit": "node --test test/*.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

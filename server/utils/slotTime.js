@@ -77,8 +77,49 @@ const bookingWindowEnd = (now = new Date(), timezone = getBusinessTimezone()) =>
 const getFutureSlotQuery = (now = new Date()) => ({ startsAt: { $gt: now } });
 const isFutureSlot = (slot, now = new Date()) => Boolean(slot?.startsAt && new Date(slot.startsAt) > now);
 
+const getFriendlyTimezoneLabel = (timezone = getBusinessTimezone()) =>
+  timezone === "Africa/Cairo" ? "Cairo time" : "local time";
+
+const formatSlotDisplay = (
+  slot,
+  {
+    locale = "en-US",
+    timezone = slot?.timezone || getBusinessTimezone(),
+    timezoneLabel = getFriendlyTimezoneLabel(timezone),
+  } = {}
+) => {
+  const startsAt = new Date(slot?.startsAt);
+  const endsAt = new Date(slot?.endsAt);
+
+  if (
+    !slot?.startsAt ||
+    !slot?.endsAt ||
+    Number.isNaN(startsAt.getTime()) ||
+    Number.isNaN(endsAt.getTime()) ||
+    endsAt <= startsAt ||
+    !validateTimezone(timezone)
+  ) {
+    return "Not available";
+  }
+
+  const date = new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: timezone,
+  }).format(startsAt);
+  const timeFormatter = new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: timezone,
+  });
+
+  return `${date} · ${timeFormatter.format(startsAt)}–${timeFormatter.format(endsAt)} (${timezoneLabel})`;
+};
+
 module.exports = {
   datePattern, timePattern, getBusinessTimezone, getBookingWindowDays, validateTimezone,
   formatDateInZone, zonedDateTimeToUtc, buildCanonicalSlotFields, addCalendarDays, bookingWindowEnd,
-  getFutureSlotQuery, isFutureSlot,
+  getFutureSlotQuery, isFutureSlot, getFriendlyTimezoneLabel, formatSlotDisplay,
 };

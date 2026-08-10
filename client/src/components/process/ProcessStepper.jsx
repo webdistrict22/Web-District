@@ -11,6 +11,15 @@ function ProcessStepper({ steps }) {
   const NextIcon = isRtl ? ArrowLeft : ArrowRight;
   if (!activeStep) return null;
 
+  const releaseTouchFocus = (event) => {
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+
+    const control = event.currentTarget;
+    window.requestAnimationFrame(() => {
+      if (document.activeElement === control) control.blur();
+    });
+  };
+
   return (
     <div className="wd-process-stepper" aria-label={t("process.controls.stepperLabel")}>
       <div className="wd-process-stepper__progress" dir="ltr">
@@ -68,6 +77,8 @@ function ProcessStepper({ steps }) {
           type="button"
           dir={isRtl ? "rtl" : "ltr"}
           onClick={() => setActiveIndex((current) => Math.max(0, current - 1))}
+          onPointerCancel={releaseTouchFocus}
+          onPointerUp={releaseTouchFocus}
           disabled={activeIndex === 0}
           aria-label={t("process.controls.previousAria")}
         >
@@ -87,6 +98,8 @@ function ProcessStepper({ steps }) {
             onClick={() =>
               setActiveIndex((current) => Math.min(steps.length - 1, current + 1))
             }
+            onPointerCancel={releaseTouchFocus}
+            onPointerUp={releaseTouchFocus}
             aria-label={t("process.controls.nextAria")}
           >
             <span>{t("process.controls.next")}</span>

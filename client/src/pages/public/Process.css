@@ -125,16 +125,14 @@
 
 .wd-process-stepper__panel {
   display: grid;
-  height: 20.5rem;
+  min-height: 19rem;
   box-sizing: border-box;
   grid-template-columns: minmax(0, 0.82fr) minmax(20rem, 1.18fr);
   align-items: center;
   gap: clamp(1.75rem, 4vw, 4rem);
   margin-top: 2.15rem;
-  border: 1px solid rgb(247 242 236 / 0.12);
-  border-radius: 1rem;
-  background: #0c0b0a;
-  padding: clamp(1.35rem, 3vw, 2.5rem);
+  border-top: 1px solid rgb(247 242 236 / 0.12);
+  padding: clamp(1.75rem, 3.5vw, 2.75rem) clamp(0rem, 1.5vw, 1rem);
   animation: wd-process-panel-in 200ms ease both;
 }
 
@@ -255,11 +253,6 @@
   color: var(--wd-dark-ink);
 }
 
-.wd-process-stepper__controls > button:not(:disabled):hover {
-  border-color: var(--wd-signature-gold);
-  transform: translateY(-1px);
-}
-
 .wd-process-stepper__controls > button:focus-visible,
 .wd-process-stepper__start:focus-visible {
   outline: 2px solid var(--wd-primary-off-white);
@@ -269,6 +262,17 @@
 .wd-process-stepper__controls > button:disabled {
   cursor: not-allowed;
   opacity: 0.42;
+}
+
+.wd-process-stepper__controls > button:not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wd-process-stepper__controls > button:not(:disabled):hover {
+    border-color: var(--wd-signature-gold);
+    transform: translateY(-1px);
+  }
 }
 
 .wd-process-faq {
@@ -314,6 +318,7 @@
 .wd-faq-tabs {
   width: min(100%, 54rem);
   margin: 2.25rem auto 0;
+  overflow-anchor: none;
 }
 
 .wd-faq-tabs__scroller {
@@ -359,11 +364,6 @@
   margin-top: 1.1rem;
 }
 
-.wd-faq-tabs__panel.is-closed {
-  min-height: 38rem;
-  grid-template-rows: repeat(7, minmax(0, 1fr));
-}
-
 .wd-faq-row {
   overflow: hidden;
   border: 1px solid rgb(109 104 98 / 0.24);
@@ -380,13 +380,10 @@
   border: 0;
   background: transparent;
   color: var(--wd-dark-ink);
+  min-height: 4.75rem;
   padding: 1.15rem 1.25rem;
   text-align: start;
   cursor: pointer;
-}
-
-.wd-faq-tabs__panel.is-closed .wd-faq-row > button {
-  height: 100%;
 }
 
 .wd-faq-row > button > span:first-child {
@@ -491,31 +488,6 @@
   gap: 0.75rem;
 }
 
-.wd-process-cta .wd-process-cta__primary {
-  border-color: #050505;
-  background: #050505;
-  color: rgb(247 242 236);
-  -webkit-text-fill-color: rgb(247 242 236);
-}
-
-.wd-process-cta .wd-process-cta__primary:hover,
-.wd-process-cta .wd-process-cta__primary:focus-visible {
-  border-color: #050505;
-  background: #171411;
-  color: rgb(247 242 236);
-  -webkit-text-fill-color: rgb(247 242 236);
-}
-
-.wd-process-cta .wd-process-cta__primary svg {
-  color: rgb(247 242 236);
-  stroke: currentColor;
-}
-
-.wd-process-cta__secondary {
-  border-color: rgb(23 20 17 / 0.34) !important;
-  color: var(--wd-dark-ink) !important;
-}
-
 [dir="rtl"] .wd-process-stepper__eyebrow,
 [dir="rtl"] .wd-process-hero__eyebrow,
 [dir="rtl"] .wd-process-faq__eyebrow,
@@ -536,13 +508,13 @@
   }
   .wd-process-stepper__node strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .wd-process-stepper__panel {
-    height: 34rem;
+    min-height: 0;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto;
     align-items: start;
     gap: 1.35rem;
     margin-top: 1.5rem;
-    padding: 1.25rem;
+    padding: 1.5rem 0 0;
   }
   .wd-process-stepper__count { margin-bottom: 1.2rem; }
   .wd-process-stepper__description { font-size: 0.92rem; line-height: 1.7; }
@@ -575,8 +547,7 @@
     font-size: 0.72rem;
     white-space: nowrap;
   }
-  .wd-faq-tabs__panel.is-closed { min-height: 44rem; }
-  .wd-faq-row > button { padding: 1rem; }
+  .wd-faq-row > button { min-height: 4.75rem; padding: 1rem; }
   .wd-faq-row__panel p { padding: 0.9rem 1rem 1.1rem; }
   .wd-process-cta { padding: 4.75rem 0 5rem; }
   .wd-process-cta__inner { grid-template-columns: 1fr; gap: 1.75rem; }
@@ -591,13 +562,12 @@
     left: calc(50% + 1.18rem);
     width: calc(100% - 2.36rem);
   }
-  .wd-process-stepper__panel { height: 37rem; padding: 1.05rem; }
+  .wd-process-stepper__panel { padding-top: 1.35rem; }
   .wd-process-stepper__controls { gap: 0.55rem; }
   .wd-process-stepper__controls > button,
   .wd-process-stepper__start { font-size: 0.76rem; }
   .wd-faq-tabs__list { gap: 0.25rem; }
   .wd-faq-tabs__list button { font-size: 0.65rem; }
-  .wd-faq-tabs__panel.is-closed { min-height: 50rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

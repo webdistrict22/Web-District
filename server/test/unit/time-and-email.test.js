@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const CallSlot = require("../../models/CallSlot");
-const { zonedDateTimeToUtc, buildCanonicalSlotFields, formatDateInZone, addCalendarDays, bookingWindowEnd, validateTimezone } = require("../../utils/slotTime");
+const { zonedDateTimeToUtc, buildCanonicalSlotFields, formatDateInZone, addCalendarDays, bookingWindowEnd, validateTimezone, formatSlotDisplay } = require("../../utils/slotTime");
 const {
   buildSlotOperations,
   buildOutsideHorizonCleanupQuery,
@@ -10,7 +10,7 @@ const {
 } = require("../../services/slotMaintenanceService");
 const { deterministicMessageId, sanitizePayload } = require("../../services/outboxService");
 const { getBackoffMs, isPermanentError } = require("../../services/outboxWorker");
-const { renderEmailTemplate } = require("../../utils/emailTemplates");
+const { EMAIL_TEMPLATE_TYPES, renderEmailTemplate } = require("../../utils/emailTemplates");
 
 test("Cairo wall-clock slots round-trip through UTC", () => {
   const utc = zonedDateTimeToUtc("2026-08-05", "16:00", "Africa/Cairo");
@@ -99,6 +99,18 @@ test("booking horizon ends on the seventh Cairo calendar day", () => {
   assert.equal(formatDateInZone(end, "Africa/Cairo"), "2026-08-11");
 });
 
+test("slot display uses authoritative timestamps and a friendly Cairo range", () => {
+  process.env.BUSINESS_TIMEZONE = "Africa/Cairo";
+  const display = formatSlotDisplay({
+    startsAt: new Date("2026-08-10T13:00:00.000Z"),
+    endsAt: new Date("2026-08-10T14:00:00.000Z"),
+    timezone: "Africa/Cairo",
+  });
+
+  assert.equal(display, "Monday, August 10 · 4:00 PM–5:00 PM (Cairo time)");
+  assert.doesNotMatch(display, /16:00|Africa\/Cairo|2026-08-10/);
+});
+
 test("outside-horizon cleanup begins strictly after the Cairo booking window and excludes manual slots", () => {
   const now = new Date("2026-08-05T12:00:00Z");
   const query = buildOutsideHorizonCleanupQuery(now);
@@ -131,4 +143,34 @@ test("email templates escape stored customer content", () => {
   assert.doesNotMatch(rendered.html, /<script>alert/);
   assert.doesNotMatch(rendered.html, /<img src=x>/);
   assert.match(rendered.html, /&lt;img src=x&gt;/);
+});
+
+test("all transactional templates render compact HTML, text, and website CTAs", () => {
+  process.env.CLIENT_URL = "https://www.web-district.com";
+  const payload = {
+    name: "Client Name",
+    businessName: "Studio Name",
+    email: "client@example.com",
+    status: "Accepted",
+    token: "a".repeat(64),
+    ctaPath: `/reset-password/${"b".repeat(64)}`,
+    title: "Project update",
+    intro: "A concise project update.",
+    subject: "Web District project update",
+    rows: [{ label: "Slot", value: "Monday, August 10 · 4:00 PM–5:00 PM (Cairo time)" }],
+  };
+
+  for (const template of EMAIL_TEMPLATE_TYPES) {
+    const rendered = renderEmailTemplate(template, payload);
+    assert.ok(rendered.subject);
+    assert.ok(rendered.text);
+    assert.ok(rendered.html);
+    assert.match(rendered.html, /display:none;max-height:0/);
+    assert.doesNotMatch(rendered.html, /\b(?:undefined|null)\b/);
+    assert.doesNotMatch(rendered.text, /\b(?:undefined|null)\b/);
+    assert.doesNotMatch(rendered.html, /api\.web-district\.com|onrender\.com|localhost|127\.0\.0\.1/i);
+    assert.doesNotMatch(rendered.html, /background:#050505[^>]+color:#050505/i);
+    assert.match(rendered.html, /color:#F7F2EC;-webkit-text-fill-color:#F7F2EC/);
+    assert.match(rendered.text, /https:\/\/www\.web-district\.com\//);
+  }
 });

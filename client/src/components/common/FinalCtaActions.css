@@ -1,8 +1,9 @@
-.wd-final-cta-action--primary,
-.wd-final-cta-action--primary:link,
-.wd-final-cta-action--primary:visited,
-.wd-final-cta-action--primary:hover,
-.wd-final-cta-action--primary:focus-visible {
+.wd-final-cta-action--dark,
+.wd-final-cta-action--dark:link,
+.wd-final-cta-action--dark:visited,
+.wd-final-cta-action--dark:hover,
+.wd-final-cta-action--dark:active,
+.wd-final-cta-action--dark:focus-visible {
   border-color: var(--wd-main-black) !important;
   background: var(--wd-main-black) !important;
   background-image: none !important;
@@ -11,11 +12,12 @@
   box-shadow: none !important;
 }
 
-.wd-final-cta-action--secondary,
-.wd-final-cta-action--secondary:link,
-.wd-final-cta-action--secondary:visited,
-.wd-final-cta-action--secondary:hover,
-.wd-final-cta-action--secondary:focus-visible {
+.wd-final-cta-action--light,
+.wd-final-cta-action--light:link,
+.wd-final-cta-action--light:visited,
+.wd-final-cta-action--light:hover,
+.wd-final-cta-action--light:active,
+.wd-final-cta-action--light:focus-visible {
   border-color: rgb(23 20 17 / 0.34) !important;
   background: var(--wd-primary-off-white) !important;
   background-image: none !important;
@@ -24,42 +26,49 @@
   box-shadow: none !important;
 }
 
-.wd-final-cta-action--primary svg,
-.wd-final-cta-action--secondary svg {
+.wd-final-cta-action--dark svg,
+.wd-final-cta-action--light svg {
   color: currentColor !important;
-  stroke: currentColor;
+  stroke: currentColor !important;
 }
 
-.wd-final-cta-action--primary:active,
-.wd-final-cta-action--secondary:active {
+.wd-final-cta-action--dark:active,
+.wd-final-cta-action--light:active {
   transform: translateY(1px) !important;
 }
 
-.wd-final-cta-action--primary:focus-visible,
-.wd-final-cta-action--secondary:focus-visible {
+.wd-final-cta-action--dark:focus-visible,
+.wd-final-cta-action--light:focus-visible {
   outline: 3px solid var(--wd-dark-ink) !important;
   outline-offset: 3px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .wd-final-cta-action--primary:hover {
+  .wd-final-cta-action--dark:hover {
     border-color: var(--wd-dark-ink) !important;
     background: var(--wd-primary-off-white) !important;
     color: var(--wd-dark-ink) !important;
     -webkit-text-fill-color: var(--wd-dark-ink) !important;
+    transform: translateY(-1px) !important;
   }
 
-  .wd-final-cta-action--secondary:hover {
+  .wd-final-cta-action--light:hover {
     border-color: var(--wd-main-black) !important;
     background: var(--wd-main-black) !important;
     color: var(--wd-primary-off-white) !important;
     -webkit-text-fill-color: var(--wd-primary-off-white) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .wd-final-cta-action--dark:active,
+  .wd-final-cta-action--light:active {
+    transform: translateY(1px) !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wd-final-cta-action--primary,
-  .wd-final-cta-action--secondary {
+  .wd-final-cta-action--dark,
+  .wd-final-cta-action--light {
     transition: none !important;
   }
 }

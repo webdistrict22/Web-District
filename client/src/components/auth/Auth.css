@@ -1,0 +1,375 @@
+.wd-auth-page {
+  min-height: 43rem;
+  overflow: clip;
+  background: var(--wd-main-black);
+  color: var(--wd-primary-off-white);
+  padding: clamp(7.5rem, 10vw, 9rem) 0 clamp(4.5rem, 7vw, 6.5rem);
+}
+
+.wd-auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(28rem, 1.18fr);
+  align-items: start;
+  gap: clamp(2.5rem, 7vw, 7rem);
+}
+
+.wd-auth-intro {
+  position: sticky;
+  top: 8rem;
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.wd-auth-eyebrow {
+  margin: 0;
+  color: var(--wd-signature-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.wd-auth-intro h1 {
+  max-width: 12ch;
+  margin: 1.1rem 0 0;
+  color: var(--wd-primary-off-white);
+  font-size: clamp(2.8rem, 5.3vw, 5.25rem);
+  font-weight: 800;
+  letter-spacing: -0.07em;
+  line-height: 0.97;
+  text-wrap: balance;
+}
+
+.wd-auth-description {
+  max-width: 35rem;
+  margin: 1.35rem 0 0;
+  color: var(--wd-stone-gray);
+  font-size: 1rem;
+  line-height: 1.72;
+  text-wrap: pretty;
+}
+
+.wd-auth-index {
+  display: block;
+  margin-top: clamp(3.5rem, 8vw, 7rem);
+  color: rgb(170 163 156 / 0.62);
+  font-family: "Sora", system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.wd-auth-panel {
+  min-width: 0;
+  border-radius: 0.75rem;
+  background: var(--wd-primary-off-white);
+  color: var(--wd-dark-ink);
+  padding: clamp(1.4rem, 3.4vw, 2.75rem);
+}
+
+.wd-auth-form {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.wd-auth-form--after-status {
+  margin-top: 1.15rem;
+}
+
+.wd-auth-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+
+.wd-auth-form .wd-auth-submit,
+.wd-auth-form .wd-auth-submit:link,
+.wd-auth-form .wd-auth-submit:visited,
+.wd-auth-form .wd-auth-submit:hover,
+.wd-auth-form .wd-auth-submit:active,
+.wd-auth-form .wd-auth-submit:focus-visible {
+  min-height: 3.2rem;
+  margin-top: 0.35rem;
+  border: 1px solid var(--wd-main-black) !important;
+  border-radius: 0.45rem !important;
+  background: var(--wd-main-black) !important;
+  background-image: none !important;
+  color: var(--wd-primary-off-white) !important;
+  -webkit-text-fill-color: var(--wd-primary-off-white) !important;
+  box-shadow: none !important;
+}
+
+.wd-auth-form .wd-auth-submit svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.wd-auth-form .wd-auth-submit:active {
+  transform: translateY(1px);
+}
+
+.wd-auth-form .wd-auth-submit:focus-visible {
+  outline: 3px solid var(--wd-signature-gold);
+  outline-offset: 3px;
+}
+
+.wd-auth-panel :where(input) {
+  min-height: 3.15rem;
+}
+
+.wd-auth-panel-link,
+.wd-auth-panel-footer a {
+  color: var(--wd-dark-ink);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: rgb(214 167 93 / 0.72);
+  text-underline-offset: 0.24rem;
+}
+
+.wd-auth-panel-link {
+  justify-self: end;
+  margin-top: -0.25rem;
+  font-size: 0.88rem;
+}
+
+.wd-auth-panel-footer {
+  margin: 1.6rem 0 0;
+  border-top: 1px solid rgb(23 20 17 / 0.16);
+  padding-top: 1.25rem;
+  color: var(--wd-warm-taupe);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.wd-auth-status {
+  border-inline-start: 3px solid var(--wd-signature-gold);
+  background: var(--wd-soft-ivory);
+  color: var(--wd-dark-ink);
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.wd-auth-status--error {
+  border-inline-start-color: #8b2f2f;
+  background: #f0dfd8;
+}
+
+.wd-auth-status--success {
+  border-inline-start-color: var(--wd-gold-surface);
+}
+
+.wd-password-field > label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--wd-dark-ink);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.wd-password-field__control {
+  position: relative;
+  min-width: 0;
+}
+
+.wd-password-field__input {
+  display: block;
+  width: 100%;
+  min-height: 3.15rem;
+  border: 1px solid rgb(23 20 17 / 0.22);
+  border-radius: 0.6rem;
+  outline: none;
+  background: #fffdfc;
+  color: var(--wd-dark-ink);
+  padding: 0.75rem 3.85rem 0.75rem 1rem;
+  color-scheme: light;
+  direction: ltr;
+  text-align: left;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.wd-password-field__input::placeholder {
+  color: var(--wd-warm-taupe);
+  opacity: 1;
+}
+
+.wd-password-field__input:focus {
+  border-color: var(--wd-gold-surface);
+}
+
+.wd-password-field__toggle {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 0.35rem;
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid rgb(23 20 17 / 0.22);
+  border-radius: 0.45rem;
+  background: var(--wd-soft-ivory);
+  color: var(--wd-dark-ink);
+  opacity: 1;
+  visibility: visible;
+  cursor: pointer;
+}
+
+.wd-password-field__toggle svg {
+  display: block;
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke: currentColor;
+}
+
+[dir="rtl"] .wd-password-field__input {
+  padding-right: 1rem;
+  padding-left: 3.85rem;
+}
+
+[dir="rtl"] .wd-password-field__toggle {
+  right: auto;
+  left: 0.35rem;
+}
+
+.wd-password-field__helper,
+.wd-password-field__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.79rem;
+  line-height: 1.5;
+}
+
+.wd-password-field__helper {
+  color: var(--wd-warm-taupe);
+}
+
+.wd-password-field__error {
+  color: #7f2929;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wd-auth-form .wd-auth-submit:hover {
+    background: var(--wd-primary-off-white) !important;
+    color: var(--wd-dark-ink) !important;
+    -webkit-text-fill-color: var(--wd-dark-ink) !important;
+    transform: translateY(-1px);
+  }
+
+  .wd-auth-form .wd-auth-submit:active {
+    transform: translateY(1px);
+  }
+
+  .wd-password-field__toggle:hover {
+    border-color: var(--wd-dark-ink);
+    background: var(--wd-signature-gold);
+  }
+}
+
+@media (max-width: 800px) {
+  .wd-auth-page {
+    min-height: 0;
+    padding: 7rem 0 4.75rem;
+  }
+
+  .wd-auth-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.25rem;
+  }
+
+  .wd-auth-intro {
+    position: static;
+    padding-top: 0;
+  }
+
+  .wd-auth-intro h1 {
+    max-width: 14ch;
+    font-size: clamp(2.45rem, 11vw, 3.5rem);
+  }
+
+  .wd-auth-description {
+    margin-top: 1rem;
+    font-size: 0.94rem;
+  }
+
+  .wd-auth-index {
+    display: none;
+  }
+
+  .wd-auth-panel {
+    padding: 1.25rem;
+  }
+
+  .wd-auth-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wd-password-field__toggle {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .wd-password-field__input,
+  .wd-password-field__toggle {
+    forced-color-adjust: auto !important;
+  }
+
+  .wd-password-field__toggle {
+    border: 1px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-auth-form .wd-auth-submit,
+  .wd-password-field__input,
+  .wd-password-field__toggle {
+    transition: none !important;
+  }
+}
+
+[dir="rtl"] .wd-auth-eyebrow,
+[dir="rtl"] .wd-auth-index {
+  letter-spacing: 0;
+}
+
+.wd-auth-result {
+  display: grid;
+  min-height: 20rem;
+  align-content: center;
+  justify-items: start;
+}
+
+.wd-auth-result__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--wd-gold-surface);
+  stroke-width: 1.35;
+}
+
+.wd-auth-result__icon.is-loading {
+  animation: wd-auth-spin 900ms linear infinite;
+}
+
+.wd-auth-result__label {
+  margin: 1.5rem 0 0;
+  color: var(--wd-warm-taupe);
+  line-height: 1.65;
+}
+
+.wd-auth-result__action {
+  margin-top: 2rem;
+}
+
+@keyframes wd-auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-auth-result__icon.is-loading {
+    animation: none;
+  }
+}

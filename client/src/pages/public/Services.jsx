@@ -64,6 +64,7 @@ function Services() {
     toggleItem: toggleService,
   } = useRestorableAccordion({
     openKey: openServiceId,
+    restoreBehavior: "smooth",
     setOpenKey: setOpenServiceId,
   });
 
@@ -161,7 +162,7 @@ function Services() {
             <div className="wd-services-cta__actions">
               <Button
                 to="/start"
-                className="wd-services-cta__primary wd-final-cta-action--primary"
+                className="wd-services-cta__primary wd-final-cta-action--dark"
                 onClick={trackStartProject}
               >
                 {t("common.buttons.startProject")}
@@ -169,7 +170,7 @@ function Services() {
               <Button
                 to="/process#faq"
                 variant="secondaryLight"
-                className="wd-services-cta__secondary wd-final-cta-action--secondary"
+                className="wd-services-cta__secondary wd-final-cta-action--light wd-final-cta-action--invert-on-hover"
               >
                 {t("common.buttons.viewQuestions")}
               </Button>

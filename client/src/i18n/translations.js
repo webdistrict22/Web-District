@@ -1197,6 +1197,18 @@ export const translations = {
       },
     },
     auth: {
+      passwordVisibility: {
+        show: "Show password",
+        hide: "Hide password",
+      },
+      passwordPolicy: {
+        helper: "Use at least 12 characters and avoid easy-to-guess passwords.",
+        required: "Password is required.",
+        "too-short": "Password must be at least 12 characters.",
+        "too-long": "Password must be 128 characters or fewer.",
+        predictable: "Choose a less predictable password.",
+        mismatch: "Passwords do not match.",
+      },
       login: {
         eyebrow: "Login",
         title: "Access your Web District account.",
@@ -1219,13 +1231,14 @@ export const translations = {
         description:
           "Use your account later to track requests, appointments, contracts, and project updates.",
         password: "Password *",
-        passwordPlaceholder: "Minimum 6 characters",
+        passwordPlaceholder: "At least 12 characters",
+        confirmPassword: "Confirm password *",
+        confirmPlaceholder: "Repeat your password",
         submit: "Create account",
         submitting: "Creating account...",
         haveAccount: "Already have an account?",
         login: "Login",
         validation: "Please enter name, email, and password.",
-        passwordLength: "Password must be at least 6 characters.",
         error: "Failed to create account.",
       },
       forgot: {
@@ -1236,7 +1249,9 @@ export const translations = {
         submit: "Send reset link",
         submitting: "Sending...",
         remember: "Remember your password?",
-        success: "Reset instructions sent.",
+        success:
+          "If an account exists with this email, you'll receive a reset link shortly. If it doesn't appear within a few minutes, check your Spam or Junk folder.",
+        successToast: "Check your email for reset instructions.",
         validation: "Please enter your email.",
         error: "Failed to send reset instructions.",
       },
@@ -1252,11 +1267,36 @@ export const translations = {
         submitting: "Resetting...",
         goBack: "Go back to",
         validation: "Please enter and confirm your new password.",
-        noMatch: "Passwords do not match.",
-        passwordLength: "Password must be at least 6 characters.",
         success: "Password reset successfully.",
         error:
           "Failed to reset password. The link may be invalid or expired.",
+      },
+      verify: {
+        eyebrow: "Email verification",
+        loadingTitle: "Verifying your email.",
+        loadingDescription: "We are checking your secure verification link.",
+        loadingLabel: "Verification in progress",
+        successTitle: "Your email is verified.",
+        successDescription:
+          "Your account is ready and securely connected to records that use this email.",
+        successLabel: "Verification complete",
+        errorTitle: "Email verification failed.",
+        errorDescription:
+          "This verification link may be invalid or expired. Sign in to request another link.",
+        errorLabel: "Verification could not be completed",
+        openAccount: "Open account",
+        backToLogin: "Back to login",
+      },
+      verificationNotice: {
+        description:
+          "Verify your email to securely link earlier requests and appointments.",
+        spamGuidance:
+          "We sent a verification link to your email. If it doesn't appear within a few minutes, check your Spam or Junk folder.",
+        resend: "Resend verification link",
+        sent: "Verification link sent",
+        resentGuidance:
+          "A new link is on its way. If it doesn't appear within a few minutes, check your Spam or Junk folder.",
+        error: "The link could not be sent right now.",
       },
     },
     client: {
@@ -1442,9 +1482,10 @@ export const translations = {
       startAnother: "Start another",
       call: {
         eyebrow: "Call booked",
-        title: "Your call appointment is booked.",
+        title: "Your call is booked.",
         description:
           "We received your call details. We will review the direction and contact you if anything needs confirmation.",
+        timeLabel: "Appointment time",
         steps: [
           "We review your call topic.",
           "We prepare the right questions before the call.",
@@ -1454,7 +1495,7 @@ export const translations = {
       },
       request: {
         eyebrow: "Request sent",
-        title: "Your website request has been sent.",
+        title: "Request received.",
         description:
           "We received your project details. We will review the business goal, website type, and direction before replying.",
         steps: [
@@ -2830,6 +2871,18 @@ export const translations = {
       },
     },
     auth: {
+      passwordVisibility: {
+        show: "إظهار كلمة المرور",
+        hide: "إخفاء كلمة المرور",
+      },
+      passwordPolicy: {
+        helper: "استخدم 12 حرفًا على الأقل وتجنب كلمات المرور سهلة التخمين.",
+        required: "كلمة المرور مطلوبة.",
+        "too-short": "يجب أن تكون كلمة المرور 12 حرفًا على الأقل.",
+        "too-long": "يجب ألا تزيد كلمة المرور على 128 حرفًا.",
+        predictable: "اختر كلمة مرور أقل قابلية للتخمين.",
+        mismatch: "كلمتا المرور غير متطابقتين.",
+      },
       login: {
         eyebrow: "تسجيل الدخول",
         title: "ادخل إلى حسابك في Web District.",
@@ -2852,13 +2905,14 @@ export const translations = {
         description:
           "استخدم حسابك لاحقًا لمتابعة الطلبات والمواعيد والعقود وتحديثات المشروع.",
         password: "كلمة المرور *",
-        passwordPlaceholder: "6 أحرف على الأقل",
+        passwordPlaceholder: "12 حرفًا على الأقل",
+        confirmPassword: "تأكيد كلمة المرور *",
+        confirmPlaceholder: "أعد كتابة كلمة المرور",
         submit: "إنشاء الحساب",
         submitting: "جارٍ إنشاء الحساب...",
         haveAccount: "لديك حساب بالفعل؟",
         login: "تسجيل الدخول",
         validation: "يرجى إدخال الاسم والبريد الإلكتروني وكلمة المرور.",
-        passwordLength: "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
         error: "تعذر إنشاء الحساب.",
       },
       forgot: {
@@ -2869,7 +2923,9 @@ export const translations = {
         submit: "إرسال رابط إعادة التعيين",
         submitting: "جارٍ الإرسال...",
         remember: "تذكرت كلمة المرور؟",
-        success: "تم إرسال تعليمات إعادة التعيين.",
+        success:
+          "إذا كان هناك حساب مرتبط بهذا البريد، فسيصلك رابط إعادة التعيين قريبًا. إذا لم يظهر خلال بضع دقائق، فتحقق من مجلد الرسائل غير المرغوب فيها أو Spam.",
+        successToast: "تحقق من بريدك للحصول على تعليمات إعادة التعيين.",
         validation: "يرجى إدخال بريدك الإلكتروني.",
         error: "تعذر إرسال تعليمات إعادة التعيين.",
       },
@@ -2885,11 +2941,36 @@ export const translations = {
         submitting: "جارٍ إعادة التعيين...",
         goBack: "العودة إلى",
         validation: "يرجى إدخال كلمة المرور الجديدة وتأكيدها.",
-        noMatch: "كلمتا المرور غير متطابقتين.",
-        passwordLength: "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
         success: "تم إعادة تعيين كلمة المرور بنجاح.",
         error:
           "تعذر إعادة تعيين كلمة المرور. قد يكون الرابط غير صالح أو منتهي الصلاحية.",
+      },
+      verify: {
+        eyebrow: "تأكيد البريد الإلكتروني",
+        loadingTitle: "جارٍ تأكيد بريدك الإلكتروني.",
+        loadingDescription: "نتحقق الآن من رابط التأكيد الآمن.",
+        loadingLabel: "جارٍ التحقق",
+        successTitle: "تم تأكيد بريدك الإلكتروني.",
+        successDescription:
+          "أصبح حسابك جاهزًا ومرتبطًا بأمان بالسجلات التي تستخدم هذا البريد.",
+        successLabel: "اكتمل التأكيد",
+        errorTitle: "تعذر تأكيد البريد الإلكتروني.",
+        errorDescription:
+          "قد يكون رابط التأكيد غير صالح أو منتهي الصلاحية. سجل الدخول لطلب رابط جديد.",
+        errorLabel: "لم يكتمل التأكيد",
+        openAccount: "فتح الحساب",
+        backToLogin: "العودة لتسجيل الدخول",
+      },
+      verificationNotice: {
+        description:
+          "أكد بريدك الإلكتروني لربط الطلبات والمواعيد السابقة بأمان.",
+        spamGuidance:
+          "أرسلنا رابط التأكيد إلى بريدك الإلكتروني. إذا لم يظهر خلال بضع دقائق، فتحقق من مجلد الرسائل غير المرغوب فيها أو Spam.",
+        resend: "إعادة إرسال رابط التأكيد",
+        sent: "تم إرسال رابط التأكيد",
+        resentGuidance:
+          "الرابط الجديد في طريقه إليك. إذا لم يظهر خلال بضع دقائق، فتحقق من مجلد الرسائل غير المرغوب فيها أو Spam.",
+        error: "تعذر إرسال الرابط الآن.",
       },
     },
     client: {
@@ -3072,9 +3153,10 @@ export const translations = {
       startAnother: "ابدأ طلب مشروع آخر",
       call: {
         eyebrow: "تم حجز المكالمة",
-        title: "تم حجز موعد المكالمة.",
+        title: "تم حجز مكالمتك.",
         description:
           "استلمنا تفاصيل المكالمة. سنراجعها ونتواصل معك إذا احتجنا إلى تأكيد أي نقطة.",
+        timeLabel: "موعد المكالمة",
         steps: [
           "نراجع موضوع المكالمة.",
           "نحضّر الأسئلة المناسبة قبل الموعد.",
@@ -3084,7 +3166,7 @@ export const translations = {
       },
       request: {
         eyebrow: "تم إرسال طلب المشروع",
-        title: "تم إرسال طلب المشروع.",
+        title: "تم استلام طلبك.",
         description:
           "استلمنا تفاصيل مشروعك. سنراجع هدف المشروع ونوع الموقع والرؤية المطلوبة قبل الرد.",
         steps: [

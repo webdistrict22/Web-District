@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import useAuth from "../../hooks/useAuth";
@@ -8,10 +9,10 @@ import Button from "../common/Button";
 import Input from "../common/Input";
 import Textarea from "../common/Textarea";
 import AvailableSlots from "./AvailableSlots";
-import StartSuccessState from "./StartSuccessState";
 import { formatSlotSummary } from "./slotFormatting";
 import { focusFirstInvalidControl } from "../../lib/a11y";
 import { trackCustomEvent, trackLead } from "../../lib/metaPixel";
+import { submitAndNavigateToSuccess } from "../../lib/successFlow";
 
 const initialForm = {
   name: "",
@@ -24,11 +25,11 @@ const initialForm = {
 
 function BookCallForm() {
   const submissionKey = useRef(crypto.randomUUID());
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { effectiveLanguage, getErrorMessage, t } = useLanguage();
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [confirmedSummary, setConfirmedSummary] = useState("");
   const [form, setForm] = useState(() => ({
     ...initialForm,
     name: user?.name || "",
@@ -105,31 +106,44 @@ function BookCallForm() {
       setIsSubmitting(true);
       setFormError("");
 
-      const { data } = await api.post("/appointments", {
-        slot: selectedSlot,
-        ...form,
-        companyWebsite: "",
-      }, { headers: { "Idempotency-Key": submissionKey.current } });
-
-      const leadParams = {
-        lead_type: "appointment_booking",
-        content_name: "Call Booking",
-        language: effectiveLanguage,
-      };
-
-      trackLead(leadParams);
-      trackCustomEvent("AppointmentBookingSubmitted", leadParams);
-
-      toast.success(
-        isAuthenticated
-          ? t("start.callForm.successLoggedIn")
-          : t("start.callForm.success"),
-      );
-
-      const confirmedSlot = data.appointment?.slot || selectedSlotData;
-      setConfirmedSummary(
-        formatSlotSummary(confirmedSlot, effectiveLanguage),
-      );
+      await submitAndNavigateToSuccess({
+        type: "call",
+        navigate,
+        submit: () => api.post(
+          "/appointments",
+          { slot: selectedSlot, ...form, companyWebsite: "" },
+          { headers: { "Idempotency-Key": submissionKey.current } },
+        ),
+        beforeNavigate: () => {
+          const leadParams = {
+            lead_type: "appointment_booking",
+            content_name: "Call Booking",
+            language: effectiveLanguage,
+          };
+          trackLead(leadParams);
+          trackCustomEvent("AppointmentBookingSubmitted", leadParams);
+          toast.success(
+            isAuthenticated
+              ? t("start.callForm.successLoggedIn")
+              : t("start.callForm.success"),
+          );
+        },
+        buildState: ({ data }) => {
+          const confirmedSlot = data.appointment?.slot || selectedSlotData;
+          return {
+            slot: confirmedSlot
+              ? {
+                  startsAt: confirmedSlot.startsAt,
+                  endsAt: confirmedSlot.endsAt,
+                  date: confirmedSlot.date,
+                  startTime: confirmedSlot.startTime,
+                  endTime: confirmedSlot.endTime,
+                  timezone: confirmedSlot.timezone,
+                }
+              : null,
+          };
+        },
+      });
     } catch (error) {
       const message = getErrorMessage(error, "start.callForm.error");
       setFormError(message);
@@ -138,10 +152,6 @@ function BookCallForm() {
       setIsSubmitting(false);
     }
   };
-
-  if (confirmedSummary) {
-    return <StartSuccessState type="call" summary={confirmedSummary} />;
-  }
 
   return (
     <div className="wd-start-form">

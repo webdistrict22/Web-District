@@ -322,39 +322,6 @@
   border-radius: 0.25rem !important;
 }
 
-.wd-services-cta__primary,
-.wd-services-cta__primary:link,
-.wd-services-cta__primary:visited {
-  border: 1px solid var(--wd-main-black) !important;
-  background: var(--wd-main-black) !important;
-  background-image: none !important;
-  color: var(--wd-primary-off-white) !important;
-  -webkit-text-fill-color: var(--wd-primary-off-white);
-  box-shadow: none !important;
-}
-
-.wd-services-cta__primary:hover {
-  border-color: var(--wd-dark-ink) !important;
-  background: var(--wd-dark-ink) !important;
-  color: var(--wd-primary-off-white) !important;
-  -webkit-text-fill-color: var(--wd-primary-off-white);
-}
-
-.wd-services-cta__secondary,
-.wd-services-cta__secondary:link,
-.wd-services-cta__secondary:visited {
-  border: 1px solid var(--wd-dark-ink) !important;
-  background: var(--wd-primary-off-white) !important;
-  color: var(--wd-dark-ink) !important;
-  -webkit-text-fill-color: var(--wd-dark-ink);
-}
-
-.wd-services-cta__secondary:hover {
-  background: var(--wd-main-black) !important;
-  color: var(--wd-primary-off-white) !important;
-  -webkit-text-fill-color: var(--wd-primary-off-white);
-}
-
 .wd-services-cta__primary svg,
 .wd-services-cta__secondary svg {
   flex: 0 0 auto;

@@ -1,10 +1,11 @@
 const sendEmail = require("./sendEmail");
 const { enqueueEmail } = require("../services/outboxService");
-const { emailLayout } = require("./emailTemplates");
+const { renderEmailTemplate } = require("./emailTemplates");
+const { formatSlotDisplay } = require("./slotTime");
 
 const ownerEmail = () => String(process.env.OWNER_EMAIL || process.env.EMAIL_USER || "").trim();
 const rows = (entries) => entries.map(([label, value]) => ({ label, value }));
-const slotLabel = (slot) => slot ? `${slot.date || ""} ${slot.startTime || ""}–${slot.endTime || ""}`.trim() : "Not available";
+const slotLabel = (slot) => formatSlotDisplay(slot);
 
 const queue = (event, options) => enqueueEmail(event, options);
 
@@ -59,12 +60,12 @@ const sendAppointmentStatusToClient = (appointment, options) => queue({
   recipientType: "client", recipient: appointment.email, template: "appointment.client-status", templatePayload: { status: appointment.status, rows: rows([["Topic", appointment.topic], ["Status", appointment.status], ["Admin note", appointment.adminNotes], ["Slot", slotLabel(appointment.slot)]]) },
 }, options);
 
-const notifyReviewSubmitted = (review, options) => queue({ eventType: "review.submitted.owner", idempotencyKey: `review:${review._id}:owner-submitted`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "owner", recipient: ownerEmail(), template: "review.owner", templatePayload: { name: review.name, rows: rows([["Name", review.name], ["Business", review.businessName], ["Rating", review.rating], ["Review", review.message]]) } }, options);
-const sendReviewSubmittedConfirmationToClient = (review, email, options) => queue({ eventType: "review.submitted.client", idempotencyKey: `review:${review._id}:client-submitted`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "client", recipient: email, template: "review.client", templatePayload: { title: "Review submitted", intro: "Thank you for sharing your review. It will appear after approval.", subject: "Your Web District review was submitted", rows: rows([["Rating", review.rating], ["Status", review.status]]) } }, options);
-const sendReviewDecisionToClient = (review, email, options) => queue({ eventType: "review.decision", idempotencyKey: `review:${review._id}:decision:${review.status}:${review.updatedAt?.getTime?.() || Date.now()}`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "client", recipient: email, template: "review.client", templatePayload: { title: "Review status updated", intro: "Your review status was updated.", subject: `Your Web District review is ${review.status}`, rows: rows([["Rating", review.rating], ["Status", review.status]]) } }, options);
+const notifyReviewSubmitted = (review, options) => queue({ eventType: "review.submitted.owner", idempotencyKey: `review:${review._id}:owner-submitted`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "owner", recipient: ownerEmail(), template: "review.owner-submitted", templatePayload: { name: review.name, rows: rows([["Name", review.name], ["Business", review.businessName], ["Rating", review.rating], ["Review", review.message]]) } }, options);
+const sendReviewSubmittedConfirmationToClient = (review, email, options) => queue({ eventType: "review.submitted.client", idempotencyKey: `review:${review._id}:client-submitted`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "client", recipient: email, template: "review.client-submitted", templatePayload: { title: "Review submitted", intro: "Thank you for sharing your review. It will appear after approval.", subject: "Your Web District review was submitted", rows: rows([["Rating", review.rating], ["Status", review.status]]) } }, options);
+const sendReviewDecisionToClient = (review, email, options) => queue({ eventType: "review.decision", idempotencyKey: `review:${review._id}:decision:${review.status}:${review.updatedAt?.getTime?.() || Date.now()}`, relatedEntityType: "Review", relatedEntityId: review._id, recipientType: "client", recipient: email, template: "review.client-decision", templatePayload: { title: "Review status updated", intro: "Your review status was updated.", subject: `Your Web District review is ${review.status}`, rows: rows([["Rating", review.rating], ["Status", review.status]]) } }, options);
 
-const contractClientEvent = (contract, kind, payload, options) => queue({ eventType: `contract.${kind}.client`, idempotencyKey: `contract:${contract._id}:client:${kind}:${contract.status}:${contract.statusVersion || 0}`, relatedEntityType: "Contract", relatedEntityId: contract._id, recipientType: "client", recipient: contract.clientEmail, template: "contract.client", templatePayload: payload }, options);
-const contractOwnerEvent = (contract, kind, payload, options) => queue({ eventType: `contract.${kind}.owner`, idempotencyKey: `contract:${contract._id}:owner:${kind}:${contract.status}:${contract.statusVersion || 0}`, relatedEntityType: "Contract", relatedEntityId: contract._id, recipientType: "owner", recipient: ownerEmail(), template: "contract.owner", templatePayload: payload }, options);
+const contractClientEvent = (contract, kind, payload, options) => queue({ eventType: `contract.${kind}.client`, idempotencyKey: `contract:${contract._id}:client:${kind}:${contract.status}:${contract.statusVersion || 0}`, relatedEntityType: "Contract", relatedEntityId: contract._id, recipientType: "client", recipient: contract.clientEmail, template: `contract.client-${kind}`, templatePayload: payload }, options);
+const contractOwnerEvent = (contract, kind, payload, options) => queue({ eventType: `contract.${kind}.owner`, idempotencyKey: `contract:${contract._id}:owner:${kind}:${contract.status}:${contract.statusVersion || 0}`, relatedEntityType: "Contract", relatedEntityId: contract._id, recipientType: "owner", recipient: ownerEmail(), template: `contract.owner-${kind}`, templatePayload: payload }, options);
 const contractRows = (contract) => rows([["Contract", contract.title], ["Client", contract.clientName], ["Business", contract.businessName], ["Website type", contract.websiteType], ["Status", contract.status], ["Total price", contract.totalPrice], ["Client note", contract.clientNotes]]);
 const sendContractToClient = (contract, options) => contractClientEvent(contract, "sent", { title: "Your proposal is ready", intro: "A Web District proposal is ready in your account.", subject: `Your Web District proposal — ${contract.title}`, rows: contractRows(contract) }, options);
 const sendContractStatusToClient = (contract, options) => contractClientEvent(contract, "status", { title: "Contract status updated", subject: `Your Web District contract is ${contract.status}`, rows: contractRows(contract) }, options);
@@ -73,8 +74,12 @@ const sendContractAcceptedToClient = (contract, options) => contractClientEvent(
 const notifyContractClientNote = (contract, options) => contractOwnerEvent(contract, "client-note", { title: "Client contract note", subject: `Client note on contract — ${contract.title}`, rows: contractRows(contract) }, options);
 
 const sendPasswordResetEmail = async (user, resetUrl) => {
-  const payload = { title: "Reset your password", intro: "We received a request to reset your password. This link expires in 10 minutes.", rows: rows([["Account", user.email], ["Name", user.name]]), ctaText: "Reset Password", ctaPath: new URL(resetUrl).pathname };
-  await sendEmail({ to: user.email, subject: "Reset your Web District password", text: `Reset your Web District password: ${resetUrl}`, html: emailLayout(payload) });
+  const rendered = renderEmailTemplate("account.password-reset", {
+    email: user.email,
+    name: user.name,
+    ctaPath: new URL(resetUrl).pathname,
+  });
+  await sendEmail({ to: user.email, ...rendered });
   return { success: true };
 };
 

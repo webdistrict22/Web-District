@@ -945,32 +945,6 @@
   box-shadow: none !important;
 }
 
-.wd-case-study-cta__light-button {
-  background: var(--wd-primary-off-white) !important;
-  background-image: none !important;
-  color: var(--wd-dark-ink) !important;
-}
-
-.wd-case-study-cta__light-button:hover {
-  background: #fffaf2 !important;
-}
-
-.wd-case-study-cta__dark-button,
-.wd-case-study-cta__dark-button:link,
-.wd-case-study-cta__dark-button:visited {
-  border-color: var(--wd-main-black) !important;
-  background: var(--wd-main-black) !important;
-  background-image: none !important;
-  color: var(--wd-primary-off-white) !important;
-  -webkit-text-fill-color: var(--wd-primary-off-white);
-}
-
-.wd-case-study-cta__dark-button:hover {
-  background: var(--wd-dark-ink) !important;
-  color: var(--wd-primary-off-white) !important;
-  -webkit-text-fill-color: var(--wd-primary-off-white);
-}
-
 .wd-case-study-cta__light-button:focus-visible,
 .wd-case-study-cta__dark-button:focus-visible {
   outline: 3px solid var(--wd-dark-ink) !important;

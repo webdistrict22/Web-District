@@ -5,6 +5,7 @@ const interactiveSelector =
 
 function useRestorableAccordion({
   openKey,
+  restoreBehavior = "auto",
   restoreScrollOnClose = true,
   setOpenKey,
 }) {
@@ -27,12 +28,19 @@ function useRestorableAccordion({
       document.documentElement.scrollHeight - window.innerHeight,
     );
 
+    const prefersReducedMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     window.scrollTo({
       top: Math.min(Math.max(restoreTop, 0), maxScroll),
       left: 0,
-      behavior: "auto",
+      behavior:
+        restoreBehavior === "smooth" && !prefersReducedMotion
+          ? "smooth"
+          : "auto",
     });
-  }, [openKey, restoreScrollOnClose]);
+  }, [openKey, restoreBehavior, restoreScrollOnClose]);
 
   const rememberOpenPosition = useCallback((key, scrollTop = window.scrollY) => {
     if (!restoreScrollOnClose) return;

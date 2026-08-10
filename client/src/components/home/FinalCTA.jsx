@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import Container from "../common/Container";
 import Button from "../common/Button";
+import FinalCtaLink from "../common/FinalCtaLink";
 import useLanguage from "../../hooks/useLanguage";
 import { trackCustomEvent } from "../../lib/metaPixel";
 
@@ -28,17 +29,23 @@ function FinalCTA({ liveUrl = "" }) {
           </h2>
           <p>{t("home.finalCta.description")}</p>
           <div className="wd-final-cta__actions">
-            <Button to="/start" icon={false} onClick={trackStartProject} className="wd-final-cta__primary wd-final-cta-action--light">
+            <FinalCtaLink
+              to="/start"
+              tone="light"
+              icon={false}
+              onClick={trackStartProject}
+              className="wd-final-cta__primary"
+            >
               {t("common.buttons.startProject")}
-            </Button>
-            <Button
+            </FinalCtaLink>
+            <FinalCtaLink
               to="/work"
-              variant="secondary"
+              tone="dark"
               onClick={trackSeeWork}
-              className="wd-final-cta__secondary wd-final-cta-action--dark"
+              className="wd-final-cta__secondary"
             >
               {t("common.buttons.viewWorkShort")}
-            </Button>
+            </FinalCtaLink>
           </div>
         </Container>
       </section>

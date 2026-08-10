@@ -123,16 +123,30 @@
   outline-offset: 0.35rem;
 }
 
+.wd-process-stepper__panels {
+  display: grid;
+}
+
 .wd-process-stepper__panel {
   display: grid;
   min-height: 19rem;
   box-sizing: border-box;
+  grid-area: 1 / 1;
   grid-template-columns: minmax(0, 0.82fr) minmax(20rem, 1.18fr);
   align-items: center;
   gap: clamp(1.75rem, 4vw, 4rem);
   margin-top: 2.15rem;
   border-top: 1px solid rgb(247 242 236 / 0.12);
   padding: clamp(1.75rem, 3.5vw, 2.75rem) clamp(0rem, 1.5vw, 1rem);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wd-process-stepper__panel.is-active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
   animation: wd-process-panel-in 200ms ease both;
 }
 

@@ -47,30 +47,49 @@ function ProcessStepper({ steps }) {
         })}
       </div>
 
-      <article
-        className="wd-process-stepper__panel"
-        dir="ltr"
-        key={`${activeStep.number}-${activeStep.title}`}
-      >
-        <div className="wd-process-stepper__identity" dir={isRtl ? "rtl" : "ltr"}>
-          <span className="wd-process-stepper__count">{activeStep.number}</span>
-          <p className="wd-process-stepper__eyebrow">{activeStep.subtitle}</p>
-          <h2 className="font-display">{activeStep.title}</h2>
-        </div>
+      <div className="wd-process-stepper__panels">
+        {steps.map((step, index) => {
+          const isActive = index === activeIndex;
 
-        <div className="wd-process-stepper__details" dir={isRtl ? "rtl" : "ltr"}>
-          <p className="wd-process-stepper__description">{activeStep.description}</p>
-
-          <div className="wd-process-stepper__points" aria-label={t("process.controls.keyPoints")}>
-            {activeStep.points.map((point) => (
-              <div key={point}>
-                <Check aria-hidden="true" />
-                <span>{point}</span>
+          return (
+            <article
+              key={step.number}
+              className={`wd-process-stepper__panel${isActive ? " is-active" : ""}`}
+              dir="ltr"
+              aria-hidden={!isActive}
+              inert={!isActive}
+            >
+              <div
+                className="wd-process-stepper__identity"
+                dir={isRtl ? "rtl" : "ltr"}
+              >
+                <span className="wd-process-stepper__count">{step.number}</span>
+                <p className="wd-process-stepper__eyebrow">{step.subtitle}</p>
+                <h2 className="font-display">{step.title}</h2>
               </div>
-            ))}
-          </div>
-        </div>
-      </article>
+
+              <div
+                className="wd-process-stepper__details"
+                dir={isRtl ? "rtl" : "ltr"}
+              >
+                <p className="wd-process-stepper__description">{step.description}</p>
+
+                <div
+                  className="wd-process-stepper__points"
+                  aria-label={t("process.controls.keyPoints")}
+                >
+                  {step.points.map((point) => (
+                    <div key={point}>
+                      <Check aria-hidden="true" />
+                      <span>{point}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
 
       <div className="wd-process-stepper__controls" dir="ltr">
         <button

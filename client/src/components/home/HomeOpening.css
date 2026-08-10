@@ -30,6 +30,12 @@
   transition: opacity 240ms ease;
 }
 
+@media (min-width: 768px) {
+  .wd-home-hero__background img {
+    object-position: 50% 45%;
+  }
+}
+
 .wd-home-hero__background.is-ready img {
   opacity: 1;
 }

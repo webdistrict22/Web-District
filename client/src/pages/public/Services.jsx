@@ -2,7 +2,7 @@ import { useCallback, useLayoutEffect, useState } from "react";
 import { useLocation } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
 import Container from "../../components/common/Container";
-import Button from "../../components/common/Button";
+import FinalCtaLink from "../../components/common/FinalCtaLink";
 import ServiceSection from "../../components/services/ServiceSection";
 import { servicesPageSections } from "../../data/servicesData";
 import useLanguage from "../../hooks/useLanguage";
@@ -160,20 +160,21 @@ function Services() {
             </div>
 
             <div className="wd-services-cta__actions">
-              <Button
+              <FinalCtaLink
                 to="/start"
-                className="wd-services-cta__primary wd-final-cta-action--dark"
+                tone="dark"
+                className="wd-services-cta__primary"
                 onClick={trackStartProject}
               >
                 {t("common.buttons.startProject")}
-              </Button>
-              <Button
+              </FinalCtaLink>
+              <FinalCtaLink
                 to="/process#faq"
-                variant="secondaryLight"
-                className="wd-services-cta__secondary wd-final-cta-action--light wd-final-cta-action--invert-on-hover"
+                tone="light"
+                className="wd-services-cta__secondary"
               >
                 {t("common.buttons.viewQuestions")}
-              </Button>
+              </FinalCtaLink>
             </div>
           </div>
         </Container>

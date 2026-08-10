@@ -143,7 +143,7 @@ function Navbar() {
     >
       <NavbarTicker />
 
-      <div className="pointer-events-auto hidden h-20 border-b border-[#D6A75D]/15 bg-[#050505]/96 backdrop-blur-xl min-[1366px]:block">
+      <div className="pointer-events-auto hidden h-20 border-b border-[#D6A75D]/15 bg-[#050505] min-[1366px]:block">
         <nav
           className="mx-auto flex h-full w-[min(1280px,calc(100%-48px))] items-center justify-between gap-5"
           aria-label={t("nav.primaryNavigation")}

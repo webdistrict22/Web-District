@@ -132,15 +132,15 @@ export function StaggeredMenu({
     );
 
     if (itemElements.length) {
-      const itemsStart = panelInsertTime + panelDuration * 0.15;
+      const itemsStart = panelInsertTime + panelDuration * 0.03;
       timeline.to(
         itemElements,
         {
           yPercent: 0,
           rotate: 0,
-          duration: 1,
+          duration: 0.65,
           ease: "power4.out",
-          stagger: { each: 0.1, from: "start" },
+          stagger: { each: 0.045, from: "start" },
         },
         itemsStart,
       );

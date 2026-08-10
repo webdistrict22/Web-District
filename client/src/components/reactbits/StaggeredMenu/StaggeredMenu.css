@@ -27,8 +27,7 @@
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid rgb(214 167 93 / 0.15);
-  background: rgb(5 5 5 / 0.96);
-  backdrop-filter: blur(16px);
+  background: #050505;
   pointer-events: none;
   transform: none !important;
 }

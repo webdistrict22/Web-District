@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import api, { PUBLIC_CONTENT_TIMEOUT } from "../../lib/axios";
 import Container from "../../components/common/Container";
-import Button from "../../components/common/Button";
+import FinalCtaLink from "../../components/common/FinalCtaLink";
 import ProjectCard from "../../components/work/ProjectCard";
 import WorkCollection from "../../components/work/WorkCollection";
 import WorkReviews from "../../components/work/WorkReviews";
@@ -70,12 +70,22 @@ function Work() {
           <h2 id="work-cta-title" className="font-display">{t("work.finalCta.title")}</h2>
           <p>{t("work.finalCta.description")}</p>
           <div className="wd-work-cta__actions">
-            <Button to="/start" icon={false} className="wd-work-cta__primary wd-final-cta-action--light">
+            <FinalCtaLink
+              to="/start"
+              tone="light"
+              icon={false}
+              className="wd-work-cta__primary"
+            >
               {t("common.buttons.startProject")}
-            </Button>
-            <Button to="/services" variant="secondary" icon={false} className="wd-work-cta__secondary wd-final-cta-action--dark">
+            </FinalCtaLink>
+            <FinalCtaLink
+              to="/services"
+              tone="dark"
+              icon={false}
+              className="wd-work-cta__secondary"
+            >
               {t("common.buttons.viewServices")}
-            </Button>
+            </FinalCtaLink>
           </div>
         </Container>
       </section>

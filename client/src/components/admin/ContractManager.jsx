@@ -9,13 +9,18 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
-import ContractList from "../dashboard/ContractList";
 import { confirmAction } from "../../lib/alerts";
+import { formatDate, formatMoney } from "../../lib/helpers";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import PaginationControls from "../common/PaginationControls";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminPageHeader from "./AdminPageHeader";
+import AdminToolbar from "./AdminToolbar";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminWorkspace from "./AdminWorkspace";
 
 const statuses = [
   "Draft",
@@ -65,6 +70,9 @@ function ContractManager() {
   const [editingId, setEditingId] = useState("");
   const [sourceType, setSourceType] = useState("manual");
   const [sourceId, setSourceId] = useState("");
+  const [mode, setMode] = useState(() =>
+    searchParams.get("source") && searchParams.get("id") ? "create" : "manage"
+  );
 
   const [filters, setFilters] = useState({
     search: "",
@@ -189,12 +197,14 @@ function ContractManager() {
     const id = searchParams.get("id");
 
     if (source === "request" && id) {
+      setMode("create");
       setSourceType("request");
       setSourceId(id);
       fillFromRequest(id, loadedSources.requests);
     }
 
     if (source === "appointment" && id) {
+      setMode("create");
       setSourceType("appointment");
       setSourceId(id);
       fillFromAppointment(id, loadedSources.appointments);
@@ -219,6 +229,17 @@ function ContractManager() {
     setSourceId("");
     setSearchParams({});
     submissionKey.current = crypto.randomUUID();
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+
+    if (editingId) resetForm();
+    setMode("create");
   };
 
   const handleSourceChange = (value) => {
@@ -311,6 +332,7 @@ function ContractManager() {
   };
 
   const handleEdit = (contract) => {
+    setMode("create");
     setEditingId(contract._id);
     setSourceType("manual");
     setSourceId("");
@@ -372,7 +394,7 @@ function ContractManager() {
 
       setContracts((prev) => prev.filter((item) => item._id !== contractId));
 
-      toast.success("Contract archived successfully.", { duration: 4200 });
+      toast.success("Contract archived successfully.", { duration: 4000 });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to archive contract.");
     } finally {
@@ -390,60 +412,75 @@ function ContractManager() {
   };
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
-
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Contracts and proposals
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Create proposals from website requests or call appointments, then
-              track scope, timeline, pricing, deposit, client notes, and status.
-            </p>
-          </div>
-
-          <Button to="/admin/requests" variant="secondary">
+    <div className="wd-admin-page">
+      <AdminPageHeader
+        eyebrow="Admin dashboard"
+        title="Contracts and proposals"
+        description="Prepare proposals from requests or calls, then manage scope, timeline, pricing, notes, and delivery status."
+        action={
+          <Button to="/admin/requests" variant="secondary" className="wd-admin-action">
             View requests
           </Button>
-        </div>
-      </Card>
+        }
+      />
 
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total contracts" value={stats.total} />
-        <StatCard label="Draft" value={stats.draft} />
-        <StatCard label="Sent" value={stats.sent} />
-        <StatCard label="In progress" value={stats.active} />
-      </div>
+      <AdminModeSwitch
+        label="Contract workspace mode"
+        value={mode}
+        options={[
+          { value: "manage", label: "Manage contracts" },
+          { value: "create", label: editingId ? "Edit contract" : "Create contract" },
+        ]}
+        onChange={handleModeChange}
+      />
 
-      <Card className="p-6 md:p-8">
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+      <AdminWorkspace
+        title={mode === "manage" ? "Manage contracts" : undefined}
+        description={
+          mode === "manage"
+            ? "Review proposals, update delivery status, and keep commercial details in one place."
+            : undefined
+        }
+        action={
+          mode === "manage" ? (
+            <Button type="button" icon={false} onClick={() => handleModeChange("create")}>
+              <Plus size={17} />
+              Create contract
+            </Button>
+          ) : undefined
+        }
+      >
+        {mode === "manage" ? (
+          <div className="wd-admin-metrics" aria-label="Contract metrics">
+            <StatCard label="Total contracts" value={stats.total} />
+            <StatCard label="Draft" value={stats.draft} />
+            <StatCard label="Sent" value={stats.sent} />
+            <StatCard label="In progress" value={stats.active} />
+          </div>
+        ) : null}
+
+      {mode === "create" ? (
+        <div className="wd-admin-form">
+        <div className="wd-admin-form-intro">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
+            <p className="wd-admin-eyebrow">
               {editingId ? "Edit contract" : "Create contract"}
             </p>
 
-            <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
+            <h2 className="font-display wd-admin-form-title">
               {editingId
                 ? "Update proposal details."
                 : "Prepare a clear proposal for a client."}
-            </h3>
+            </h2>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          <Button type="button" variant="secondaryLight" onClick={resetForm} className="wd-admin-action">
+            Back to contracts
+          </Button>
         </div>
 
         {!editingId && (
-          <div className="mb-6 grid gap-5 md:grid-cols-2">
+          <div className="wd-admin-contract-source wd-admin-form-grid wd-admin-form-grid--2">
             <Select
               label="Create from"
               value={sourceType}
@@ -490,168 +527,104 @@ function ContractManager() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="grid gap-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <Input
-              label="Contract title *"
-              value={form.title}
-              onChange={(e) => updateField("title", e.target.value)}
-            />
+        <form onSubmit={handleSubmit} className="wd-admin-contract-form">
+          <section className="wd-admin-form-section" aria-labelledby="contract-client-heading">
+            <div className="wd-admin-form-section__heading">
+              <h3 id="contract-client-heading">1. Client and proposal</h3>
+              <p>Identify the proposal, client, business, and website direction.</p>
+            </div>
+            <div className="wd-admin-form-grid wd-admin-form-grid--2">
+              <Input label="Contract title *" value={form.title} onChange={(e) => updateField("title", e.target.value)} />
+              <Select label="Status" value={form.status} onChange={(e) => updateField("status", e.target.value)}>
+                {statuses.map((status) => <option key={status}>{status}</option>)}
+              </Select>
+              <Input label="Client name *" value={form.clientName} onChange={(e) => updateField("clientName", e.target.value)} />
+              <Input label="Business name" value={form.businessName} onChange={(e) => updateField("businessName", e.target.value)} />
+              <Input label="Client email *" type="email" value={form.clientEmail} onChange={(e) => updateField("clientEmail", e.target.value)} />
+              <Input label="Client phone" value={form.clientPhone} onChange={(e) => updateField("clientPhone", e.target.value)} />
+              <Select
+                label="Website type"
+                value={form.websiteType}
+                onChange={(e) => {
+                  const nextType = e.target.value;
+                  updateField("websiteType", nextType);
+                  setForm((prev) => ({
+                    ...prev,
+                    websiteType: nextType,
+                    pagesText: prev.pagesText || suggestPages(nextType),
+                    featuresText: prev.featuresText || suggestFeatures(nextType),
+                  }));
+                }}
+              >
+                {websiteTypes.map((type) => <option key={type}>{type}</option>)}
+              </Select>
+            </div>
+          </section>
 
-            <Select
-              label="Status"
-              value={form.status}
-              onChange={(e) => updateField("status", e.target.value)}
-            >
-              {statuses.map((status) => (
-                <option key={status}>{status}</option>
-              ))}
-            </Select>
+          <section className="wd-admin-form-section" aria-labelledby="contract-scope-heading">
+            <div className="wd-admin-form-section__heading">
+              <h3 id="contract-scope-heading">2. Scope</h3>
+              <p>Define the work, pages, and features included in this proposal.</p>
+            </div>
+            <div className="wd-admin-form-grid">
+              <Textarea label="Scope summary *" value={form.scopeSummary} onChange={(e) => updateField("scopeSummary", e.target.value)} rows={4} />
+              <div className="wd-admin-form-grid wd-admin-form-grid--2">
+                <Textarea label="Pages included" placeholder={"One page per line\nHome\nServices\nContact"} value={form.pagesText} onChange={(e) => updateField("pagesText", e.target.value)} rows={6} />
+                <Textarea label="Features included" placeholder={"One feature per line\nContact form\nAdmin dashboard\nBooking system"} value={form.featuresText} onChange={(e) => updateField("featuresText", e.target.value)} rows={6} />
+              </div>
+            </div>
+          </section>
 
-            <Input
-              label="Client name *"
-              value={form.clientName}
-              onChange={(e) => updateField("clientName", e.target.value)}
-            />
+          <section className="wd-admin-form-section" aria-labelledby="contract-timeline-heading">
+            <div className="wd-admin-form-section__heading">
+              <h3 id="contract-timeline-heading">3. Timeline</h3>
+              <p>Set the working estimate, start date, and client-facing deadline.</p>
+            </div>
+            <div className="wd-admin-form-grid wd-admin-form-grid--3">
+              <Input label="Timeline" placeholder="Example: 2-3 weeks" value={form.timeline} onChange={(e) => updateField("timeline", e.target.value)} />
+              <Input label="Start date" type="date" value={form.startDate} onChange={(e) => updateField("startDate", e.target.value)} />
+              <Input label="Deadline" value={form.deadline} onChange={(e) => updateField("deadline", e.target.value)} />
+            </div>
+          </section>
 
-            <Input
-              label="Business name"
-              value={form.businessName}
-              onChange={(e) => updateField("businessName", e.target.value)}
-            />
+          <section className="wd-admin-form-section" aria-labelledby="contract-pricing-heading">
+            <div className="wd-admin-form-section__heading">
+              <h3 id="contract-pricing-heading">4. Pricing</h3>
+              <p>Set the total project price and required deposit percentage.</p>
+            </div>
+            <div className="wd-admin-form-grid wd-admin-form-grid--2">
+              <Input label="Total price" type="number" value={form.totalPrice} onChange={(e) => updateField("totalPrice", e.target.value)} />
+              <Input label="Deposit %" type="number" value={form.depositPercent} onChange={(e) => updateField("depositPercent", e.target.value)} />
+            </div>
+          </section>
 
-            <Input
-              label="Client email *"
-              type="email"
-              value={form.clientEmail}
-              onChange={(e) => updateField("clientEmail", e.target.value)}
-            />
+          <section className="wd-admin-form-section" aria-labelledby="contract-notes-heading">
+            <div className="wd-admin-form-section__heading">
+              <h3 id="contract-notes-heading">5. Notes</h3>
+              <p>Keep payment terms, internal context, and client-visible notes distinct.</p>
+            </div>
+            <div className="wd-admin-form-grid">
+              <Textarea label="Payment notes" value={form.paymentNotes} onChange={(e) => updateField("paymentNotes", e.target.value)} rows={3} />
+              <div className="wd-admin-form-grid wd-admin-form-grid--2">
+                <Textarea label="Admin notes" value={form.adminNotes} onChange={(e) => updateField("adminNotes", e.target.value)} rows={4} />
+                <Textarea label="Client notes" value={form.clientNotes} onChange={(e) => updateField("clientNotes", e.target.value)} rows={4} />
+              </div>
+            </div>
+          </section>
 
-            <Input
-              label="Client phone"
-              value={form.clientPhone}
-              onChange={(e) => updateField("clientPhone", e.target.value)}
-            />
-
-            <Select
-              label="Website type"
-              value={form.websiteType}
-              onChange={(e) => {
-                const nextType = e.target.value;
-                updateField("websiteType", nextType);
-                setForm((prev) => ({
-                  ...prev,
-                  websiteType: nextType,
-                  pagesText: prev.pagesText || suggestPages(nextType),
-                  featuresText: prev.featuresText || suggestFeatures(nextType),
-                }));
-              }}
-            >
-              {websiteTypes.map((type) => (
-                <option key={type}>{type}</option>
-              ))}
-            </Select>
-
-            <Input
-              label="Timeline"
-              placeholder="Example: 2-3 weeks"
-              value={form.timeline}
-              onChange={(e) => updateField("timeline", e.target.value)}
-            />
-          </div>
-
-          <Textarea
-            label="Scope summary *"
-            value={form.scopeSummary}
-            onChange={(e) => updateField("scopeSummary", e.target.value)}
-            rows={4}
-          />
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <Textarea
-              label="Pages included"
-              placeholder={"One page per line\nHome\nServices\nContact"}
-              value={form.pagesText}
-              onChange={(e) => updateField("pagesText", e.target.value)}
-              rows={6}
-            />
-
-            <Textarea
-              label="Features included"
-              placeholder={"One feature per line\nContact form\nAdmin dashboard\nBooking system"}
-              value={form.featuresText}
-              onChange={(e) => updateField("featuresText", e.target.value)}
-              rows={6}
-            />
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-4">
-            <Input
-              label="Start date"
-              type="date"
-              value={form.startDate}
-              onChange={(e) => updateField("startDate", e.target.value)}
-            />
-
-            <Input
-              label="Deadline"
-              value={form.deadline}
-              onChange={(e) => updateField("deadline", e.target.value)}
-            />
-
-            <Input
-              label="Total price"
-              type="number"
-              value={form.totalPrice}
-              onChange={(e) => updateField("totalPrice", e.target.value)}
-            />
-
-            <Input
-              label="Deposit %"
-              type="number"
-              value={form.depositPercent}
-              onChange={(e) => updateField("depositPercent", e.target.value)}
-            />
-          </div>
-
-          <Textarea
-            label="Payment notes"
-            value={form.paymentNotes}
-            onChange={(e) => updateField("paymentNotes", e.target.value)}
-            rows={3}
-          />
-
-          <div className="grid gap-5 md:grid-cols-2">
-            <Textarea
-              label="Admin notes"
-              value={form.adminNotes}
-              onChange={(e) => updateField("adminNotes", e.target.value)}
-              rows={4}
-            />
-
-            <Textarea
-              label="Client notes"
-              value={form.clientNotes}
-              onChange={(e) => updateField("clientNotes", e.target.value)}
-              rows={4}
-            />
-          </div>
-
-          <div>
-            <Button type="submit" disabled={isSaving} icon={false}>
+          <div className="wd-admin-form-submit">
+            <Button type="submit" disabled={isSaving} icon={false} className="wd-admin-action">
               <Plus size={17} />
-              {isSaving
-                ? "Saving..."
-                : editingId
-                  ? "Save contract"
-                  : "Create contract"}
+              {isSaving ? "Saving..." : editingId ? "Save contract" : "Create contract"}
             </Button>
           </div>
         </form>
-      </Card>
+        </div>
+      ) : null}
 
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_240px_auto_auto] lg:items-end">
+      {mode === "manage" ? (
+        <>
+          <AdminToolbar className="wd-admin-contract-toolbar">
           <Input
             label="Search contracts"
             placeholder="Search title, client, business, email, phone, or type"
@@ -679,18 +652,23 @@ function ContractManager() {
             Apply
           </Button>
 
-          <Button type="button" variant="secondary" onClick={handleResetFilters}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="wd-admin-reset"
+            onClick={handleResetFilters}
+            disabled={!filters.search.trim() && filters.status === "All"}
+          >
             Reset
           </Button>
-        </div>
-      </Card>
+          </AdminToolbar>
 
       {isLoading ? (
         <Loader text="Loading contracts..." />
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchContracts} />
       ) : contracts.length ? (
-        <div className="grid gap-5">
+        <div className="wd-admin-record-list">
           {contracts.map((contract) => (
             <AdminContractCard
               key={contract._id}
@@ -705,14 +683,20 @@ function ContractManager() {
             pagination={pagination}
             onPageChange={fetchContracts}
             disabled={isLoading}
+            tone="light"
           />
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No contracts yet"
           description="Create contracts manually or from website requests and call appointments."
+          actionText="Create contract"
+          onAction={() => handleModeChange("create")}
         />
-      )}
+          )}
+        </>
+      ) : null}
+      </AdminWorkspace>
     </div>
   );
 }
@@ -725,25 +709,59 @@ function AdminContractCard({
   isDeleting,
 }) {
   return (
-    <Card className="p-6">
-      <div className="mb-5 flex flex-wrap gap-3">
-        <StatusBadge status={contract.status} />
-
-        <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-          {contract.websiteType}
-        </span>
-
-        {contract.clientNotes && (
-          <span className="rounded-full border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
-            Has client note
-          </span>
-        )}
+    <Card className="wd-admin-record wd-admin-contract-record">
+      <div className="wd-admin-record__header">
+        <div>
+          <div className="wd-admin-record__chips">
+            <StatusBadge status={contract.status} tone="light" />
+            <span className="wd-admin-chip">{contract.websiteType}</span>
+            {contract.clientNotes ? <span className="wd-admin-chip">Client note</span> : null}
+          </div>
+          <h2 className="wd-admin-record__title">{contract.title}</h2>
+          <p className="wd-admin-record__byline">
+            {contract.businessName || contract.clientName}
+          </p>
+        </div>
+        <time className="wd-admin-record__date" dateTime={contract.createdAt}>
+          {formatDate(contract.createdAt, "en")}
+        </time>
       </div>
 
-      <ContractList contracts={[contract]} emptyMode="admin" />
+      <p className="wd-admin-record__description">{contract.scopeSummary}</p>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-4">
-        <Button type="button" variant="secondary" onClick={() => onEdit(contract)}>
+      <dl className="wd-admin-record__meta">
+        <ContractDetail label="Client" value={contract.clientName} />
+        <ContractDetail label="Email" value={contract.clientEmail} ltr />
+        <ContractDetail label="Phone" value={contract.clientPhone} ltr />
+        <ContractDetail label="Timeline" value={contract.timeline} />
+        <ContractDetail label="Start date" value={contract.startDate} />
+        <ContractDetail label="Deadline" value={contract.deadline} />
+      </dl>
+
+      <div className="wd-admin-contract-financials" aria-label="Contract pricing">
+        <ContractAmount label="Total" value={contract.totalPrice} />
+        <ContractAmount
+          label={`Deposit (${contract.depositPercent || 70}%)`}
+          value={contract.depositAmount}
+        />
+        <ContractAmount label="Remaining" value={contract.remainingAmount} />
+      </div>
+
+      <div className="wd-admin-contract-inclusions">
+        <ContractListBlock title="Pages included" items={contract.pagesIncluded} />
+        <ContractListBlock title="Features included" items={contract.featuresIncluded} />
+      </div>
+
+      {contract.paymentNotes || contract.clientNotes || contract.adminNotes ? (
+        <div className="wd-admin-contract-notes">
+          <ContractNote label="Payment notes" value={contract.paymentNotes} />
+          <ContractNote label="Client notes" value={contract.clientNotes} />
+          <ContractNote label="Admin notes" value={contract.adminNotes} />
+        </div>
+      ) : null}
+
+      <div className="wd-admin-record__actions">
+        <Button type="button" variant="secondary" onClick={() => onEdit(contract)} className="wd-admin-action">
           Edit
         </Button>
 
@@ -751,6 +769,7 @@ function AdminContractCard({
           type="button"
           variant="secondary"
           onClick={() => onQuickStatus(contract, "Sent")}
+          className="wd-admin-action"
         >
           Mark Sent
         </Button>
@@ -759,6 +778,7 @@ function AdminContractCard({
           type="button"
           variant="secondary"
           onClick={() => onQuickStatus(contract, "In Progress")}
+          className="wd-admin-action"
         >
           In Progress
         </Button>
@@ -767,13 +787,60 @@ function AdminContractCard({
           type="button"
           onClick={() => onDelete(contract._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="wd-admin-danger"
         >
           <Trash2 size={17} />
           {isDeleting ? "Archiving..." : "Archive"}
         </button>
       </div>
     </Card>
+  );
+}
+
+function ContractDetail({ label, value, ltr = false }) {
+  return (
+    <div className="wd-admin-meta-item">
+      <dt>{label}</dt>
+      <dd dir={ltr ? "ltr" : undefined} className={ltr ? "wd-ltr" : undefined}>
+        {value || "—"}
+      </dd>
+    </div>
+  );
+}
+
+function ContractAmount({ label, value }) {
+  return (
+    <div>
+      <span>{label}</span>
+      <strong className="font-display">
+        {value || value === 0 ? formatMoney(value, "EGP", "en") : "Not set"}
+      </strong>
+    </div>
+  );
+}
+
+function ContractListBlock({ title, items }) {
+  return (
+    <section>
+      <h3>{title}</h3>
+      {items?.length ? (
+        <ul>
+          {items.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      ) : (
+        <p>Not set</p>
+      )}
+    </section>
+  );
+}
+
+function ContractNote({ label, value }) {
+  if (!value) return null;
+  return (
+    <section>
+      <h3>{label}</h3>
+      <p>{value}</p>
+    </section>
   );
 }
 
@@ -856,14 +923,7 @@ function suggestFeatures(websiteType) {
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default ContractManager;

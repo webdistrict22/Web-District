@@ -15,12 +15,15 @@ import Button from "../common/Button";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import PaginationControls from "../common/PaginationControls";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminToolbar from "./AdminToolbar";
+import AdminWorkspace from "./AdminWorkspace";
 
 function ClientManager() {
   const [clients, setClients] = useState([]);
@@ -155,39 +158,24 @@ function ClientManager() {
   }, [clients]);
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
-
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Clients
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              View client accounts and their linked website requests, call
-              appointments, and reviews.
-            </p>
-          </div>
-
-          <Button to="/signup" variant="secondary">
+    <div className="wd-admin-page">
+      <AdminWorkspace
+        title="Client accounts"
+        description="Review account status and linked website activity."
+        action={
+          <Button to="/signup" variant="secondaryLight" className="wd-admin-action">
             Open signup page
           </Button>
+        }
+      >
+        <div className="wd-admin-metrics" aria-label="Client metrics">
+          <StatCard label="Total clients" value={stats.total} />
+          <StatCard label="Active" value={stats.active} />
+          <StatCard label="Disabled" value={stats.disabled} />
+          <StatCard label="With requests" value={stats.withRequests} />
         </div>
-      </Card>
 
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total clients" value={stats.total} />
-        <StatCard label="Active" value={stats.active} />
-        <StatCard label="Disabled" value={stats.disabled} />
-        <StatCard label="With requests" value={stats.withRequests} />
-      </div>
-
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_240px_auto_auto] lg:items-end">
+        <AdminToolbar className="wd-admin-client-toolbar">
           <Input
             label="Search clients"
             placeholder="Search name, business, email, or phone"
@@ -210,52 +198,60 @@ function ClientManager() {
             Apply
           </Button>
 
-          <Button type="button" variant="secondary" onClick={handleResetFilters}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="wd-admin-reset"
+            onClick={handleResetFilters}
+            disabled={!filters.search.trim() && filters.status === "All"}
+          >
             Reset
           </Button>
-        </div>
-      </Card>
+        </AdminToolbar>
 
-      {isLoading ? (
+        {isLoading ? (
         <Loader text="Loading client accounts..." />
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchClients} />
       ) : clients.length ? (
-        <div className="grid gap-5 xl:grid-cols-[1fr_0.9fr]">
-          <div className="grid gap-5">
+        <div className="wd-admin-client-workspace">
+          <div className="wd-admin-record-list">
             {clients.map((client) => (
-              <ClientCard
-                key={client._id}
-                client={client}
-                onToggleDetails={handleToggleDetails}
-                onToggleStatus={handleToggleStatus}
-                isUpdating={updatingId === client._id}
-                isExpanded={expandedClientId === client._id}
-                isDetailsLoading={
-                  isDetailsLoading && expandedClientId === client._id
-                }
-              />
+              <div key={client._id} className="wd-admin-client-entry">
+                <ClientCard
+                  client={client}
+                  onToggleDetails={handleToggleDetails}
+                  onToggleStatus={handleToggleStatus}
+                  isUpdating={updatingId === client._id}
+                  isExpanded={expandedClientId === client._id}
+                  isDetailsLoading={isDetailsLoading && expandedClientId === client._id}
+                />
+                {expandedClientId === client._id ? (
+                  <div className="wd-admin-client-detail-mobile">
+                    <ClientDetailsPanel data={selectedClientData} isLoading={isDetailsLoading} />
+                  </div>
+                ) : null}
+              </div>
             ))}
             <PaginationControls
               pagination={pagination}
               onPageChange={fetchClients}
               disabled={isLoading}
+              tone="light"
             />
           </div>
 
-          <ClientDetailsPanel
-            data={selectedClientData}
-            isLoading={isDetailsLoading}
-          />
+          <div className="wd-admin-client-detail-desktop">
+            <ClientDetailsPanel data={selectedClientData} isLoading={isDetailsLoading} />
+          </div>
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No clients found"
           description="Client accounts will appear here after users sign up."
-          actionText="Open signup page"
-          actionTo="/signup"
         />
-      )}
+        )}
+      </AdminWorkspace>
     </div>
   );
 }
@@ -270,9 +266,7 @@ function ClientCard({
 }) {
   return (
     <Card
-      className={`p-6 transition ${
-        isExpanded ? "border-[#C4A77D]/50" : "hover:border-[#C4A77D]/25"
-      }`}
+      className={`wd-admin-record wd-admin-client-card${isExpanded ? " is-selected" : ""}`}
     >
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
         <div>
@@ -330,7 +324,7 @@ function ClientCard({
       </div>
 
       {isExpanded && (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+        <div className="wd-admin-client-inline-summary">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               Client details
@@ -373,6 +367,7 @@ function ClientCard({
           variant="secondary"
           onClick={() => onToggleStatus(client)}
           disabled={isUpdating}
+          className={client.isActive ? "wd-admin-danger" : "wd-admin-action"}
         >
           {isUpdating
             ? "Updating..."
@@ -392,7 +387,7 @@ function ClientDetailsPanel({ data, isLoading }) {
 
   if (!data) {
     return (
-      <Card className="sticky top-24 h-fit p-6">
+      <Card className="wd-admin-client-detail wd-admin-record">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
           <UserRound size={24} />
         </div>
@@ -412,8 +407,8 @@ function ClientDetailsPanel({ data, isLoading }) {
   const { client, activity } = data;
 
   return (
-    <div className="sticky top-24 grid h-fit gap-5">
-      <Card className="p-6">
+    <div className="wd-admin-client-detail-stack">
+      <Card className="wd-admin-client-detail wd-admin-record">
         <div className="mb-5 flex flex-wrap gap-3">
           <span
             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
@@ -507,7 +502,7 @@ function ClientDetailsPanel({ data, isLoading }) {
 
 function ActivityBlock({ title, icon: Icon, items, renderItem, emptyText }) {
   return (
-    <Card className="p-6">
+    <section className="wd-admin-client-activity">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
           <Icon size={18} />
@@ -525,15 +520,15 @@ function ActivityBlock({ title, icon: Icon, items, renderItem, emptyText }) {
           <p className="text-sm text-[#D9D4CC]">{emptyText}</p>
         )}
       </div>
-    </Card>
+    </section>
   );
 }
 
 function ActivityItem({ title, subtitle, date, status }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+    <article className="wd-admin-client-activity-item">
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <StatusBadge status={status} />
+        <StatusBadge status={status} tone="light" />
         <span className="text-xs text-[#D9D4CC]">{formatDate(date)}</span>
       </div>
 
@@ -541,19 +536,19 @@ function ActivityItem({ title, subtitle, date, status }) {
       <p className="wd-value-wrap mt-1 line-clamp-2 text-sm text-[#D9D4CC]">
         {subtitle}
       </p>
-    </div>
+    </article>
   );
 }
 
 function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
+    <div className="wd-admin-info-item">
+      <Icon size={16} className="wd-admin-info-item__icon" />
       <div className="min-w-0 max-w-full">
-        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="wd-admin-info-item__label">{label}</p>
         <p
           dir={ltr ? "ltr" : undefined}
-          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+          className={`wd-admin-info-item__value wd-value-wrap ${
             ltr ? "wd-ltr" : ""
           }`}
         >
@@ -569,11 +564,11 @@ function DetailItem({ label, value, ltr = false }) {
     value === null || value === undefined || value === "" ? "Not added" : value;
 
   return (
-    <div className="min-w-0 max-w-full rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#D9D4CC]">{label}</p>
+    <div className="wd-admin-mini-info">
+      <p className="wd-admin-info-item__label">{label}</p>
       <p
-        dir={ltr ? "ltr" : undefined}
-        className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+          dir={ltr ? "ltr" : undefined}
+          className={`wd-admin-info-item__value wd-value-wrap ${
           ltr ? "wd-ltr" : ""
         }`}
       >
@@ -585,22 +580,15 @@ function DetailItem({ label, value, ltr = false }) {
 
 function MiniStat({ label, value }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-1 text-2xl font-bold text-[#F8F7F4]">{value}</p>
+    <div className="wd-admin-client-count">
+      <p>{label}</p>
+      <strong className="font-display">{value}</strong>
     </div>
   );
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default ClientManager;

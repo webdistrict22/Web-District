@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router";
-import Card from "../common/Card";
+import AdminPageHeader from "./AdminPageHeader";
 import SlotManager from "./SlotManager";
 import FAQManager from "./FAQManager";
 import PackageManager from "./PackageManager";
@@ -50,49 +50,28 @@ function ControlManager({ initialTab = "slots" }) {
   const ActiveComponent = activeControl.Component;
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-          Admin dashboard
-        </p>
+    <div className="wd-admin-page">
+      <AdminPageHeader
+        eyebrow="Admin dashboard"
+        title="Control"
+        description="Manage the parts that change often: slots, FAQ, packages, and selected work."
+      />
 
-        <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-          Control
-        </h2>
-
-        <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-          Manage the parts that change often: slots, FAQ, packages, and
-          selected work.
-        </p>
-      </Card>
-
-      <Card className="p-3">
-        <div
-          className="grid gap-2 md:grid-cols-4"
-          role="group"
-          aria-label="Control sections"
-        >
+      <nav className="wd-admin-local-tabs" aria-label="Control sections">
           {controlTabs.map((tab) => (
             <NavLink
               key={tab.id}
               to={tab.path}
               aria-current={activeTab === tab.id ? "page" : undefined}
-              className={`rounded-2xl border p-4 text-left transition ${
-                activeTab === tab.id
-                  ? "border-[#C4A77D]/45 bg-[#C4A77D]/12 text-[#F8F7F4]"
-                  : "border-white/10 bg-white/[0.025] text-[#D9D4CC] hover:border-[#C4A77D]/35 hover:text-[#F8F7F4]"
-              }`}
+              className={`wd-admin-local-tab${activeTab === tab.id ? " is-active" : ""}`}
             >
-              <span className="block text-sm font-semibold">{tab.label}</span>
-              <span className="mt-1 block text-xs text-[#D9D4CC]">
-                {tab.description}
-              </span>
+              {tab.label}
+              <span className="sr-only"> — {tab.description}</span>
             </NavLink>
           ))}
-        </div>
-      </Card>
+      </nav>
 
-      <div>
+      <div className="wd-admin-subworkspace">
         <ActiveComponent />
       </div>
     </div>

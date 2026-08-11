@@ -7,7 +7,7 @@ function AdminRoute({ children }) {
   const location = useLocation();
 
   if (isAuthLoading) {
-    return <Loader text="Checking admin access..." />;
+    return <Loader page text="Checking admin access..." />;
   }
 
   if (!isAuthenticated) {

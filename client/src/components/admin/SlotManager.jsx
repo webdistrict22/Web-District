@@ -8,10 +8,15 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import PaginationControls from "../common/PaginationControls";
+import { formatSlotDisplayParts } from "../start/slotFormatting";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminToolbar from "./AdminToolbar";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminWorkspace from "./AdminWorkspace";
 
 const initialForm = {
   date: "",
@@ -24,6 +29,7 @@ function SlotManager() {
   const [slots, setSlots] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
+  const [mode, setMode] = useState("manage");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
@@ -68,6 +74,19 @@ function SlotManager() {
   const resetForm = () => {
     setForm(initialForm);
     setEditingId("");
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+    if (editingId) {
+      setForm(initialForm);
+      setEditingId("");
+    }
+    setMode("create");
   };
 
   const handleSubmit = async (e) => {
@@ -106,6 +125,7 @@ function SlotManager() {
   };
 
   const handleEdit = (slot) => {
+    setMode("create");
     setEditingId(slot._id);
     setForm({
       date: slot.date || "",
@@ -158,38 +178,50 @@ function SlotManager() {
   };
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
+    <div className="wd-admin-page">
+      <AdminModeSwitch
+        label="Slot workspace mode"
+        value={mode}
+        options={[
+          { value: "manage", label: "Manage slots" },
+          { value: "create", label: editingId ? "Edit slot" : "Create slot" },
+        ]}
+        onChange={handleModeChange}
+      />
 
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Available call slots
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Create and control the call times clients can book from the Start page.
-            </p>
+      <AdminWorkspace
+        title={mode === "manage" ? "Available call slots" : undefined}
+        description={
+          mode === "manage"
+            ? "Create and control the Cairo-time call windows clients can book."
+            : undefined
+        }
+        action={
+          mode === "manage" ? (
+            <div className="wd-admin-workspace-actions">
+              <Button type="button" icon={false} onClick={() => handleModeChange("create")}>
+                <Plus size={17} />
+                Create slot
+              </Button>
+              <Button to="/start" variant="secondaryLight" className="wd-admin-action">
+                View start page
+              </Button>
+            </div>
+          ) : undefined
+        }
+      >
+        {mode === "manage" ? (
+          <div className="wd-admin-metrics" aria-label="Slot metrics">
+            <StatCard label="Total slots" value={stats.total} />
+            <StatCard label="Available" value={stats.available} />
+            <StatCard label="Booked" value={stats.booked} />
+            <StatCard label="Inactive" value={stats.inactive} />
           </div>
+        ) : null}
 
-          <Button to="/start" variant="secondary">
-            View start page
-          </Button>
-        </div>
-      </Card>
-
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total slots" value={stats.total} />
-        <StatCard label="Available" value={stats.available} />
-        <StatCard label="Booked" value={stats.booked} />
-        <StatCard label="Inactive" value={stats.inactive} />
-      </div>
-
-      <Card className="p-6 md:p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
+      {mode === "create" ? (
+        <div className="wd-admin-form">
+        <div className="wd-admin-form-intro">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
               {editingId ? "Edit slot" : "Create slot"}
@@ -199,11 +231,9 @@ function SlotManager() {
             </h3>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          <Button type="button" variant="secondaryLight" onClick={resetForm}>
+            Back to slots
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -249,10 +279,12 @@ function SlotManager() {
             </Button>
           </div>
         </form>
-      </Card>
+        </div>
+      ) : null}
 
-      <Card className="p-5">
-        <div className="grid gap-4 md:grid-cols-[1fr_260px] md:items-end">
+      {mode === "manage" ? (
+        <>
+          <AdminToolbar className="wd-admin-slot-toolbar">
           <div>
             <p className="mb-2 text-sm font-medium text-[#D9D4CC]">Slot list</p>
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-[#D9D4CC]">
@@ -275,13 +307,12 @@ function SlotManager() {
             <option>Booked</option>
             <option>Inactive</option>
           </Select>
-        </div>
-      </Card>
+          </AdminToolbar>
 
-      {isLoading ? (
+          {isLoading ? (
         <Loader text="Loading call slots..." />
       ) : slots.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="wd-admin-record-list wd-admin-slot-grid">
           {slots.map((slot) => (
             <SlotCard
               key={slot._id}
@@ -297,21 +328,28 @@ function SlotManager() {
               pagination={pagination}
               onPageChange={(page) => fetchSlots(page, filter)}
               disabled={isLoading}
+              tone="light"
             />
           </div>
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No call slots found"
           description="Create your first available slot so clients can book a discovery call."
+          actionText="Create slot"
+          onAction={() => handleModeChange("create")}
         />
-      )}
+          )}
+        </>
+      ) : null}
+      </AdminWorkspace>
     </div>
   );
 }
 
 function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
   const status = slot.isBooked ? "Booked" : slot.isActive ? "Available" : "Inactive";
+  const slotDisplay = formatSlotDisplayParts(slot, "en");
 
   const statusClass = slot.isBooked
     ? "border-[#C4A77D]/30 bg-[#C4A77D]/12 text-[#F8F7F4]"
@@ -320,7 +358,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
       : "border-[#D9D4CC]/18 bg-white/[0.025] text-[#D9D4CC]";
 
   return (
-    <Card className="p-6">
+    <Card className="wd-admin-record wd-admin-slot-record">
       <div className="flex items-start justify-between gap-4">
         <div>
           <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass}`}>
@@ -328,30 +366,30 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
           </span>
 
           <h3 className="font-display mt-4 text-2xl font-bold tracking-[-0.04em]">
-            {slot.date}
+            {slotDisplay.date}
           </h3>
 
           <div className="mt-3 flex flex-wrap gap-3 text-sm text-[#D9D4CC]">
             <span className="inline-flex items-center gap-2">
               <CalendarDays size={16} className="text-[#C4A77D]" />
-              {slot.date}
+              {slotDisplay.date}
             </span>
 
             <span className="inline-flex items-center gap-2">
               <Clock size={16} className="text-[#C4A77D]" />
-              {slot.startTime} - {slot.endTime}
+              {slotDisplay.timeRange} ({slotDisplay.timezoneLabel})
             </span>
           </div>
         </div>
       </div>
 
       {slot.notes && (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+          <div className="wd-admin-slot-note">
           <p className="text-sm leading-7 text-[#D9D4CC]">{slot.notes}</p>
         </div>
       )}
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="wd-admin-record__actions">
         <Button type="button" variant="secondary" onClick={() => onEdit(slot)}>
           Edit
         </Button>
@@ -369,7 +407,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
           type="button"
           onClick={() => onDelete(slot._id)}
           disabled={slot.isBooked || isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-50"
+          className="wd-admin-danger"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
@@ -386,14 +424,7 @@ function SlotCard({ slot, onEdit, onToggleActive, onDelete, isDeleting }) {
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default SlotManager;

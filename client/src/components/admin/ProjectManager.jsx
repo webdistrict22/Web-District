@@ -8,10 +8,14 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import Badge from "../common/Badge";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminToolbar from "./AdminToolbar";
+import AdminWorkspace from "./AdminWorkspace";
 
 const initialForm = {
   title: "",
@@ -43,6 +47,7 @@ function ProjectManager() {
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
+  const [mode, setMode] = useState("manage");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [visibilityFilter, setVisibilityFilter] = useState("All");
@@ -118,6 +123,21 @@ function ProjectManager() {
   const resetForm = () => {
     setForm(initialForm);
     setEditingId("");
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+
+    if (editingId) {
+      setForm(initialForm);
+      setEditingId("");
+    }
+
+    setMode("form");
   };
 
   const handleSubmit = async (e) => {
@@ -175,6 +195,7 @@ function ProjectManager() {
   };
 
   const handleEdit = (project) => {
+    setMode("form");
     setEditingId(project._id);
     setForm({
       title: project.title || "",
@@ -311,39 +332,73 @@ function ProjectManager() {
   const imageUrls = textToArray(form.imagesText);
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
+    <div className="wd-admin-page">
+      <AdminModeSwitch
+        label="Project workspace mode"
+        value={mode}
+        onChange={handleModeChange}
+        options={[
+          { value: "manage", label: "Manage projects" },
+          { value: "form", label: editingId ? "Edit project" : "Create project" },
+        ]}
+      />
 
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Projects / selected work
-            </h2>
+      <AdminWorkspace
+        title={mode === "manage" ? "Projects / selected work" : editingId ? "Edit project" : "Create project"}
+        description={
+          mode === "manage"
+            ? "Manage the selected projects shown on the website while keeping the public presentation broad and flexible."
+            : editingId
+              ? "Update this selected project and its public presentation."
+              : "Add a selected project to the public work collection."
+        }
+        action={
+          mode === "manage" ? (
+            <div className="wd-admin-workspace-actions">
+              <Button type="button" onClick={() => handleModeChange("form")}>Create project</Button>
+              <Button to="/work" variant="secondaryLight">View work page</Button>
+            </div>
+          ) : (
+            <Button type="button" variant="secondaryLight" onClick={resetForm}>Back to projects</Button>
+          )
+        }
+      >
+        {mode === "manage" ? (
+          <>
+            <div className="wd-admin-metrics" aria-label="Project metrics">
+              <StatCard label="Total projects" value={stats.total} />
+              <StatCard label="Visible" value={stats.visible} />
+              <StatCard label="Featured" value={stats.featured} />
+              <StatCard label="Hidden" value={stats.hidden} />
+            </div>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Manage the selected projects shown on the website. Keep the public
-              wording focused on “Some of our work” so Web District feels broad
-              and flexible.
-            </p>
-          </div>
+            <AdminToolbar className="wd-admin-project-toolbar">
+              <Input label="Search projects" placeholder="Search title, type, business, or description" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Select label="Website type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                <option>All</option>
+                {websiteTypes.map((type) => <option key={type}>{type}</option>)}
+              </Select>
+              <Select label="Visibility" value={visibilityFilter} onChange={(e) => setVisibilityFilter(e.target.value)}>
+                <option>All</option>
+                <option>Visible</option>
+                <option>Hidden</option>
+              </Select>
+            </AdminToolbar>
 
-          <Button to="/work" variant="secondary">
-            View work page
-          </Button>
-        </div>
-      </Card>
-
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total projects" value={stats.total} />
-        <StatCard label="Visible" value={stats.visible} />
-        <StatCard label="Featured" value={stats.featured} />
-        <StatCard label="Hidden" value={stats.hidden} />
-      </div>
-
-      <Card className="p-6 md:p-8">
+            {isLoading ? (
+              <Loader text="Loading projects..." />
+            ) : filteredProjects.length ? (
+              <div className="wd-admin-record-list wd-admin-project-grid">
+                {filteredProjects.map((project) => (
+                  <AdminProjectCard key={project._id} project={project} onEdit={handleEdit} onToggleVisibility={handleToggleVisibility} onToggleFeatured={handleToggleFeatured} onDelete={handleDelete} isDeleting={deletingId === project._id} />
+                ))}
+              </div>
+            ) : (
+              <AdminEmptyState title="No projects found" description="Add selected projects like Zohour, S8 Factory, Atheer, or AKM." actionLabel="Create project" onAction={() => handleModeChange("form")} />
+            )}
+          </>
+        ) : (
+          <div className="wd-admin-form">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
@@ -354,11 +409,7 @@ function ProjectManager() {
             </h3>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          {editingId && <Button type="button" variant="secondaryLight" onClick={resetForm}>Cancel edit</Button>}
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -431,7 +482,7 @@ function ProjectManager() {
               rows={5}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+            <div className="wd-admin-project-images rounded-2xl border border-white/10 bg-white/[0.025] p-5">
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                 <div>
                   <p className="text-sm font-medium text-[#D9D4CC]">
@@ -463,7 +514,7 @@ function ProjectManager() {
                 />
               </div>
 
-              <p className="mt-4 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4 text-sm leading-6 text-[#F8F7F4]">
+              <p className="wd-admin-project-images__environment mt-4 rounded-2xl border border-[#C4A77D]/20 bg-[#C4A77D]/8 p-4 text-sm leading-6 text-[#F8F7F4]">
                 Uses CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and
                 CLOUDINARY_API_SECRET from the backend environment.
               </p>
@@ -562,62 +613,9 @@ function ProjectManager() {
             </div>
           </div>
         </form>
-      </Card>
-
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_240px_240px] lg:items-end">
-          <Input
-            label="Search projects"
-            placeholder="Search title, type, business, or description"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <Select
-            label="Website type"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            <option>All</option>
-            {websiteTypes.map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </Select>
-
-          <Select
-            label="Visibility"
-            value={visibilityFilter}
-            onChange={(e) => setVisibilityFilter(e.target.value)}
-          >
-            <option>All</option>
-            <option>Visible</option>
-            <option>Hidden</option>
-          </Select>
-        </div>
-      </Card>
-
-      {isLoading ? (
-        <Loader text="Loading projects..." />
-      ) : filteredProjects.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
-          {filteredProjects.map((project) => (
-            <AdminProjectCard
-              key={project._id}
-              project={project}
-              onEdit={handleEdit}
-              onToggleVisibility={handleToggleVisibility}
-              onToggleFeatured={handleToggleFeatured}
-              onDelete={handleDelete}
-              isDeleting={deletingId === project._id}
-            />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          title="No projects found"
-          description="Add selected projects like Zohour, S8 Factory, Atheer, or AKM."
-        />
-      )}
+          </div>
+        )}
+      </AdminWorkspace>
     </div>
   );
 }
@@ -631,7 +629,7 @@ function AdminProjectCard({
   isDeleting,
 }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="wd-admin-record wd-admin-project-record overflow-hidden">
       <div className="h-52 border-b border-white/10 bg-[radial-gradient(circle_at_70%_20%,rgba(196,167,125,0.20),transparent_30%),linear-gradient(135deg,#080808,#0B0B0B)] p-5">
         <div className="flex h-full items-end rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-5">
           <div>
@@ -690,7 +688,7 @@ function AdminProjectCard({
           </div>
         )}
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="wd-admin-record__actions">
           <Button type="button" variant="secondary" onClick={() => onEdit(project)}>
             Edit
           </Button>
@@ -719,7 +717,7 @@ function AdminProjectCard({
             type="button"
             onClick={() => onDelete(project._id)}
             disabled={isDeleting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
+            className="wd-admin-danger"
           >
             <Trash2 size={17} />
             {isDeleting ? "Deleting..." : "Delete"}
@@ -731,14 +729,7 @@ function AdminProjectCard({
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default ProjectManager;

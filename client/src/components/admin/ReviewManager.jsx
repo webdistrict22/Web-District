@@ -8,12 +8,16 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import PaginationControls from "../common/PaginationControls";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminToolbar from "./AdminToolbar";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminWorkspace from "./AdminWorkspace";
 
 const initialForm = {
   name: "",
@@ -32,6 +36,7 @@ function ReviewManager() {
   const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
+  const [mode, setMode] = useState("manage");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [visibilityFilter, setVisibilityFilter] = useState("All");
@@ -80,6 +85,20 @@ function ReviewManager() {
   const resetForm = () => {
     setForm(initialForm);
     setEditingId("");
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+
+    if (editingId) {
+      setForm(initialForm);
+      setEditingId("");
+    }
+    setMode("add");
   };
 
   const handleSubmit = async (e) => {
@@ -125,6 +144,7 @@ function ReviewManager() {
   };
 
   const handleEdit = (review) => {
+    setMode("add");
     setEditingId(review._id);
     setForm({
       name: review.name || "",
@@ -178,57 +198,65 @@ function ReviewManager() {
   };
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
+    <div className="wd-admin-page">
+      <AdminModeSwitch
+        label="Review workspace mode"
+        value={mode}
+        options={[
+          { value: "manage", label: "Manage reviews" },
+          { value: "add", label: editingId ? "Edit testimonial" : "Add testimonial" },
+        ]}
+        onChange={handleModeChange}
+      />
 
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Reviews and testimonials
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Manage public testimonials. Approve real client reviews, hide
-              weak ones, or manually add polished testimonials after completed
-              work.
-            </p>
+      <AdminWorkspace
+        title={mode === "manage" ? "Reviews and testimonials" : undefined}
+        description={
+          mode === "manage"
+            ? "Approve client reviews, control visibility, or add a manual testimonial."
+            : undefined
+        }
+        action={
+          mode === "manage" ? (
+            <div className="wd-admin-workspace-actions">
+              <Button type="button" icon={false} onClick={() => handleModeChange("add")}>
+                <Plus size={17} />
+                Add testimonial
+              </Button>
+              <Button to="/work" variant="secondaryLight" className="wd-admin-action">
+                View work page
+              </Button>
+            </div>
+          ) : undefined
+        }
+      >
+        {mode === "manage" ? (
+          <div className="wd-admin-metrics" aria-label="Review metrics">
+            <StatCard label="Total reviews" value={stats.total} />
+            <StatCard label="Approved" value={stats.approved} />
+            <StatCard label="Pending" value={stats.pending} />
+            <StatCard label="Visible" value={stats.visible} />
           </div>
+        ) : null}
 
-          <Button to="/work" variant="secondary">
-            View work page
-          </Button>
-        </div>
-      </Card>
-
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total reviews" value={stats.total} />
-        <StatCard label="Approved" value={stats.approved} />
-        <StatCard label="Pending" value={stats.pending} />
-        <StatCard label="Visible" value={stats.visible} />
-      </div>
-
-      <Card className="p-6 md:p-8">
-        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+      {mode === "add" ? (
+        <div className="wd-admin-form">
+        <div className="wd-admin-form-intro">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
+            <p className="wd-admin-eyebrow">
               {editingId ? "Edit review" : "Add manual review"}
             </p>
 
-            <h3 className="font-display mt-2 text-2xl font-bold tracking-[-0.04em]">
+            <h3 className="font-display wd-admin-form-title">
               {editingId
                 ? "Update this testimonial."
                 : "Add a testimonial that feels real and premium."}
             </h3>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          <Button type="button" variant="secondaryLight" onClick={resetForm} className="wd-admin-action">
+            Back to reviews
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -297,7 +325,7 @@ function ReviewManager() {
           />
 
           <div>
-            <Button type="submit" disabled={isSaving} icon={false}>
+            <Button type="submit" disabled={isSaving} icon={false} className="wd-admin-action">
               <Plus size={17} />
               {isSaving
                 ? "Saving..."
@@ -307,10 +335,12 @@ function ReviewManager() {
             </Button>
           </div>
         </form>
-      </Card>
+        </div>
+      ) : null}
 
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_220px_220px_auto] lg:items-end">
+      {mode === "manage" ? (
+        <>
+          <AdminToolbar className="wd-admin-review-toolbar">
           <Input
             label="Search reviews"
             placeholder="Search client, business, role, or message"
@@ -343,13 +373,12 @@ function ReviewManager() {
             <Search size={17} />
             Apply
           </Button>
-        </div>
-      </Card>
+          </AdminToolbar>
 
-      {isLoading ? (
+          {isLoading ? (
         <Loader text="Loading reviews..." />
       ) : reviews.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="wd-admin-record-list wd-admin-review-grid">
           {reviews.map((review) => (
             <ReviewCard
               key={review._id}
@@ -361,24 +390,32 @@ function ReviewManager() {
             />
           ))}
           <div className="md:col-span-2">
-            <PaginationControls pagination={pagination} onPageChange={fetchReviews} disabled={isLoading} />
+            <PaginationControls
+              pagination={pagination}
+              onPageChange={fetchReviews}
+              disabled={isLoading}
+              tone="light"
+            />
           </div>
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No reviews found"
           description="Approved testimonials will appear publicly on the Work page."
         />
-      )}
+          )}
+        </>
+      ) : null}
+      </AdminWorkspace>
     </div>
   );
 }
 
 function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
   return (
-    <Card className="p-6">
+    <Card className="wd-admin-record wd-admin-review-record">
       <div className="mb-5 flex flex-wrap gap-3">
-        <StatusBadge status={review.status} />
+        <StatusBadge status={review.status} tone="light" />
 
         <span
           className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
@@ -419,7 +456,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
         </p>
 
         {review.client && (
-          <div className="mt-4 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
+          <div className="wd-admin-linked-client">
             <p className="text-sm font-semibold text-[#D9D4CC]">
               Linked client account
             </p>
@@ -433,7 +470,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
         )}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <div className="wd-admin-record__actions">
         <Button type="button" variant="secondary" onClick={() => onEdit(review)}>
           Edit
         </Button>
@@ -475,7 +512,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
           type="button"
           onClick={() => onDelete(review._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="wd-admin-danger"
         >
           <Trash2 size={17} />
           {isDeleting ? "Archiving..." : "Archive"}
@@ -486,14 +523,7 @@ function ReviewCard({ review, onEdit, onQuickUpdate, onDelete, isDeleting }) {
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default ReviewManager;

@@ -8,10 +8,14 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import Badge from "../common/Badge";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminToolbar from "./AdminToolbar";
+import AdminWorkspace from "./AdminWorkspace";
 
 const initialForm = {
   name: "",
@@ -37,6 +41,7 @@ function PackageManager() {
   const [packages, setPackages] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
+  const [mode, setMode] = useState("manage");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [visibilityFilter, setVisibilityFilter] = useState("All");
@@ -110,6 +115,21 @@ function PackageManager() {
   const resetForm = () => {
     setForm(initialForm);
     setEditingId("");
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+
+    if (editingId) {
+      setForm(initialForm);
+      setEditingId("");
+    }
+
+    setMode("form");
   };
 
   const handleSubmit = async (e) => {
@@ -163,6 +183,7 @@ function PackageManager() {
   };
 
   const handleEdit = (packageItem) => {
+    setMode("form");
     setEditingId(packageItem._id);
     setForm({
       name: packageItem.name || "",
@@ -247,38 +268,103 @@ function PackageManager() {
   };
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
+    <div className="wd-admin-page">
+      <AdminModeSwitch
+        label="Package workspace mode"
+        value={mode}
+        onChange={handleModeChange}
+        options={[
+          { value: "manage", label: "Manage packages" },
+          { value: "form", label: editingId ? "Edit package" : "Create package" },
+        ]}
+      />
 
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Packages and website options
-            </h2>
+      <AdminWorkspace
+        title={mode === "manage" ? "Packages and website options" : editingId ? "Edit package" : "Create package"}
+        description={
+          mode === "manage"
+            ? "Keep the service directions clear, flexible, and ready for public use."
+            : editingId
+              ? "Update this website option without changing its management flow."
+              : "Add a clear website direction for the public services experience."
+        }
+        action={
+          mode === "manage" ? (
+            <div className="wd-admin-workspace-actions">
+              <Button type="button" onClick={() => handleModeChange("form")}>Create package</Button>
+              <Button to="/services" variant="secondaryLight">View services</Button>
+            </div>
+          ) : (
+            <Button type="button" variant="secondaryLight" onClick={resetForm}>Back to packages</Button>
+          )
+        }
+      >
+        {mode === "manage" ? (
+          <>
+            <div className="wd-admin-metrics" aria-label="Package metrics">
+              <StatCard label="Total options" value={stats.total} />
+              <StatCard label="Visible" value={stats.visible} />
+              <StatCard label="Featured" value={stats.featured} />
+              <StatCard label="Custom" value={stats.custom} />
+            </div>
 
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Manage the website directions shown on the site. Keep them clear,
-              premium, and flexible instead of making Web District feel limited.
-            </p>
-          </div>
+            <AdminToolbar className="wd-admin-package-toolbar">
+              <Input
+                label="Search packages"
+                placeholder="Search name, description, or type"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
 
-          <Button to="/services" variant="secondary">
-            View services
-          </Button>
-        </div>
-      </Card>
+              <Select
+                label="Website type"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+              >
+                <option>All</option>
+                {websiteTypes.map((type) => (
+                  <option key={type}>{type}</option>
+                ))}
+              </Select>
 
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total options" value={stats.total} />
-        <StatCard label="Visible" value={stats.visible} />
-        <StatCard label="Featured" value={stats.featured} />
-        <StatCard label="Custom" value={stats.custom} />
-      </div>
+              <Select
+                label="Visibility"
+                value={visibilityFilter}
+                onChange={(e) => setVisibilityFilter(e.target.value)}
+              >
+                <option>All</option>
+                <option>Visible</option>
+                <option>Hidden</option>
+              </Select>
+            </AdminToolbar>
 
-      <Card className="p-6 md:p-8">
+            {isLoading ? (
+              <Loader text="Loading website options..." />
+            ) : filteredPackages.length ? (
+              <div className="wd-admin-record-list wd-admin-package-grid">
+                {filteredPackages.map((packageItem) => (
+                  <PackageCard
+                    key={packageItem._id}
+                    packageItem={packageItem}
+                    onEdit={handleEdit}
+                    onToggleVisibility={handleToggleVisibility}
+                    onToggleFeatured={handleToggleFeatured}
+                    onDelete={handleDelete}
+                    isDeleting={deletingId === packageItem._id}
+                  />
+                ))}
+              </div>
+            ) : (
+              <AdminEmptyState
+                title="No packages found"
+                description="Create website options like Online Store, Business Website, Landing Page, and Custom Website."
+                actionLabel="Create package"
+                onAction={() => handleModeChange("form")}
+              />
+            )}
+          </>
+        ) : (
+          <div className="wd-admin-form">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
@@ -291,11 +377,7 @@ function PackageManager() {
             </h3>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          {editingId && <Button type="button" variant="secondaryLight" onClick={resetForm}>Cancel edit</Button>}
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -402,62 +484,9 @@ function PackageManager() {
             </Button>
           </div>
         </form>
-      </Card>
-
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_240px_240px] lg:items-end">
-          <Input
-            label="Search packages"
-            placeholder="Search name, description, or type"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <Select
-            label="Website type"
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-          >
-            <option>All</option>
-            {websiteTypes.map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </Select>
-
-          <Select
-            label="Visibility"
-            value={visibilityFilter}
-            onChange={(e) => setVisibilityFilter(e.target.value)}
-          >
-            <option>All</option>
-            <option>Visible</option>
-            <option>Hidden</option>
-          </Select>
-        </div>
-      </Card>
-
-      {isLoading ? (
-        <Loader text="Loading website options..." />
-      ) : filteredPackages.length ? (
-        <div className="grid gap-5 md:grid-cols-2">
-          {filteredPackages.map((packageItem) => (
-            <PackageCard
-              key={packageItem._id}
-              packageItem={packageItem}
-              onEdit={handleEdit}
-              onToggleVisibility={handleToggleVisibility}
-              onToggleFeatured={handleToggleFeatured}
-              onDelete={handleDelete}
-              isDeleting={deletingId === packageItem._id}
-            />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          title="No packages found"
-          description="Create website options like Online Store, Business Website, Landing Page, and Custom Website."
-        />
-      )}
+          </div>
+        )}
+      </AdminWorkspace>
     </div>
   );
 }
@@ -471,7 +500,7 @@ function PackageCard({
   isDeleting,
 }) {
   return (
-    <Card className="p-6">
+    <Card className="wd-admin-record wd-admin-package-record">
       <div className="mb-5 flex flex-wrap gap-3">
         <Badge>{packageItem.websiteType}</Badge>
 
@@ -506,7 +535,7 @@ function PackageCard({
         {packageItem.shortDescription}
       </p>
 
-      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+      <div className="wd-admin-mini-info">
         <p className="text-xs text-[#D9D4CC]">Price label</p>
         <p className="mt-1 font-semibold text-[#F8F7F4]">
           {packageItem.priceLabel || "Custom quote"}
@@ -526,7 +555,7 @@ function PackageCard({
         </div>
       )}
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <div className="wd-admin-record__actions">
         <Button type="button" variant="secondary" onClick={() => onEdit(packageItem)}>
           Edit
         </Button>
@@ -555,7 +584,7 @@ function PackageCard({
           type="button"
           onClick={() => onDelete(packageItem._id)}
           disabled={isDeleting}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="wd-admin-danger"
         >
           <Trash2 size={17} />
           {isDeleting ? "Deleting..." : "Delete"}
@@ -566,14 +595,7 @@ function PackageCard({
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default PackageManager;

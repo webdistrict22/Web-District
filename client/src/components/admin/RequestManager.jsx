@@ -16,13 +16,17 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import ErrorState from "../common/ErrorState";
 import StatusBadge from "../common/StatusBadge";
 import { formatDate } from "../../lib/helpers";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
 import PaginationControls from "../common/PaginationControls";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminPageHeader from "./AdminPageHeader";
+import AdminToolbar from "./AdminToolbar";
+import AdminWorkspace from "./AdminWorkspace";
 
 const requestStatuses = [
   "New",
@@ -185,7 +189,7 @@ function RequestManager() {
         prev.filter((request) => request._id !== requestId)
       );
 
-      toast.success("Request archived successfully.", { duration: 4200 });
+      toast.success("Request archived successfully.", { duration: 4000 });
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to archive request."
@@ -209,39 +213,27 @@ function RequestManager() {
   }, [requests]);
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
-
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Website requests
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              View website requests, filter by status or website type, update
-              progress, and add internal admin notes.
-            </p>
-          </div>
-
-          <Button to="/start" variant="secondary">
+    <div className="wd-admin-page">
+      <AdminPageHeader
+        eyebrow="Admin dashboard"
+        title="Website requests"
+        description="Filter submitted website requests, update progress, and keep internal follow-up notes close to the client brief."
+        action={
+          <Button to="/start" variant="secondary" className="wd-admin-action">
             Open start page
           </Button>
+        }
+      />
+
+      <AdminWorkspace>
+        <div className="wd-admin-metrics" aria-label="Request metrics">
+          <StatCard label="Total requests" value={stats.total} />
+          <StatCard label="New" value={stats.newRequests} />
+          <StatCard label="In progress" value={stats.inProgress} />
+          <StatCard label="Completed" value={stats.completed} />
         </div>
-      </Card>
 
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total requests" value={stats.total} />
-        <StatCard label="New" value={stats.newRequests} />
-        <StatCard label="In progress" value={stats.inProgress} />
-        <StatCard label="Completed" value={stats.completed} />
-      </div>
-
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.7fr_0.7fr_auto_auto] lg:items-end">
+        <AdminToolbar className="wd-admin-request-toolbar">
           <Input
             label="Search"
             placeholder="Search name, business, email, or phone"
@@ -275,18 +267,27 @@ function RequestManager() {
   Apply
 </Button>
 
-          <Button type="button" variant="secondary" onClick={handleResetFilters}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="wd-admin-reset"
+            onClick={handleResetFilters}
+            disabled={
+              !filters.search.trim() &&
+              filters.status === "All" &&
+              filters.websiteType === "All"
+            }
+          >
             Reset
           </Button>
-        </div>
-      </Card>
+        </AdminToolbar>
 
-      {isLoading ? (
+        {isLoading ? (
         <Loader text="Loading website requests..." />
       ) : loadError ? (
         <ErrorState message={loadError} onRetry={fetchRequests} />
       ) : requests.length ? (
-        <div className="grid gap-5">
+        <div className="wd-admin-record-list">
           {requests.map((request) => (
             <AdminRequestCard
               key={request._id}
@@ -303,16 +304,16 @@ function RequestManager() {
             pagination={pagination}
             onPageChange={fetchRequests}
             disabled={isLoading}
+            tone="light"
           />
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No website requests found"
           description="No requests match your current filters. New website requests will appear here."
-          actionText="Open start page"
-          actionTo="/start"
         />
-      )}
+        )}
+      </AdminWorkspace>
     </div>
   );
 }
@@ -329,11 +330,11 @@ function AdminRequestCard({
   if (!draft) return null;
 
   return (
-    <Card className="overflow-hidden">
-      <div className="grid gap-0 xl:grid-cols-[1fr_420px]">
-        <div className="min-w-0 p-6">
+    <Card className="wd-admin-record wd-admin-managed-record overflow-hidden">
+      <div className="wd-admin-managed-record__grid">
+        <div className="wd-admin-managed-record__body">
           <div className="mb-5 flex flex-wrap items-center gap-3">
-            <StatusBadge status={request.status} />
+            <StatusBadge status={request.status} tone="light" />
 
             <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-[#D9D4CC]">
               {request.websiteType}
@@ -384,7 +385,7 @@ function AdminRequestCard({
           </div>
 
           {request.client && (
-            <div className="mt-5 rounded-2xl border border-[#C4A77D]/15 bg-[#C4A77D]/5 p-4">
+            <div className="wd-admin-linked-client">
               <p className="text-sm font-semibold text-[#D9D4CC]">
                 Linked client account
               </p>
@@ -398,8 +399,8 @@ function AdminRequestCard({
           )}
         </div>
 
-        <div className="border-t border-white/10 bg-white/[0.025] p-6 xl:border-l xl:border-t-0">
-          <div className="grid gap-5">
+        <aside className="wd-admin-record-editor" aria-label={`Manage ${request.businessName || request.name}`}>
+          <div className="wd-admin-record-editor__fields">
             <Select
               label="Request status"
               value={draft.status}
@@ -444,39 +445,32 @@ function AdminRequestCard({
     type="button"
     onClick={() => onDelete(request._id)}
     disabled={isDeleting}
-    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
+    className="wd-admin-danger sm:col-span-2"
   >
     <Trash2 size={17} />
     {isDeleting ? "Archiving..." : "Archive"}
   </button>
 </div>
           </div>
-        </div>
+        </aside>
       </div>
     </Card>
   );
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 function InfoItem({ icon: Icon, label, value, ltr = false }) {
   return (
-    <div className="flex min-w-0 max-w-full gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <Icon size={17} className="mt-0.5 shrink-0 text-[#C4A77D]" />
+    <div className="wd-admin-info-item">
+      <Icon size={16} className="wd-admin-info-item__icon" />
       <div className="min-w-0 max-w-full">
-        <p className="text-xs text-[#D9D4CC]">{label}</p>
+        <p className="wd-admin-info-item__label">{label}</p>
         <p
           dir={ltr ? "ltr" : undefined}
-          className={`wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC] ${
+          className={`wd-admin-info-item__value wd-value-wrap ${
             ltr ? "wd-ltr" : ""
           }`}
         >
@@ -489,9 +483,9 @@ function InfoItem({ icon: Icon, label, value, ltr = false }) {
 
 function MiniInfo({ label, value }) {
   return (
-    <div className="min-w-0 max-w-full rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <p className="text-xs text-[#D9D4CC]">{label}</p>
-      <p className="wd-value-wrap mt-1 text-sm font-medium text-[#D9D4CC]">
+    <div className="wd-admin-mini-info">
+      <p className="wd-admin-info-item__label">{label}</p>
+      <p className="wd-admin-info-item__value wd-value-wrap">
         {value || "—"}
       </p>
     </div>

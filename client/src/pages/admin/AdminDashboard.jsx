@@ -1,49 +1,22 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import toast from "react-hot-toast";
 import {
   CalendarDays,
-  FileQuestion,
   FileText,
-  FolderKanban,
-  Layers,
   Star,
   UsersRound,
 } from "lucide-react";
-import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Loader from "../../components/common/Loader";
 import StatusBadge from "../../components/common/StatusBadge";
+import AdminMetric from "../../components/admin/AdminMetric";
+import AdminPageHeader from "../../components/admin/AdminPageHeader";
+import AdminWorkspace from "../../components/admin/AdminWorkspace";
 import api from "../../lib/axios";
 import { formatDate } from "../../lib/helpers";
+import { formatSlotDisplayParts } from "../../components/start/slotFormatting";
 import useInitialLoad from "../../hooks/useInitialLoad";
-
-const quickActions = [
-  {
-    title: "Review website requests",
-    description: "Open submitted website requests and update their status.",
-    to: "/admin/requests",
-  },
-  {
-    title: "Manage call slots",
-    description: "Create available times for clients to book calls.",
-    to: "/admin/control/slots",
-  },
-  {
-    title: "View appointments",
-    description: "Check booked calls and add notes after conversations.",
-    to: "/admin/appointments",
-  },
-  {
-    title: "Manage testimonials",
-    description: "Approve client reviews or add manual testimonials.",
-    to: "/admin/clients/reviews",
-  },
-  {
-    title: "Manage selected work",
-    description: "Add and edit projects shown on the Work page.",
-    to: "/admin/control/projects",
-  },
-];
 
 function AdminDashboard() {
   const [dashboard, setDashboard] = useState(null);
@@ -52,14 +25,10 @@ function AdminDashboard() {
   const fetchDashboard = async () => {
     try {
       setIsLoading(true);
-
       const { data } = await api.get("/dashboard/admin");
-
       setDashboard(data);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to load dashboard stats."
-      );
+      toast.error(error.response?.data?.message || "Failed to load dashboard stats.");
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +38,6 @@ function AdminDashboard() {
 
   const statsCards = useMemo(() => {
     const stats = dashboard?.stats;
-
     if (!stats) return [];
 
     return [
@@ -101,188 +69,101 @@ function AdminDashboard() {
         icon: UsersRound,
         to: "/admin/clients",
       },
-      {
-        label: "Available slots",
-        value: stats.slots.available,
-        note: `${stats.slots.booked} booked`,
-        icon: Layers,
-        to: "/admin/control/slots",
-      },
-      {
-        label: "Visible projects",
-        value: stats.projects.visible,
-        note: `${stats.projects.featured} featured`,
-        icon: FolderKanban,
-        to: "/admin/control/projects",
-      },
-      {
-        label: "Visible FAQ",
-        value: stats.faqs.visible,
-        note: `${stats.faqs.total} total`,
-        icon: FileQuestion,
-        to: "/admin/control/faq",
-      },
     ];
   }, [dashboard]);
 
-  if (isLoading) {
-    return <Loader text="Loading Web District dashboard..." />;
-  }
+  if (isLoading) return <Loader text="Loading Web District dashboard..." />;
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Overview
-            </p>
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              Manage the Web District platform.
-            </h2>
-            <p className="mt-4 max-w-2xl leading-7 text-[#D9D4CC]">
-              Track the real activity behind requests, calls, reviews, selected
-              work, services, FAQ, and client accounts.
-            </p>
-          </div>
-
-          <Button type="button" variant="secondary" onClick={fetchDashboard}>
+    <div className="wd-admin-page">
+      <AdminPageHeader
+        eyebrow="Admin dashboard"
+        title="Manage the Web District platform."
+        description="Track requests, calls, reviews, and client activity from one operational workspace."
+        action={
+          <Button
+            type="button"
+            variant="secondary"
+            className="wd-admin-action"
+            onClick={fetchDashboard}
+          >
             Refresh stats
           </Button>
+        }
+      />
+
+      <AdminWorkspace title="Platform at a glance" className="wd-admin-overview-summary">
+        <div className="wd-admin-metrics" aria-label="Platform metrics">
+          {statsCards.map((stat) => (
+            <AdminMetric key={stat.label} {...stat} />
+          ))}
         </div>
-      </Card>
+      </AdminWorkspace>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {statsCards.map((stat) => (
-          <StatCard key={stat.label} stat={stat} />
-        ))}
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-2">
-        <LatestRequests items={dashboard?.latest?.requests || []} />
-        <LatestAppointments items={dashboard?.latest?.appointments || []} />
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-3">
-        {quickActions.map((action) => (
-          <Card key={action.title} className="p-6">
-            <h3 className="font-display text-xl font-bold tracking-[-0.04em]">
-              {action.title}
-            </h3>
-
-            <p className="mt-3 min-h-[84px] leading-7 text-[#D9D4CC]">
-              {action.description}
-            </p>
-
-            <div className="mt-6">
-              <Button to={action.to} variant="secondary">
-                Open
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
+      <AdminWorkspace title="Recent activity" className="wd-admin-overview-activity">
+        <div className="wd-admin-dashboard-activity" aria-label="Latest activity">
+          <LatestActivity
+            title="Latest requests"
+            actionTo="/admin/requests"
+            items={dashboard?.latest?.requests || []}
+            type="request"
+          />
+          <LatestActivity
+            title="Latest calls"
+            actionTo="/admin/appointments"
+            items={dashboard?.latest?.appointments || []}
+            type="appointment"
+          />
+        </div>
+      </AdminWorkspace>
     </div>
   );
 }
 
-function StatCard({ stat }) {
-  const Icon = stat.icon;
-
+function LatestActivity({ title, actionTo, items, type }) {
   return (
-    <Card className="p-5 transition duration-300 hover:-translate-y-1 hover:border-[#C4A77D]/35">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-[#D9D4CC]">{stat.label}</p>
-          <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-            {stat.value}
-          </p>
-          <p className="mt-2 text-sm text-[#D9D4CC]">{stat.note}</p>
-        </div>
-
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 text-[#F8F7F4]">
-          <Icon size={20} />
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <Button to={stat.to} variant="secondary">
-          View
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function LatestRequests({ items }) {
-  return (
-    <LatestCard title="Latest requests" actionTo="/admin/requests">
-      {items.length ? (
-        items.map((item) => (
-          <LatestItem
-            key={item._id}
-            title={item.businessName || item.name}
-            subtitle={item.websiteType}
-            date={item.createdAt}
-            status={item.status}
-          />
-        ))
-      ) : (
-        <p className="text-sm text-[#D9D4CC]">No requests yet.</p>
-      )}
-    </LatestCard>
-  );
-}
-
-function LatestAppointments({ items }) {
-  return (
-    <LatestCard title="Latest calls" actionTo="/admin/appointments">
-      {items.length ? (
-        items.map((item) => (
-          <LatestItem
-            key={item._id}
-            title={item.businessName || item.name}
-            subtitle={item.slot ? `${item.slot.date} • ${item.slot.startTime}` : item.topic}
-            date={item.createdAt}
-            status={item.status}
-          />
-        ))
-      ) : (
-        <p className="text-sm text-[#D9D4CC]">No appointments yet.</p>
-      )}
-    </LatestCard>
-  );
-}
-
-function LatestCard({ title, actionTo, children }) {
-  return (
-    <Card className="p-6">
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <h3 className="font-display text-xl font-bold tracking-[-0.04em]">
-          {title}
-        </h3>
-
-        <Button to={actionTo} variant="ghost">
+    <section className="wd-admin-activity-panel">
+      <div className="wd-admin-section-heading">
+        <h2>{title}</h2>
+        <Link to={actionTo} className="wd-admin-text-link">
           View all
-        </Button>
+        </Link>
       </div>
 
-      <div className="grid gap-3">{children}</div>
-    </Card>
+      <div className="wd-admin-activity-list">
+        {items.length ? (
+          items.map((item) => (
+            <LatestItem key={item._id} item={item} type={type} />
+          ))
+        ) : (
+          <p className="wd-admin-activity-empty">No {type === "request" ? "requests" : "appointments"} yet.</p>
+        )}
+      </div>
+    </section>
   );
 }
 
-function LatestItem({ title, subtitle, date, status }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <StatusBadge status={status} />
-        <span className="text-xs text-[#D9D4CC]">{formatDate(date)}</span>
-      </div>
+function LatestItem({ item, type }) {
+  const slot = type === "appointment" && item.slot
+    ? formatSlotDisplayParts(item.slot, "en")
+    : null;
+  const subtitle = type === "request"
+    ? item.websiteType
+    : slot?.date
+      ? `${slot.date} · ${slot.timeRange}`
+      : item.topic;
 
-      <p className="font-semibold text-[#F8F7F4]">{title}</p>
-      <p className="mt-1 text-sm text-[#D9D4CC]">{subtitle}</p>
-    </div>
+  return (
+    <article className="wd-admin-activity-item">
+      <div className="wd-admin-activity-item__copy">
+        <div className="wd-admin-activity-item__status">
+          <StatusBadge status={item.status} tone="light" />
+          <time dateTime={item.createdAt}>{formatDate(item.createdAt, "en")}</time>
+        </div>
+        <h3>{item.businessName || item.name}</h3>
+        <p>{subtitle}</p>
+      </div>
+    </article>
   );
 }
 

@@ -8,9 +8,13 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import Loader from "../common/Loader";
-import EmptyState from "../common/EmptyState";
 import { confirmAction } from "../../lib/alerts";
 import useInitialLoad from "../../hooks/useInitialLoad";
+import AdminEmptyState from "./AdminEmptyState";
+import AdminMetric from "./AdminMetric";
+import AdminToolbar from "./AdminToolbar";
+import AdminModeSwitch from "./AdminModeSwitch";
+import AdminWorkspace from "./AdminWorkspace";
 
 const initialForm = {
   question: "",
@@ -24,6 +28,7 @@ function FAQManager() {
   const [faqs, setFaqs] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState("");
+  const [mode, setMode] = useState("manage");
   const [search, setSearch] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
@@ -82,6 +87,19 @@ function FAQManager() {
   const resetForm = () => {
     setForm(initialForm);
     setEditingId("");
+    setMode("manage");
+  };
+
+  const handleModeChange = (nextMode) => {
+    if (nextMode === "manage") {
+      resetForm();
+      return;
+    }
+    if (editingId) {
+      setForm(initialForm);
+      setEditingId("");
+    }
+    setMode("form");
   };
 
   const handleSubmit = async (e) => {
@@ -125,6 +143,7 @@ function FAQManager() {
   };
 
   const handleEdit = (faq) => {
+    setMode("form");
     setEditingId(faq._id);
     setForm({
       question: faq.question || "",
@@ -178,38 +197,49 @@ function FAQManager() {
   };
 
   return (
-    <div className="grid gap-5">
-      <Card className="p-6 md:p-8">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
-              Admin dashboard
-            </p>
+    <div className="wd-admin-page">
+      <AdminModeSwitch
+        label="FAQ workspace mode"
+        value={mode}
+        options={[
+          { value: "manage", label: "Manage FAQ" },
+          { value: "form", label: editingId ? "Edit FAQ" : "Add FAQ" },
+        ]}
+        onChange={handleModeChange}
+      />
 
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-[-0.05em]">
-              FAQ management
-            </h2>
-
-            <p className="mt-4 max-w-3xl leading-7 text-[#D9D4CC]">
-              Add and manage questions that help clients understand the Web
-              District process before they submit a request.
-            </p>
+      <AdminWorkspace
+        title={mode === "manage" ? "FAQ management" : undefined}
+        description={
+          mode === "manage"
+            ? "Maintain the public questions that explain the Web District process."
+            : undefined
+        }
+        action={
+          mode === "manage" ? (
+            <div className="wd-admin-workspace-actions">
+              <Button type="button" icon={false} onClick={() => handleModeChange("form")}>
+                <Plus size={17} />
+                Add FAQ
+              </Button>
+              <Button to="/" variant="secondaryLight" className="wd-admin-action">
+                View homepage
+              </Button>
+            </div>
+          ) : undefined
+        }
+      >
+        {mode === "manage" ? (
+          <div className="wd-admin-metrics" aria-label="FAQ metrics">
+            <StatCard label="Total questions" value={stats.total} />
+            <StatCard label="Visible" value={stats.visible} />
+            <StatCard label="Hidden" value={stats.hidden} />
+            <StatCard label="Categories" value={stats.categories} />
           </div>
+        ) : null}
 
-          <Button to="/" variant="secondary">
-            View homepage
-          </Button>
-        </div>
-      </Card>
-
-      <div className="grid gap-5 md:grid-cols-4">
-        <StatCard label="Total questions" value={stats.total} />
-        <StatCard label="Visible" value={stats.visible} />
-        <StatCard label="Hidden" value={stats.hidden} />
-        <StatCard label="Categories" value={stats.categories} />
-      </div>
-
-      <Card className="p-6 md:p-8">
+      {mode === "form" ? (
+        <div className="wd-admin-form">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#C4A77D]">
@@ -222,11 +252,9 @@ function FAQManager() {
             </h3>
           </div>
 
-          {editingId && (
-            <Button type="button" variant="secondary" onClick={resetForm}>
-              Cancel edit
-            </Button>
-          )}
+          <Button type="button" variant="secondaryLight" onClick={resetForm}>
+            Back to FAQ
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -283,10 +311,12 @@ function FAQManager() {
             </Button>
           </div>
         </form>
-      </Card>
+        </div>
+      ) : null}
 
-      <Card className="p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_240px] lg:items-end">
+      {mode === "manage" ? (
+        <>
+          <AdminToolbar className="wd-admin-faq-toolbar">
           <Input
             label="Search FAQ"
             placeholder="Search question, answer, or category"
@@ -303,13 +333,12 @@ function FAQManager() {
             <option>Visible</option>
             <option>Hidden</option>
           </Select>
-        </div>
-      </Card>
+          </AdminToolbar>
 
-      {isLoading ? (
+          {isLoading ? (
         <Loader text="Loading FAQ questions..." />
       ) : filteredFAQs.length ? (
-        <div className="grid gap-5">
+        <div className="wd-admin-record-list">
           {filteredFAQs.map((faq) => (
             <FAQCard
               key={faq._id}
@@ -322,18 +351,23 @@ function FAQManager() {
           ))}
         </div>
       ) : (
-        <EmptyState
+          <AdminEmptyState
           title="No FAQ questions found"
           description="Create FAQ questions to help visitors understand services, timelines, hosting, calls, and custom websites."
+          actionText="Add FAQ"
+          onAction={() => handleModeChange("form")}
         />
-      )}
+          )}
+        </>
+      ) : null}
+      </AdminWorkspace>
     </div>
   );
 }
 
 function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
   return (
-    <Card className="p-6">
+    <Card className="wd-admin-record wd-admin-faq-record">
       <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
         <div>
           <div className="mb-4 flex flex-wrap gap-3">
@@ -384,7 +418,7 @@ function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
             type="button"
             onClick={() => onDelete(faq._id)}
             disabled={isDeleting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#C4A77D]/25 bg-[#C4A77D]/10 px-5 py-3 text-sm font-semibold text-[#F8F7F4] transition hover:border-[#C4A77D]/45 disabled:cursor-not-allowed disabled:opacity-60"
+          className="wd-admin-danger"
           >
             <Trash2 size={17} />
             {isDeleting ? "Deleting..." : "Delete"}
@@ -396,14 +430,7 @@ function FAQCard({ faq, onEdit, onToggleVisibility, onDelete, isDeleting }) {
 }
 
 function StatCard({ label, value }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm text-[#D9D4CC]">{label}</p>
-      <p className="font-display mt-3 text-4xl font-bold tracking-[-0.05em] text-[#F8F7F4]">
-        {value}
-      </p>
-    </Card>
-  );
+  return <AdminMetric label={label} value={value} />;
 }
 
 export default FAQManager;

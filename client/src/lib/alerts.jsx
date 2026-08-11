@@ -7,6 +7,7 @@ export function confirmAction({
   confirmText = "Confirm",
   cancelText = "Cancel",
 } = {}) {
+  
   return new Promise((resolve) => {
     let isSettled = false;
     let toastId;

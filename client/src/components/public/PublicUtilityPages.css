@@ -123,8 +123,10 @@
   gap: 0.7rem;
 }
 
-.wd-utility-cta__actions > a {
-  border-radius: 0.35rem !important;
+.wd-utility-cta__primary,
+.wd-utility-cta__secondary {
+  min-height: 3.25rem;
+  border-radius: 0.25rem !important;
 }
 
 .wd-success-page {

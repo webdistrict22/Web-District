@@ -1,5 +1,5 @@
-import Button from "../common/Button";
 import Container from "../common/Container";
+import FinalCtaLink from "../common/FinalCtaLink";
 import PageMeta from "../common/PageMeta";
 import useLanguage from "../../hooks/useLanguage";
 import "./PublicUtilityPages.css";
@@ -50,12 +50,20 @@ function LegalPage({ canonical, translationKey }) {
             <p>{content.ctaDescription}</p>
           </div>
           <div className="wd-utility-cta__actions">
-            <Button to="/start" className="wd-final-cta-action--dark">
+            <FinalCtaLink
+              to="/start"
+              tone="dark"
+              className="wd-utility-cta__primary"
+            >
               {t("common.buttons.startProject")}
-            </Button>
-            <Button to="/process#faq" className="wd-final-cta-action--light">
+            </FinalCtaLink>
+            <FinalCtaLink
+              to="/process#faq"
+              tone="light"
+              className="wd-utility-cta__secondary"
+            >
               {t("common.buttons.viewQuestions")}
-            </Button>
+            </FinalCtaLink>
           </div>
         </Container>
       </section>

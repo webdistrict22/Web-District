@@ -24,8 +24,11 @@ function HeroSection() {
     ? "/images/home/phone-home-hero.webp"
     : "/images/home/desktop-home-hero.webp";
   const heroImageMetadata = getImageMetadata(heroImageUrl);
-  const { handleLoad: handleHeroLoad, isLoaded: isHeroLoaded } =
-    useSessionImage(heroImageUrl);
+  const {
+    handleLoad: handleHeroLoad,
+    imageRef: heroImageRef,
+    isLoaded: isHeroLoaded,
+  } = useSessionImage(heroImageUrl);
 
   const englishSubline =
     settings.heroSubtext &&
@@ -49,7 +52,13 @@ function HeroSection() {
         className={`wd-home-hero__background${isHeroLoaded ? " is-ready" : " is-loading"}`}
         aria-hidden="true"
       >
+        <source
+          media="(max-width: 767px)"
+          srcSet="/images/home/phone-home-hero.webp"
+          type="image/webp"
+        />
         <img
+          ref={heroImageRef}
           src={heroImageUrl}
           alt=""
           width={heroImageMetadata.width}

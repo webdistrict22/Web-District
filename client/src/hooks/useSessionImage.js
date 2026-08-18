@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "wd:loaded-images:v1";
 const MAX_STORED_URLS = 160;
 const loadedImageUrls = new Set();
+const loadedImageListeners = new Set();
 let didHydrateSession = false;
 
 const hydrateSessionCache = () => {
@@ -36,22 +37,57 @@ const markImageLoaded = (url) => {
   } catch {
     // The in-memory cache still covers the active SPA session.
   }
+
+  loadedImageListeners.forEach((listener) => listener());
 };
 
 function useSessionImage(url) {
-  const [loadedUrl, setLoadedUrl] = useState(() =>
-    hasLoadedImage(url) ? url : "",
+  const imageElementRef = useRef(null);
+  const nativeLoadHandlerRef = useRef(null);
+  const subscribe = useCallback((listener) => {
+    loadedImageListeners.add(listener);
+    return () => loadedImageListeners.delete(listener);
+  }, []);
+  const getSnapshot = useCallback(() => hasLoadedImage(url), [url]);
+  const getServerSnapshot = useCallback(() => false, []);
+  const isLoaded = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
   );
-  const isLoaded = Boolean(url) && (loadedUrl === url || hasLoadedImage(url));
 
-  const handleLoad = useCallback((event) => {
-    const currentUrl = event.currentTarget.currentSrc || url;
+  const markCurrentImageLoaded = useCallback((image) => {
+    if (!image || !image.complete || image.naturalWidth === 0) return;
+
+    const currentUrl = image.currentSrc || url;
     markImageLoaded(url);
     markImageLoaded(currentUrl);
-    setLoadedUrl(url);
   }, [url]);
 
-  return { handleLoad, isLoaded };
+  const handleLoad = useCallback((event) => {
+    markCurrentImageLoaded(event.currentTarget);
+  }, [markCurrentImageLoaded]);
+
+  const imageRef = useCallback((image) => {
+    if (imageElementRef.current && nativeLoadHandlerRef.current) {
+      imageElementRef.current.removeEventListener(
+        "load",
+        nativeLoadHandlerRef.current,
+      );
+    }
+
+    imageElementRef.current = image;
+    nativeLoadHandlerRef.current = null;
+
+    if (!image) return;
+
+    const handleNativeLoad = () => markCurrentImageLoaded(image);
+    nativeLoadHandlerRef.current = handleNativeLoad;
+    image.addEventListener("load", handleNativeLoad, { once: true });
+    markCurrentImageLoaded(image);
+  }, [markCurrentImageLoaded]);
+
+  return { handleLoad, imageRef, isLoaded };
 }
 
 export { hasLoadedImage, markImageLoaded };

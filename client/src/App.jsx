@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./context/AuthProvider.jsx";
 import LanguageProvider from "./context/LanguageProvider.jsx";
@@ -128,14 +128,36 @@ function SkipLink() {
   );
 }
 
-function App() {
+function App({
+  initialLanguage,
+  initialPath,
+  isPrerender = false,
+  staticNotFoundPath,
+}) {
+  const [clientIntegrationsReady, setClientIntegrationsReady] = useState(
+    () => !isPrerender,
+  );
+
+  useEffect(() => {
+    if (!isPrerender) return undefined;
+
+    const timerId = window.setTimeout(() => {
+      setClientIntegrationsReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [isPrerender]);
+
   return (
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={initialLanguage}>
       <AuthProvider>
         <SettingsProvider>
           <div>
             <SkipLink />
-            <AppRoutes />
+            <AppRoutes
+              initialPath={initialPath}
+              staticNotFoundPath={staticNotFoundPath}
+            />
           </div>
 
           <Toaster
@@ -183,10 +205,12 @@ function App() {
             }}
           />
 
-          <Suspense fallback={null}>
-            <Analytics beforeSend={excludePrivateAnalytics} />
-            <SpeedInsights beforeSend={excludePrivateAnalytics} />
-          </Suspense>
+          {clientIntegrationsReady ? (
+            <Suspense fallback={null}>
+              <Analytics beforeSend={excludePrivateAnalytics} />
+              <SpeedInsights beforeSend={excludePrivateAnalytics} />
+            </Suspense>
+          ) : null}
         </SettingsProvider>
       </AuthProvider>
     </LanguageProvider>

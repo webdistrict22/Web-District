@@ -7,6 +7,7 @@ import Container from "../common/Container";
 import ManualCarouselControls from "../common/ManualCarousel";
 import useManualCarousel from "../common/useManualCarousel";
 import useLanguage from "../../hooks/useLanguage";
+import { getImageMetadata } from "../../data/imageMetadata";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { trackCustomEvent } from "../../lib/metaPixel";
 
@@ -118,7 +119,13 @@ function WorkPreview() {
                   <article className="wd-work-card" dir={isRtl ? "rtl" : "ltr"}>
                     <div className="wd-work-card__image">
                       {image ? (
-                        <img src={image} alt={name} loading="lazy" decoding="async" />
+                        <img
+                          src={image}
+                          alt={name}
+                          {...getImageMetadata(image)}
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : null}
                     </div>
                     <div className="wd-work-card__meta">

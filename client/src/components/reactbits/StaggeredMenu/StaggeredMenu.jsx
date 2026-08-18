@@ -25,6 +25,8 @@ export function StaggeredMenu({
   logoUrl = "/src/assets/logos/reactbits-gh-white.svg",
   logoAlt = "Logo",
   logoLink = "/",
+  logoWidth = 1254,
+  logoHeight = 1254,
   menuButtonColor = "#fff",
   openMenuButtonColor = "#fff",
   accentColor = "#5227FF",
@@ -414,8 +416,8 @@ export function StaggeredMenu({
             alt={logoAlt}
             className="sm-logo-img"
             draggable={false}
-            width={96}
-            height={48}
+            width={logoWidth}
+            height={logoHeight}
           />
         </a>
         <button

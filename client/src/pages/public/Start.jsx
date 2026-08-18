@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Container from "../../components/common/Container";
-import PageMeta from "../../components/common/PageMeta";
+import RouteMeta from "../../components/common/RouteMeta";
 import StartOptions from "../../components/start/StartOptions";
 import WebsiteRequestForm from "../../components/start/WebsiteRequestForm";
 import BookCallForm from "../../components/start/BookCallForm";
@@ -15,11 +15,7 @@ function Start() {
 
   return (
     <div className="wd-start-page">
-      <PageMeta
-        title={t("start.hero.eyebrow")}
-        description={t("start.hero.description")}
-        canonical="/start"
-      />
+      <RouteMeta path="/start" />
 
       <section className="wd-start-hero">
         <Container>

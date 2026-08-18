@@ -1,6 +1,6 @@
 import Container from "../../components/common/Container";
 import Button from "../../components/common/Button";
-import PageMeta from "../../components/common/PageMeta";
+import RouteMeta from "../../components/common/RouteMeta";
 import ProcessStepper from "../../components/process/ProcessStepper";
 import FAQTabs from "../../components/process/FAQTabs";
 import useLanguage from "../../hooks/useLanguage";
@@ -13,11 +13,7 @@ function Process() {
 
   return (
     <>
-      <PageMeta
-        title={t("process.hero.eyebrow")}
-        description={t("process.hero.description")}
-        canonical="/process"
-      />
+      <RouteMeta path="/process" />
 
       <section className="wd-process-hero">
         <Container>

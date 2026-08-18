@@ -1,54 +1,101 @@
 {
-  "routes": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
     {
-      "src": "/.*",
-      "headers": {
-        "X-Content-Type-Options": "nosniff",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-        "X-Frame-Options": "DENY",
-        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
-        "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com; connect-src 'self' https://api.web-district.com https://web-district.onrender.com https://www.facebook.com https://connect.facebook.net https://graph.facebook.com https://vitals.vercel-insights.com; frame-src 'none'; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
-      },
-      "continue": true
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "web-district.com" }],
+      "destination": "https://www.web-district.com/:path*",
+      "permanent": true
     },
     {
-      "src": "/assets/(.*)",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      },
-      "continue": true
+      "source": "/contact",
+      "destination": "/process#faq",
+      "permanent": true
     },
     {
-      "src": "/sw\\.js",
-      "headers": {
-        "Cache-Control": "no-cache, no-store, must-revalidate"
-      },
-      "continue": true
+      "source": "/dashboard",
+      "destination": "/account",
+      "permanent": true
     },
     {
-      "src": "/manifest\\.webmanifest",
-      "headers": {
-        "Cache-Control": "no-cache"
-      },
-      "continue": true
-    },
-    {
-      "src": "/index\\.html",
-      "headers": {
-        "Cache-Control": "no-cache"
-      },
-      "continue": true
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/.*",
-      "dest": "/index.html",
-      "headers": {
-        "Cache-Control": "no-cache"
-      }
+      "source": "/admin/dashboard",
+      "destination": "/admin",
+      "permanent": true
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://res.cloudinary.com https://www.facebook.com; connect-src 'self' https://api.web-district.com https://web-district.onrender.com https://www.facebook.com https://connect.facebook.net https://graph.facebook.com https://vitals.vercel-insights.com; frame-src 'none'; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+        }
+      ]
+    },
+    {
+      "source": "/assets/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    },
+    {
+      "source": "/login",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/signup",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/forgot-password",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/success",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/reset-password/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/verify-email/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/account/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/_spa",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ],
+  "rewrites": [
+    { "source": "/login", "destination": "/_spa" },
+    { "source": "/signup", "destination": "/_spa" },
+    { "source": "/forgot-password", "destination": "/_spa" },
+    { "source": "/success", "destination": "/_spa" },
+    { "source": "/reset-password/:path*", "destination": "/_spa" },
+    { "source": "/verify-email/:path*", "destination": "/_spa" },
+    { "source": "/account/:path*", "destination": "/_spa" },
+    { "source": "/admin/:path*", "destination": "/_spa" }
   ]
 }

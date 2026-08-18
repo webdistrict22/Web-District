@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getImageMetadata } from "../../data/imageMetadata";
 
 function ProjectCover({
   image,
@@ -10,6 +11,7 @@ function ProjectCover({
 }) {
   const [failedImage, setFailedImage] = useState("");
   const canShowImage = Boolean(image) && failedImage !== image;
+  const imageMetadata = getImageMetadata(image);
 
   return (
     <div
@@ -33,6 +35,8 @@ function ProjectCover({
         <img
           src={image}
           alt={name}
+          width={imageMetadata.width}
+          height={imageMetadata.height}
           loading={imageLoading}
           decoding="async"
           fetchPriority={fetchPriority}

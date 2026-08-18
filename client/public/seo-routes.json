@@ -1,0 +1,21 @@
+{
+  "routes": [
+    "/",
+    "/services",
+    "/work",
+    "/process",
+    "/start",
+    "/terms",
+    "/privacy",
+    "/work/zohour",
+    "/work/s8-factory",
+    "/work/atheer",
+    "/work/akm",
+    "/work/davinto",
+    "/work/salah-frame",
+    "/work/fresh-cart",
+    "/work/travco",
+    "/work/byjojo",
+    "/work/ms-store"
+  ]
+}

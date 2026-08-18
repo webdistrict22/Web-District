@@ -1,7 +1,9 @@
 import { useState } from "react";
 import useLanguage from "../../hooks/useLanguage";
+import { getImageMetadata } from "../../data/imageMetadata";
 
 const logoSrc = "/images/logo/web-district-logo.webp";
+const logoMetadata = getImageMetadata(logoSrc);
 
 function BrandLogo({ size = "md", showText = true }) {
   const [isFailed, setIsFailed] = useState(false);
@@ -18,8 +20,8 @@ function BrandLogo({ size = "md", showText = true }) {
           <img
             src={logoSrc}
             alt="Web District"
-            width={size === "lg" ? 112 : 96}
-            height={size === "lg" ? 64 : 48}
+            width={logoMetadata.width}
+            height={logoMetadata.height}
             loading="eager"
             decoding="async"
             fetchPriority="high"

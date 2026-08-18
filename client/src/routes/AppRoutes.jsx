@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import {
   BrowserRouter,
+  MemoryRouter,
   Navigate,
   Route,
   Routes,
@@ -17,6 +18,9 @@ import Work from "../pages/public/Work";
 import CaseStudy from "../pages/public/CaseStudy";
 import Process from "../pages/public/Process";
 import Start from "../pages/public/Start";
+import Terms from "../pages/public/Terms";
+import Privacy from "../pages/public/Privacy";
+import NotFound from "../pages/NotFound";
 import useLanguage from "../hooks/useLanguage";
 
 import ProtectedRoute from "./ProtectedRoute";
@@ -28,14 +32,11 @@ const DashboardLayout = lazy(() =>
 );
 const AdminLayout = lazy(() => import("../components/layout/AdminLayout"));
 const Success = lazy(() => import("../pages/public/Success"));
-const Terms = lazy(() => import("../pages/public/Terms"));
-const Privacy = lazy(() => import("../pages/public/Privacy"));
 const Login = lazy(() => import("../pages/auth/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
 const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 const VerifyEmail = lazy(() => import("../pages/auth/VerifyEmail"));
-const NotFound = lazy(() => import("../pages/NotFound"));
 
 const ClientDashboard = lazy(() => import("../pages/client/ClientDashboard"));
 const ClientRequests = lazy(() => import("../pages/client/ClientRequests"));
@@ -71,11 +72,24 @@ function LanguageRouteSync() {
   return null;
 }
 
-function AppRoutes() {
+function CaseStudyRoute({ staticNotFoundPath }) {
+  const location = useLocation();
+
+  if (staticNotFoundPath && location.pathname === staticNotFoundPath) {
+    return <NotFound />;
+  }
+
+  return <CaseStudy />;
+}
+
+function AppRoutes({ initialPath = "/", staticNotFoundPath = "" }) {
   const { t } = useLanguage();
+  const isServer = typeof window === "undefined";
+  const Router = isServer ? MemoryRouter : BrowserRouter;
+  const routerProps = isServer ? { initialEntries: [initialPath] } : {};
 
   return (
-    <BrowserRouter>
+    <Router {...routerProps}>
       <LanguageRouteSync />
       <ScrollToTop />
       <MetaPixelTracker />
@@ -86,7 +100,10 @@ function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="services" element={<Services />} />
           <Route path="work" element={<Work />} />
-          <Route path="work/:slug" element={<CaseStudy />} />
+          <Route
+            path="work/:slug"
+            element={<CaseStudyRoute staticNotFoundPath={staticNotFoundPath} />}
+          />
           <Route path="process" element={<Process />} />
           <Route path="start" element={<Start />} />
           <Route
@@ -209,7 +226,7 @@ function AppRoutes() {
 
       </Routes>
       </Suspense>
-    </BrowserRouter>
+    </Router>
   );
 }
 

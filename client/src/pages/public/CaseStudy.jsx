@@ -8,10 +8,11 @@ import Button from "../../components/common/Button";
 import PageMeta from "../../components/common/PageMeta";
 import { getFallbackProjectBySlug } from "../../data/demoProjects";
 import useLanguage from "../../hooks/useLanguage";
+import { getCaseStudySeo } from "../../seo/seoConfig";
 
 function CaseStudy() {
   const { slug } = useParams();
-  const { t } = useLanguage();
+  const { effectiveLanguage, t } = useLanguage();
   const fallbackProject = getFallbackProjectBySlug(slug);
 
   const [project, setProject] = useState(fallbackProject || null);
@@ -51,28 +52,18 @@ function CaseStudy() {
       ? project.fullDescription || project.shortDescription
       : project.overview
     : "";
-  const metaTitle = projectName
-    ? `${projectName} ${t("work.caseStudy.eyebrow")}`
-    : t("work.caseStudy.eyebrow");
-  const metaDescription = projectName
-    ? t(`work.projects.${project.slug}.overview`, rawOverview)
-    : t("work.caseStudy.notFoundDescription");
+  const routeSeo = project ? getCaseStudySeo(project, effectiveLanguage) : null;
+  const metaTitle = routeSeo?.title || t("work.caseStudy.eyebrow");
+  const metaDescription = routeSeo?.description ||
+    (projectName
+      ? t(`work.projects.${project.slug}.overview`, rawOverview)
+      : t("work.caseStudy.notFoundDescription"));
   const pageMeta = (
     <PageMeta
       title={metaTitle}
       description={metaDescription}
-      canonical={`/work/${slug}`}
-      image={project?.coverImage}
-      type="article"
+      {...(routeSeo || {})}
       robots={!isLoading && !project ? "noindex,nofollow" : "index,follow"}
-      structuredData={project ? {
-        "@context": "https://schema.org",
-        "@type": "CreativeWork",
-        name: projectName,
-        description: metaDescription,
-        url: `https://www.web-district.com/work/${slug}`,
-        ...(project.coverImage ? { image: new URL(project.coverImage, "https://www.web-district.com").toString() } : {}),
-      } : undefined}
     />
   );
 

@@ -5,7 +5,7 @@ import FinalCtaLink from "../../components/common/FinalCtaLink";
 import ProjectCard from "../../components/work/ProjectCard";
 import WorkCollection from "../../components/work/WorkCollection";
 import WorkReviews from "../../components/work/WorkReviews";
-import PageMeta from "../../components/common/PageMeta";
+import RouteMeta from "../../components/common/RouteMeta";
 import { mergeProjectsWithFallback } from "../../data/demoProjects";
 import useLanguage from "../../hooks/useLanguage";
 import useInitialLoad from "../../hooks/useInitialLoad";
@@ -36,11 +36,7 @@ function Work() {
 
   return (
     <div className="wd-work-page">
-      <PageMeta
-        title={t("work.hero.eyebrow")}
-        description={t("work.hero.description")}
-        canonical="/work"
-      />
+      <RouteMeta path="/work" />
 
       <section className="wd-work-projects" aria-labelledby="work-page-title">
         <Container>

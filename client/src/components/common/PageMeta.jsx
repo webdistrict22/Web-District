@@ -5,7 +5,8 @@ const BASE_URL = "https://www.web-district.com";
 const DEFAULT_TITLE = "Web District | Premium Website Development Agency";
 const DEFAULT_DESCRIPTION =
   "Premium websites and digital experiences for brands ready to grow online.";
-const DEFAULT_IMAGE = "/icons/icon-512.png";
+const DEFAULT_IMAGE = "/images/home/desktop-home-hero.webp";
+const DEFAULT_IMAGE_ALT = "Web District web design and development agency";
 
 const toAbsoluteUrl = (value) => {
   try {
@@ -73,7 +74,11 @@ function PageMeta({
   description = DEFAULT_DESCRIPTION,
   canonical,
   image = DEFAULT_IMAGE,
-  type = "website",
+  imageAlt = DEFAULT_IMAGE_ALT,
+  imageWidth = 1672,
+  imageHeight = 941,
+  ogType,
+  type = ogType || "website",
   robots = "index,follow",
   structuredData,
 }) {
@@ -95,13 +100,16 @@ function PageMeta({
     upsertMeta("property", "og:type", type);
     upsertMeta("property", "og:url", socialUrl);
     upsertMeta("property", "og:image", imageUrl);
-    upsertMeta("property", "og:image:alt", `${SITE_NAME} preview`);
+    upsertMeta("property", "og:image:alt", imageAlt);
+    upsertMeta("property", "og:image:width", String(imageWidth));
+    upsertMeta("property", "og:image:height", String(imageHeight));
     upsertMeta("property", "og:site_name", SITE_NAME);
 
     upsertMeta("name", "twitter:card", "summary_large_image");
     upsertMeta("name", "twitter:title", finalTitle);
     upsertMeta("name", "twitter:description", finalDescription);
     upsertMeta("name", "twitter:image", imageUrl);
+    upsertMeta("name", "twitter:image:alt", imageAlt);
 
     updateCanonical(canonicalUrl);
 
@@ -116,7 +124,18 @@ function PageMeta({
     } else {
       existing?.remove();
     }
-  }, [canonical, description, image, robots, structuredData, title, type]);
+  }, [
+    canonical,
+    description,
+    image,
+    imageAlt,
+    imageHeight,
+    imageWidth,
+    robots,
+    structuredData,
+    title,
+    type,
+  ]);
 
   return null;
 }

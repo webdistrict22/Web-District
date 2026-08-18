@@ -1,8 +1,14 @@
 import { Link } from "react-router";
 import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
 import useLanguage from "../../hooks/useLanguage";
+import { getImageMetadata } from "../../data/imageMetadata";
 
-function ProjectCard({ project, className = "", duplicate = false }) {
+function ProjectCard({
+  project,
+  className = "",
+  duplicate = false,
+  priority = false,
+}) {
   const { isRtl, t, translateValue } = useLanguage();
   const DirectionalArrow = isRtl ? ArrowUpLeft : ArrowUpRight;
   const isDatabaseProject = Boolean(project._id);
@@ -22,12 +28,22 @@ function ProjectCard({ project, className = "", duplicate = false }) {
   const image = isDatabaseProject
     ? project.images?.[0]
     : project.coverImage || project.image;
+  const imageMetadata = getImageMetadata(image);
 
   const card = (
     <article className="wd-work-project-card">
       <div className="wd-work-project-card__image">
         {image ? (
-          <img src={image} alt={name} loading="lazy" decoding="async" draggable="false" />
+          <img
+            src={image}
+            alt={name}
+            width={imageMetadata.width}
+            height={imageMetadata.height}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
+            draggable="false"
+          />
         ) : null}
       </div>
       <div className="wd-work-project-card__body">

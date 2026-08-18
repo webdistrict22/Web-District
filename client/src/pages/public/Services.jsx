@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useState } from "react";
 import { useLocation } from "react-router";
-import PageMeta from "../../components/common/PageMeta";
+import RouteMeta from "../../components/common/RouteMeta";
 import Container from "../../components/common/Container";
 import FinalCtaLink from "../../components/common/FinalCtaLink";
 import ServiceSection from "../../components/services/ServiceSection";
@@ -84,11 +84,7 @@ function Services() {
 
   return (
     <div className="wd-services-page">
-      <PageMeta
-        title={t("services.metaTitle")}
-        description={t("services.metaDescription")}
-        canonical="/services"
-      />
+      <RouteMeta path="/services" />
 
       <section
         className="wd-services-hero"

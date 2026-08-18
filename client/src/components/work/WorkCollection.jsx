@@ -34,7 +34,7 @@ function WorkCollection({
       <div className="wd-work-grid" aria-label={ariaLabel}>
         {items.map((item, index) => (
           <div className="wd-work-grid__item" key={getKey(item, index)}>
-            {renderItem(item, { duplicate: false })}
+            {renderItem(item, { duplicate: false, priority: index === 0 })}
           </div>
         ))}
       </div>
@@ -62,7 +62,7 @@ function WorkCollection({
                 aria-hidden={duplicate || undefined}
                 dir={isRtl ? "rtl" : "ltr"}
               >
-                {renderItem(item, { duplicate })}
+                {renderItem(item, { duplicate, priority: false })}
               </div>
             ))}
           </div>

@@ -1,6 +1,6 @@
 import Container from "../common/Container";
 import FinalCtaLink from "../common/FinalCtaLink";
-import PageMeta from "../common/PageMeta";
+import RouteMeta from "../common/RouteMeta";
 import useLanguage from "../../hooks/useLanguage";
 import "./PublicUtilityPages.css";
 
@@ -10,11 +10,7 @@ function LegalPage({ canonical, translationKey }) {
 
   return (
     <div className="wd-legal-page">
-      <PageMeta
-        title={content.metaTitle}
-        description={content.metaDescription}
-        canonical={canonical}
-      />
+      <RouteMeta path={canonical} />
 
       <section className="wd-utility-hero">
         <Container>

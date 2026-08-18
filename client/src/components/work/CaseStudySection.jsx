@@ -22,6 +22,7 @@ import ProjectCard from "./ProjectCard";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import useRestorableAccordion from "../../hooks/useRestorableAccordion";
 import "./CaseStudySection.css";
+import { getImageMetadata } from "../../data/imageMetadata";
 
 const QUALITY_KEYS = [
   "experience",
@@ -44,19 +45,7 @@ const getImageSource = (image) =>
   typeof image === "string" ? image : image?.src;
 
 function useDesktopShowcase() {
-  const [isDesktop, setIsDesktop] = useState(() =>
-    window.matchMedia("(min-width: 1024px)").matches,
-  );
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
-    const handleChange = (event) => setIsDesktop(event.matches);
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return isDesktop;
+  return useMediaQuery("(min-width: 1024px)");
 }
 
 function ShowcaseGrid({ images, name, t }) {
@@ -70,7 +59,8 @@ function ShowcaseGrid({ images, name, t }) {
               name,
               number: String(index + 1).padStart(2, "0"),
             })}
-            loading={index === 0 ? "eager" : "lazy"}
+            {...getImageMetadata(image)}
+            loading="lazy"
             decoding="async"
           />
         </figure>
@@ -146,7 +136,8 @@ function ShowcaseCarousel({ images, name, t }) {
                     number: String(logicalIndex + 1).padStart(2, "0"),
                   })}
                   className="wd-case-study-carousel__image"
-                  loading={logicalIndex === 0 ? "eager" : "lazy"}
+                  {...getImageMetadata(source)}
+                  loading="lazy"
                   decoding="async"
                 />
               </div>
@@ -588,6 +579,7 @@ function CaseStudySection({ project }) {
                 <img
                   src={logoImage}
                   alt={t("work.caseStudy.logoImageAlt", undefined, { name })}
+                  {...getImageMetadata(logoImage)}
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"

@@ -32,8 +32,12 @@ const interpolate = (value, params) => {
   );
 };
 
-function LanguageProvider({ children }) {
-  const [language, setLanguageState] = useState(getStoredLanguage);
+function LanguageProvider({ children, initialLanguage }) {
+  const [language, setLanguageState] = useState(() =>
+    supportedLanguages.includes(initialLanguage)
+      ? initialLanguage
+      : getStoredLanguage(),
+  );
   const [isAdminRoute, setIsAdminRoute] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.location.pathname.startsWith("/admin");
@@ -42,6 +46,19 @@ function LanguageProvider({ children }) {
   const effectiveLanguage = isAdminRoute ? "en" : language;
   const direction = effectiveLanguage === "ar" ? "rtl" : "ltr";
   const isArabic = effectiveLanguage === "ar";
+
+  useEffect(() => {
+    if (!initialLanguage || typeof window === "undefined") return;
+
+    const timerId = window.setTimeout(() => {
+      const storedLanguage = getStoredLanguage();
+      if (storedLanguage !== initialLanguage) {
+        setLanguageState(storedLanguage);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [initialLanguage]);
 
   const setLanguage = useCallback((nextLanguage) => {
     const safeLanguage = supportedLanguages.includes(nextLanguage)

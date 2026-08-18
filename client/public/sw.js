@@ -1,8 +1,14 @@
 const CACHE_PREFIX = "web-district-pwa-";
-const CACHE_NAME = "web-district-pwa-v3";
-const OFFLINE_URL = "/index.html";
+const CACHE_NAME = "web-district-pwa-v4";
+const OFFLINE_URL = "/";
+const PRIVATE_SHELL_URL = "/_spa";
+const NOT_FOUND_URL = "/404";
+const SEO_ROUTES_URL = "/seo-routes.json";
 const CORE_ASSETS = [
   OFFLINE_URL,
+  PRIVATE_SHELL_URL,
+  NOT_FOUND_URL,
+  SEO_ROUTES_URL,
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
@@ -22,6 +28,16 @@ const isSensitiveRequest = (request, url) => {
   const acceptsJson = request.headers
     .get("accept")
     ?.includes("application/json");
+  const isPrivateNavigationPath = [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/success",
+    "/reset-password",
+    "/verify-email",
+    "/account",
+    "/admin",
+  ].some((path) => url.pathname === path || url.pathname.startsWith(`${path}/`));
   const isPrivateDataPath =
     url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/admin/api") ||
@@ -30,7 +46,7 @@ const isSensitiveRequest = (request, url) => {
       url.pathname.startsWith("/client")) &&
       request.mode !== "navigate");
 
-  return acceptsJson || isPrivateDataPath;
+  return acceptsJson || isPrivateDataPath || isPrivateNavigationPath;
 };
 
 const isStaticRequest = (request, url) =>
@@ -71,15 +87,39 @@ const handleNavigation = async (request) => {
 
     if (response.ok && contentType.includes("text/html")) {
       const cache = await caches.open(CACHE_NAME);
-      await cache.put(OFFLINE_URL, response.clone());
+      await cache.put(request, response.clone());
     }
 
     return response;
   } catch {
     const cache = await caches.open(CACHE_NAME);
-    const cachedIndex = await cache.match(OFFLINE_URL);
+    const cachedRoute = await cache.match(request, { ignoreSearch: true });
+    if (cachedRoute) return cachedRoute;
 
-    return cachedIndex || Response.error();
+    const routeManifestResponse = await cache.match(SEO_ROUTES_URL);
+    const routeManifest = routeManifestResponse
+      ? await routeManifestResponse.json().catch(() => ({ routes: [] }))
+      : { routes: [] };
+    const url = new URL(request.url);
+    const normalizedPath = url.pathname === "/"
+      ? "/"
+      : url.pathname.replace(/\/+$/, "");
+
+    if (routeManifest.routes?.includes(normalizedPath)) {
+      const privateShell = await cache.match(PRIVATE_SHELL_URL);
+      return privateShell || Response.error();
+    }
+
+    const notFound = await cache.match(NOT_FOUND_URL);
+    if (notFound) {
+      return new Response(await notFound.blob(), {
+        status: 404,
+        statusText: "Not Found",
+        headers: notFound.headers,
+      });
+    }
+
+    return Response.error();
   }
 };
 

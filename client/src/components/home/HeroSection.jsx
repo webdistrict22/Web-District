@@ -5,6 +5,7 @@ import useMediaQuery from "../../hooks/useMediaQuery";
 import useSettings from "../../hooks/useSettings";
 import useSessionImage from "../../hooks/useSessionImage";
 import { trackCustomEvent } from "../../lib/metaPixel";
+import { getImageMetadata } from "../../data/imageMetadata";
 import "./HomeOpening.css";
 
 const defaultSubline =
@@ -22,6 +23,7 @@ function HeroSection() {
   const heroImageUrl = isMobileHero
     ? "/images/home/phone-home-hero.webp"
     : "/images/home/desktop-home-hero.webp";
+  const heroImageMetadata = getImageMetadata(heroImageUrl);
   const { handleLoad: handleHeroLoad, isLoaded: isHeroLoaded } =
     useSessionImage(heroImageUrl);
 
@@ -50,8 +52,8 @@ function HeroSection() {
         <img
           src={heroImageUrl}
           alt=""
-          width="1680"
-          height="945"
+          width={heroImageMetadata.width}
+          height={heroImageMetadata.height}
           loading="eager"
           fetchPriority="high"
           decoding="async"

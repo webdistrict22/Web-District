@@ -407,7 +407,8 @@ export const mergeProjectsWithFallback = (projects = []) => {
       return;
     }
 
-    merged.push(project);
+    // New case studies are published through the static catalog first so every
+    // public card has a prerendered route, metadata, and sitemap entry.
   });
 
   return merged;

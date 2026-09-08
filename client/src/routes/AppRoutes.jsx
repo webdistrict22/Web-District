@@ -14,6 +14,7 @@ import ScrollToTop from "../components/common/ScrollToTop";
 import MetaPixelTracker from "../components/analytics/MetaPixelTracker";
 import Home from "../pages/public/Home";
 import Services from "../pages/public/Services";
+import ServiceDetail from "../pages/public/ServiceDetail";
 import Work from "../pages/public/Work";
 import CaseStudy from "../pages/public/CaseStudy";
 import Process from "../pages/public/Process";
@@ -99,6 +100,7 @@ function AppRoutes({ initialPath = "/", staticNotFoundPath = "" }) {
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<Home />} />
           <Route path="services" element={<Services />} />
+          <Route path="services/:serviceSlug" element={<ServiceDetail />} />
           <Route path="work" element={<Work />} />
           <Route
             path="work/:slug"

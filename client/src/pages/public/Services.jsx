@@ -40,9 +40,11 @@ function Services() {
   const serviceDetails = t("services.details", []);
   const transitionBand = t("services.transitionBand", {});
   const sectionLabels = t("services.sectionLabels", {});
+  const locale = effectiveLanguage === "ar" ? "ar" : "en";
   const services = servicesPageSections.map((section, index) => ({
     ...section,
     ...serviceDetails[index],
+    detailLinkLabel: section.page[locale]?.hubLinkLabel,
   }));
 
   const trackStartProject = () =>

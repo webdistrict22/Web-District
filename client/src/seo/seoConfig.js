@@ -1,5 +1,9 @@
 import { translations } from "../i18n/translations.js";
 import { workProjects } from "../data/demoProjects.js";
+import {
+  serviceByPath,
+  serviceCatalog,
+} from "../data/servicesData.js";
 import { getImageMetadata } from "../data/imageMetadata.js";
 
 export const SITE_NAME = "Web District";
@@ -132,10 +136,15 @@ const staticArabicSeo = {
 const projectBySlug = new Map(workProjects.map((project) => [project.slug, project]));
 const staticRoutes = Object.keys(staticEnglishSeo);
 
+export const SERVICE_ROUTES = serviceCatalog.map((item) => item.path);
 export const CASE_STUDY_ROUTES = workProjects.map(
   (project) => `/work/${project.slug}`,
 );
-export const PUBLIC_SEO_ROUTES = [...staticRoutes, ...CASE_STUDY_ROUTES];
+export const PUBLIC_SEO_ROUTES = [
+  ...staticRoutes,
+  ...SERVICE_ROUTES,
+  ...CASE_STUDY_ROUTES,
+];
 
 export const normalizeSeoPath = (value = "/") => {
   const pathname = String(value).split(/[?#]/, 1)[0] || "/";
@@ -177,6 +186,79 @@ const websiteNode = {
 const homeStructuredData = {
   "@context": "https://schema.org",
   "@graph": [organizationNode, websiteNode],
+};
+
+const withDefaultImageMetadata = (seo) => {
+  const { width: imageWidth, height: imageHeight } = getImageMetadata(DEFAULT_IMAGE);
+  return {
+    ...seo,
+    image: toAbsoluteUrl(DEFAULT_IMAGE),
+    imageAlt: DEFAULT_IMAGE_ALT,
+    imageWidth,
+    imageHeight,
+  };
+};
+
+export const getServiceSeo = (service, language = "en") => {
+  if (!service) return null;
+
+  const locale = language === "ar" ? "ar" : "en";
+  const localized = service.seo[locale] || service.seo.en;
+  const page = service.page[locale] || service.page.en;
+  const canonical = toAbsoluteUrl(service.path);
+  const homeName = locale === "ar" ? "الرئيسية" : "Home";
+  const servicesName = locale === "ar" ? "الخدمات" : "Services";
+
+  return withDefaultImageMetadata({
+    ...localized,
+    canonical,
+    robots: "index,follow",
+    ogType: "website",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@graph": [
+        organizationNode,
+        {
+          "@type": "Service",
+          "@id": `${canonical}#service`,
+          name: page.name,
+          serviceType: service.serviceType,
+          description: localized.description,
+          url: canonical,
+          provider: { "@id": ORGANIZATION_ID },
+          areaServed: {
+            "@type": "Country",
+            name: "Egypt",
+          },
+          inLanguage: locale,
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${canonical}#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: homeName,
+              item: `${SITE_URL}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: servicesName,
+              item: `${SITE_URL}/services`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: page.name,
+              item: canonical,
+            },
+          ],
+        },
+      ],
+    },
+  });
 };
 
 const getArabicProjectDescription = (project) => {
@@ -265,6 +347,9 @@ export const getCaseStudySeo = (project, language = "en") => {
 
 export const getSeoForPath = (value, language = "en") => {
   const path = normalizeSeoPath(value);
+  const service = serviceByPath.get(path);
+  if (service) return getServiceSeo(service, language);
+
   const caseStudyMatch = path.match(/^\/work\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
 
   if (caseStudyMatch) {
@@ -275,30 +360,14 @@ export const getSeoForPath = (value, language = "en") => {
   if (!localized) return null;
 
   const canonical = toAbsoluteUrl(path);
-  const { width: imageWidth, height: imageHeight } = getImageMetadata(DEFAULT_IMAGE);
 
-  return {
+  return withDefaultImageMetadata({
     ...localized,
     canonical,
     robots: "index,follow",
     ogType: "website",
-    image: toAbsoluteUrl(DEFAULT_IMAGE),
-    imageAlt: DEFAULT_IMAGE_ALT,
-    imageWidth,
-    imageHeight,
     structuredData: path === "/" ? homeStructuredData : undefined,
-  };
-};
-
-const withDefaultImageMetadata = (seo) => {
-  const { width: imageWidth, height: imageHeight } = getImageMetadata(DEFAULT_IMAGE);
-  return {
-    ...seo,
-    image: toAbsoluteUrl(DEFAULT_IMAGE),
-    imageAlt: DEFAULT_IMAGE_ALT,
-    imageWidth,
-    imageHeight,
-  };
+  });
 };
 
 export const getNotFoundSeo = (language = "en") =>

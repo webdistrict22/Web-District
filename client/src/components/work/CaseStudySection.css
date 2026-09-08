@@ -81,6 +81,27 @@
   text-transform: uppercase;
 }
 
+.wd-case-study-intro__service-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.9rem;
+  margin-top: 0.55rem;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.wd-case-study-intro__service-links a {
+  color: var(--wd-stone-gray);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--wd-signature-gold) 52%, transparent);
+  text-underline-offset: 0.24rem;
+}
+
+.wd-case-study-intro__service-links a:hover {
+  color: var(--wd-signature-gold);
+}
+
 .wd-case-study-intro__summary {
   max-width: 46rem;
   margin-top: 0.75rem;

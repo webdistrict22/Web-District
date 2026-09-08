@@ -13,12 +13,16 @@ const normalizeOrigin = (value) => { try { return new URL(String(value || "")).o
 const allowedOrigins = new Set([
   process.env.CLIENT_URL,
   ...String(process.env.ALLOWED_ORIGINS || "").split(","),
-  ...(production ? [] : ["http://localhost:5173", "http://localhost:3000"]),
+  ...(production ? [] : ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000"]),
 ].map((value) => normalizeOrigin(value.trim())).filter(Boolean));
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 app.use(requestContext);
+app.use((req, res, next) => {
+  res.set("X-Robots-Tag", "noindex, nofollow");
+  next();
+});
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({
   origin: (origin, callback) => {

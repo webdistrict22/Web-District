@@ -71,7 +71,7 @@ function ServicesPreview() {
                 <Link
                   className="wd-service-panel-link"
                   key={`${service.title}-${index}`}
-                  to={`/services#${servicesPageSections[logicalIndex].id}`}
+                  to={servicesPageSections[logicalIndex].path}
                   aria-label={`${service.title} - ${t("common.buttons.viewServices")}`}
                   aria-hidden={duplicate || undefined}
                   tabIndex={duplicate ? -1 : undefined}

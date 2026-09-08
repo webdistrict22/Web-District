@@ -86,6 +86,7 @@ function HeroSection() {
               <RotatingText
                 key={effectiveLanguage}
                 texts={rotatingPhrases}
+                includeScreenReaderText={false}
                 splitBy={isArabic ? "lines" : "words"}
                 rotationInterval={2600}
                 staggerDuration={isArabic ? 0 : 0.025}

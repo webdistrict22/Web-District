@@ -27,6 +27,7 @@ const RotatingText = forwardRef((props, ref) => {
     staggerFrom = "first",
     loop = true,
     auto = true,
+    includeScreenReaderText = true,
     splitBy = "characters",
     onNext,
     mainClassName,
@@ -150,7 +151,9 @@ const RotatingText = forwardRef((props, ref) => {
       layout
       transition={transition}
     >
-      <span className="text-rotate-sr-only">{texts[currentTextIndex]}</span>
+      {includeScreenReaderText ? (
+        <span className="text-rotate-sr-only">{texts[currentTextIndex]}</span>
+      ) : null}
       <AnimatePresence mode={animatePresenceMode} initial={animatePresenceInitial}>
         <motion.span
           key={currentTextIndex}

@@ -173,7 +173,7 @@ export const translations = {
         eyebrow: "What we build",
         title: "Six clear website directions.",
         description:
-          "Choose the direction that matches your goal. We keep the structure clear from the start.",
+          "Web District is a web design and development agency in Egypt. We build six clear website directions around what each business actually needs.",
         previousAria: "Previous service",
         nextAria: "Next service",
         titles: [

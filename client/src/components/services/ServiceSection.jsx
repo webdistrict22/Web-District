@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import Container from "../common/Container";
 
 function DetailList({ items, className = "" }) {
@@ -60,6 +61,12 @@ function ServiceDetails({ service, labels, id }) {
         />
         {service.scopeNote ? (
           <p className="wd-service-section__scope-note">{service.scopeNote}</p>
+        ) : null}
+        {service.path && service.detailLinkLabel ? (
+          <Link className="wd-service-section__detail-link" to={service.path}>
+            {service.detailLinkLabel}
+            <span aria-hidden="true">↗</span>
+          </Link>
         ) : null}
       </div>
     </div>

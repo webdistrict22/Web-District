@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { Link } from "react-router";
 import {
   ChevronDown,
   ExternalLink,
@@ -18,6 +19,7 @@ import LogoLoop from "../reactbits/LogoLoop/LogoLoop";
 import { getPublicReviews } from "../../lib/publicContentApi";
 import useLanguage from "../../hooks/useLanguage";
 import { workProjects } from "../../data/demoProjects";
+import { getRelatedServicesForProject } from "../../data/servicesData";
 import ProjectCard from "./ProjectCard";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import useRestorableAccordion from "../../hooks/useRestorableAccordion";
@@ -544,6 +546,8 @@ function CaseStudySection({ project }) {
   const isDatabaseProject = Boolean(project._id);
   const rawName = isDatabaseProject ? project.title : project.name;
   const name = t(`work.projects.${project.slug}.name`, rawName);
+  const relatedServices = getRelatedServicesForProject(project.slug);
+  const serviceLocale = isRtl ? "ar" : "en";
   const rawType = isDatabaseProject ? project.websiteType : project.type;
   const rawSubtitle = project.businessType || rawType;
   const subtitle = t(
@@ -590,6 +594,22 @@ function CaseStudySection({ project }) {
                   {name}
                 </h1>
                 <p className="wd-case-study-intro__subtitle">{subtitle}</p>
+                {relatedServices.length ? (
+                  <nav
+                    className="wd-case-study-intro__service-links"
+                    aria-label={
+                      isRtl
+                        ? "خدمات Web District المرتبطة"
+                        : "Related Web District services"
+                    }
+                  >
+                    {relatedServices.map((service) => (
+                      <Link key={service.id} to={service.path}>
+                        {service.page[serviceLocale].name}
+                      </Link>
+                    ))}
+                  </nav>
+                ) : null}
               </div>
             </div>
             <div className="wd-case-study-intro__body">

@@ -274,6 +274,31 @@
   line-height: 1.65;
 }
 
+.wd-service-section__detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  color: var(--service-control);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.wd-service-section__detail-link span {
+  transition: transform 180ms ease;
+}
+
+.wd-service-section__detail-link:hover span {
+  transform: translate(2px, -2px);
+}
+
+.wd-service-section__detail-link:focus-visible {
+  outline: 2px solid var(--service-control);
+  outline-offset: 4px;
+}
+
 .wd-services-cta {
   background: var(--wd-signature-gold);
   color: var(--wd-dark-ink);

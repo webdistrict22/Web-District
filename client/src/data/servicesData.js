@@ -38,6 +38,8 @@ export const serviceCatalog = [
       "fresh-cart",
       "byjojo",
       "ms-store",
+      "darb",
+      "wam",
     ],
     relatedServiceIds: ["landing-pages", "custom-platforms", "business-websites"],
     seo: {
@@ -331,6 +333,7 @@ export const serviceCatalog = [
     reverse: true,
     serviceType: "Custom platform, portal and dashboard development",
     relatedProjectSlugs: ["s8-factory"],
+    projectSlugs: ["s8-factory", "burn-gym", "wam"],
     relatedServiceIds: ["business-websites", "booking-websites", "online-stores"],
     seo: {
       en: {

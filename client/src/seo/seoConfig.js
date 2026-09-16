@@ -50,6 +50,22 @@ const staticEnglishSeo = {
 };
 
 const caseStudyEnglishSeo = {
+  darb: {
+    title: "Darb Perfume E-commerce Case Study | Web District",
+    description:
+      "See how Web District shaped Darb's perfume e-commerce experience around fragrance discovery, checkout, order tracking, store management, and a polished brand-led storefront.",
+  },
+  wam: {
+    title: "Wish A Mesh 3D Printing Website Case Study | Web District",
+    description:
+      "Explore Wish A Mesh, a 3D-printing commerce platform combining ready-made products, custom requests, model uploads, checkout, tracking, accounts, and admin workflows.",
+  },
+  "burn-gym": {
+    title: "Burn Gym Custom Dashboard Case Study | Web District",
+    description:
+      "Explore Burn Gym, a custom gym-management dashboard by Web District that centralizes members, memberships, coaches, classes, attendance, payments, and daily operations.",
+  },
+
   zohour: {
     title: "Zohour E-commerce Website Case Study | Web District",
     description:

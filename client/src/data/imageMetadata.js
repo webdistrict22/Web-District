@@ -24,6 +24,27 @@ const imageMetadata = {
   "/images/brands-logos/zohour-logo.webp": { width: 1021, height: 800 },
 };
 
+
+// PORTFOLIO EXPANSION IMAGE METADATA START
+Object.assign(imageMetadata, {
+  "/images/projects/darb-cover.webp": { width: 1682, height: 1682 },
+  "/images/projects/wam-cover.webp": { width: 1774, height: 1774 },
+  "/images/projects/burngym-cover.webp": { width: 1254, height: 1254 },
+  "/images/brands-logos/darb-logo.webp": { width: 1682, height: 1682 },
+  "/images/brands-logos/wam-logo.webp": { width: 1774, height: 1774 },
+  "/images/brands-logos/burngym-logo.webp": { width: 1254, height: 1254 },
+  "/images/projects/showcases/darb-showcase-01.webp": { width: 941, height: 1672 },
+  "/images/projects/showcases/darb-showcase-02.webp": { width: 1122, height: 1402 },
+  "/images/projects/showcases/darb-showcase-03.webp": { width: 1122, height: 1402 },
+  "/images/projects/showcases/wam-showcase-01.webp": { width: 1122, height: 1402 },
+  "/images/projects/showcases/wam-showcase-02.webp": { width: 1122, height: 1402 },
+  "/images/projects/showcases/wam-showcase-03.webp": { width: 1122, height: 1402 },
+  "/images/projects/showcases/burngym-showcase-01.webp": { width: 1229, height: 1536 },
+  "/images/projects/showcases/burngym-showcase-02.webp": { width: 1229, height: 1536 },
+  "/images/projects/showcases/burngym-showcase-03.webp": { width: 1229, height: 1536 },
+});
+// PORTFOLIO EXPANSION IMAGE METADATA END
+
 for (const slug of [
   "akm",
   "atheer",

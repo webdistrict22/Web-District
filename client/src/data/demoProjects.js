@@ -1,3 +1,4 @@
+import { portfolioExpansionProjects } from "./portfolioExpansionProjects.js";
 import { caseStudyDetails } from "./caseStudyDetails.js";
 
 const baseWorkProjects = [
@@ -383,10 +384,33 @@ const baseWorkProjects = [
   },
 ];
 
-export const workProjects = baseWorkProjects.map((project) => ({
+const originalWorkProjects = baseWorkProjects.map((project) => ({
   ...project,
   ...caseStudyDetails[project.slug],
 }));
+
+export const workProjects = (() => {
+  const s8Index = originalWorkProjects.findIndex((project) => project?.slug === "s8-factory");
+  if (s8Index < 0) {
+    throw new Error('Static portfolio catalog is missing the "s8-factory" project');
+  }
+
+  const darbProject = portfolioExpansionProjects.find((project) => project.slug === "darb");
+  const wamProject = portfolioExpansionProjects.find((project) => project.slug === "wam");
+  const burnGymProject = portfolioExpansionProjects.find((project) => project.slug === "burn-gym");
+
+  if (!darbProject || !wamProject || !burnGymProject) {
+    throw new Error("Portfolio expansion projects are incomplete");
+  }
+
+  return [
+    ...originalWorkProjects.slice(0, s8Index + 1),
+    darbProject,
+    wamProject,
+    ...originalWorkProjects.slice(s8Index + 1),
+    burnGymProject,
+  ];
+})();
 
 export const mergeProjectsWithFallback = (projects = []) => {
   if (!projects.length) return workProjects;

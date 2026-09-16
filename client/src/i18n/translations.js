@@ -490,6 +490,9 @@ export const translations = {
         launchScope: "Launch scope",
         builtToExpand: "Built to expand",
         securityLabels: {
+          accessControl: "Access control",
+          sensitiveData: "Sensitive data protection",
+          businessRules: "Business rules and order integrity",
           accessAuthorization: "Access and authorization",
           requestAbuse: "Request and abuse protection",
           browserTransport: "Browser and transport protection",
@@ -2214,6 +2217,9 @@ export const translations = {
         launchScope: "نطاق الإطلاق",
         builtToExpand: "مصمم للتوسع",
         securityLabels: {
+          accessControl: "التحكم في الوصول",
+          sensitiveData: "حماية البيانات الحساسة",
+          businessRules: "قواعد العمل وسلامة الطلبات",
           accessAuthorization: "الوصول والصلاحيات",
           requestAbuse: "حماية الطلبات والحد من إساءة الاستخدام",
           browserTransport: "حماية المتصفح والاتصال",

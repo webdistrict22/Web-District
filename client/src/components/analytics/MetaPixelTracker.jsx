@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 import useLanguage from "../../hooks/useLanguage";
+import { getFallbackProjectBySlug } from "../../data/demoProjects";
+import { getServiceBySlug } from "../../data/servicesData";
 import {
   initMetaPixel,
   trackCustomEvent,
@@ -33,13 +35,6 @@ const publicPageViews = {
   "/process": { contentName: "Process", contentCategory: "Public Page" },
 };
 
-const caseStudyViews = {
-  zohour: "Zohour Case Study",
-  "s8-factory": "S8 Factory Case Study",
-  atheer: "Atheer Case Study",
-  akm: "AKM Case Study",
-};
-
 let lastTrackedPath = "";
 
 const normalizePath = (pathname) => {
@@ -47,27 +42,46 @@ const normalizePath = (pathname) => {
   return pathname.replace(/\/+$/, "");
 };
 
+const decodeRouteSegment = (value) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return "";
+  }
+};
+
 const getCaseStudyConfig = (path) => {
   const match = path.match(/^\/work\/([^/]+)$/);
-
   if (!match) return null;
 
-  let projectSlug;
+  const projectSlug = decodeRouteSegment(match[1]);
+  if (!projectSlug) return null;
 
-  try {
-    projectSlug = decodeURIComponent(match[1]);
-  } catch {
-    return null;
-  }
-
-  const contentName = caseStudyViews[projectSlug];
-
-  if (!contentName) return null;
+  const project = getFallbackProjectBySlug(projectSlug);
+  if (!project) return null;
 
   return {
-    contentName,
+    contentName: project.name || project.title || projectSlug,
     contentCategory: "Case Study",
     projectSlug,
+  };
+};
+
+const getServiceDetailConfig = (path, language) => {
+  const match = path.match(/^\/services\/([^/]+)$/);
+  if (!match) return null;
+
+  const serviceSlug = decodeRouteSegment(match[1]);
+  if (!serviceSlug) return null;
+
+  const service = getServiceBySlug(serviceSlug);
+  if (!service) return null;
+
+  const page = service.page?.[language] || service.page?.en;
+
+  return {
+    contentName: page?.name || service.serviceType || serviceSlug,
+    contentCategory: "Service",
   };
 };
 
@@ -78,8 +92,15 @@ function MetaPixelTracker() {
   useEffect(() => {
     const path = normalizePath(location.pathname);
     const caseStudyConfig = getCaseStudyConfig(path);
+    const serviceDetailConfig = getServiceDetailConfig(
+      path,
+      effectiveLanguage,
+    );
     const isCaseStudyPath = /^\/work\/[^/]+$/.test(path);
-    const isTrackedPath = trackedPublicPaths.has(path) || isCaseStudyPath;
+    const isTrackedPath =
+      trackedPublicPaths.has(path) ||
+      isCaseStudyPath ||
+      Boolean(serviceDetailConfig);
 
     if (!isTrackedPath) {
       lastTrackedPath = "";
@@ -91,7 +112,11 @@ function MetaPixelTracker() {
     const timerId = window.setTimeout(() => {
       if (lastTrackedPath === path || !initMetaPixel()) return;
 
-      const viewConfig = publicPageViews[path] || caseStudyConfig;
+      const viewConfig =
+        publicPageViews[path] ||
+        caseStudyConfig ||
+        serviceDetailConfig;
+
       const eventParams = {
         page_path: path,
         page_title: viewConfig?.contentName || document.title,
@@ -110,13 +135,20 @@ function MetaPixelTracker() {
       };
 
       if (caseStudyConfig?.projectSlug) {
-        viewParams.project_slug = viewConfig.projectSlug;
+        viewParams.project_slug = caseStudyConfig.projectSlug;
       }
 
       trackViewContent(viewConfig.contentName, viewParams);
 
       if (caseStudyConfig?.projectSlug) {
         trackCustomEvent("ProjectCaseStudyView", {
+          ...viewParams,
+          content_name: viewConfig.contentName,
+        });
+      }
+
+      if (serviceDetailConfig) {
+        trackCustomEvent("ServicePageView", {
           ...viewParams,
           content_name: viewConfig.contentName,
         });

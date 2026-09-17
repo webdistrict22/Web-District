@@ -18,6 +18,10 @@ const brandLogos = [
   ["fresh cart", "/images/brands-logos/freshcart-logo.webp"],
   ["salah", "/images/brands-logos/salahframe-logo.webp"],
   ["ms store", "/images/brands-logos/ms-logo.webp"],
+  ["darb", "/images/brands-logos/darb-logo.webp"],
+  ["wish a mesh", "/images/brands-logos/wam-logo.webp"],
+  ["wam", "/images/brands-logos/wam-logo.webp"],
+  ["burn gym", "/images/brands-logos/burngym-logo.webp"],
 ];
 
 const getLogo = (brand = "") => {
